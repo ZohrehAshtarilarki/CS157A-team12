@@ -48,7 +48,7 @@ The **Campus Event Management System** utilizes the following technologies:
 
 - **Database Management System (DBMS)**: MySQL Workbench
 - **Front-end**: HTML, CSS, JavaScript
-- **Back-end**: Java, XML, JSP
+- **Back-end**: Java
 - **Authentication and Authorization**: Implements user authentication and role-based access control.
 
 ## Getting Started
