@@ -65,8 +65,8 @@ For detailed installation and configuration instructions, please refer to the pr
 
 ## Contributors
 
-- [Zohreh Ashtarilarki]
-- [Long Nguyen]
+- Zohreh Ashtarilarki
+- Long Nguyen
 
 ## License
 
