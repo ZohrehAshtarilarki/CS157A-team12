@@ -1,17 +1,17 @@
 package model;
 
 public class User {
-	private int schoolID;
+	private int userID;
 	private String email;
 	private String userName;
 	private String password;
 	
 	
-	public int getSchoolID() {
-		return schoolID;
+	public int getuserID() {
+		return userID;
 	}
-	public void setSchoolID(int schoolID) {
-		this.schoolID = schoolID;
+	public void setuserID(int userID) {
+		this.userID = userID;
 	}
 	public String getEmail() {
 		return email;
