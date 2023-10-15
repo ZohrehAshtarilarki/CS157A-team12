@@ -25,13 +25,13 @@ public class AttendeeServlet extends HttpServlet {
 
         if (action != null) {
             switch (action) {
-                case "create":
+                case "createAttendee":
                     createAttendee(request, response);
                     break;
-                case "update":
+                case "updateAttendee":
                     updateAttendee(request, response);
                     break;
-                case "delete":
+                case "deleteAttendee":
                     deleteAttendee(request, response);
                     break;
                 default:
@@ -60,11 +60,11 @@ public class AttendeeServlet extends HttpServlet {
 
     private void createAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String attendeeId = request.getParameter("attendeeId");
+        int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
 
         Attendee attendee = new Attendee();
         attendee.setSjsuId(sjsuId);
-        attendee.setAttendeeId(Integer.parseInt(attendeeId));
+        attendee.setAttendeeId(attendeeId);
 
         attendeeDAO.createAttendee(attendee);
 
@@ -74,11 +74,11 @@ public class AttendeeServlet extends HttpServlet {
 
     private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String attendeeId = request.getParameter("attendeeId");
+        int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
 
         Attendee attendee = new Attendee();
         attendee.setSjsuId(sjsuId);
-        attendee.setAttendeeId(Integer.parseInt(attendeeId));
+        attendee.setAttendeeId(attendeeId);
 
         attendeeDAO.updateAttendee(attendee);
 

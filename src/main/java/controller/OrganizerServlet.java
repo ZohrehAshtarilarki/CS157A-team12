@@ -26,13 +26,13 @@ public class OrganizerServlet extends HttpServlet {
 
         if (action != null) {
             switch (action) {
-                case "create":
+                case "createOrganizer":
                     createOrganizer(request, response);
                     break;
-                case "update":
+                case "updateOrganizer":
                     updateOrganizer(request, response);
                     break;
-                case "delete":
+                case "deleteOrganizer":
                     deleteOrganizer(request, response);
                     break;
                 default:
@@ -61,12 +61,12 @@ public class OrganizerServlet extends HttpServlet {
 
     private void createOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String organizerId = request.getParameter("organizerId");
+        int organizerId = Integer.parseInt(request.getParameter("organizerId"));
         String organizationName = request.getParameter("organizationName");
 
         Organizer organizer = new Organizer();
         organizer.setSjsuId(sjsuId);
-        organizer.setOrganizerId(Integer.parseInt(organizerId));
+        organizer.setOrganizerId(organizerId);
         organizer.setOrganizationName(organizationName);
 
         organizerDAO.createOrganizer(organizer);
@@ -77,12 +77,12 @@ public class OrganizerServlet extends HttpServlet {
 
     private void updateOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String organizerId = request.getParameter("organizerId");
+    	int organizerId = Integer.parseInt(request.getParameter("organizerId"));
         String organizationName = request.getParameter("organizationName");
 
         Organizer organizer = new Organizer();
         organizer.setSjsuId(sjsuId);
-        organizer.setOrganizerId(Integer.parseInt(organizerId));
+        organizer.setOrganizerId(organizerId);
         organizer.setOrganizationName(organizationName);
 
         organizerDAO.updateOrganizer(organizer);
