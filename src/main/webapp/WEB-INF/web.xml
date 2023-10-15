@@ -19,4 +19,24 @@
     <servlet-name>UserServlet</servlet-name>
     <url-pattern>/UserServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>OrganizerServlet</display-name>
+    <servlet-name>OrganizerServlet</servlet-name>
+    <servlet-class>controller.OrganizerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OrganizerServlet</servlet-name>
+    <url-pattern>/OrganizerServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AttendeeServlet</display-name>
+    <servlet-name>AttendeeServlet</servlet-name>
+    <servlet-class>controller.AttendeeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AttendeeServlet</servlet-name>
+    <url-pattern>/AttendeeServlet</url-pattern>
+  </servlet-mapping>
 </web-app>
