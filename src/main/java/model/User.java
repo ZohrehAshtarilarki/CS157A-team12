@@ -5,10 +5,10 @@ public class User {
     private String sjsuEmail;
     private String username;
     private String password;
-    
+
     // Default constructor
     public User() {}
-    
+
     // Parameterized constructor
     public User(int sjsuId, String sjsuEmail, String username, String password) {
         this.sjsuId = sjsuId;

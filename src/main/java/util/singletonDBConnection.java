@@ -5,37 +5,48 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 // Singleton Database Connection
-public class singletonDBConnection implements DBConnectionInt {
-    private static singletonDBConnection instance;
+public class singletonDbConnection implements DbConnectionInt {
+    private static singletonDbConnection instance;
     private Connection connection;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/your_database_name";
+    private static final String URL = "jdbc:mysql://localhost:3306/EventManagement";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "123456@Ebi";
 
-    private singletonDBConnection() {
+    private singletonDbConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            System.out.print("connecting successfully");
         } catch (Exception e) {
             e.printStackTrace();
             // Handle exceptions appropriately later
         }
     }
 
-    public static singletonDBConnection getInstance() {
+    public static singletonDbConnection getInstance() {
         if (instance == null) {
-            synchronized (singletonDBConnection.class) {
+            synchronized (singletonDbConnection.class) {
                 if (instance == null) {
-                    instance = new singletonDBConnection();
+                    instance = new singletonDbConnection();
                 }
             }
         }
         return instance;
     }
 
-    @Override
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed() || !connection.isValid(2)) {
+                System.out.println("Connection either closed or not valid. connecting again...");
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+                System.out.print("connecting successfully");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately later
+        }
         return connection;
     }
 
@@ -51,3 +62,4 @@ public class singletonDBConnection implements DBConnectionInt {
         }
     }
 }
+

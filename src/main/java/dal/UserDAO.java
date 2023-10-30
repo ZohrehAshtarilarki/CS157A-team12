@@ -1,8 +1,8 @@
 package dal;
 
 import model.User;
-import util.DBConnectionInt;
-import util.singletonDBConnection;
+import util.DbConnectionInt;
+import util.singletonDbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    private DBConnectionInt dbConnection;
+    private final DbConnectionInt dbConnection;
 
     public UserDAO() {
-        dbConnection = singletonDBConnection.getInstance();
+        dbConnection = singletonDbConnection.getInstance();
     }
 
-    public void createUser(User user) {
+    public String registerUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password) VALUES (?, ?, ?, ?";
+        String insertQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password) VALUES (?, ?, ?, ?)";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
@@ -29,13 +29,18 @@ public class UserDAO {
             preparedStatement.setString(3, user.getUsername());
             preparedStatement.setString(4, user.getPassword());
 
-            preparedStatement.executeUpdate();
+            int i = preparedStatement.executeUpdate();
+            //Just to ensure data has been inserted into the database
+            if(i != 0)	return "SUCCESS";
         } catch (SQLException e) {
+            System.out.println("DB operation failure. reason:\n");
             e.printStackTrace();
             // Handle exceptions appropriately later
         } finally {
             dbConnection.closeConnection();
         }
+        // On failure, send a message from here.
+        return "Oops.. Something went wrong there..!";
     }
 
     public void updateUser(User user) {
@@ -109,6 +114,9 @@ public class UserDAO {
         User user = null;
 
         try {
+//            if (!(connection != null && connection.isValid(2))){
+//                System.out.println("Connection has died");
+//            }
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             preparedStatement.setString(1, username);
 
