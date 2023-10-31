@@ -1,8 +1,8 @@
 package dal;
 
 import model.Organizer;
-import util.DBConnectionInt;
-import util.singletonDBConnection;
+import util.DbConnectionInt;
+import util.singletonDbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,10 +13,10 @@ import java.util.List;
 
 
 public class OrganizerDAO {
-    private DBConnectionInt dbConnection;
+    private DbConnectionInt dbConnection;
 
     public OrganizerDAO() {
-        dbConnection = singletonDBConnection.getInstance();
+        dbConnection = singletonDbConnection.getInstance();
     }
 
     public void createOrganizer(Organizer organizer) {

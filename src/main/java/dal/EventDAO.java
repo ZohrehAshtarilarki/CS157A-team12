@@ -1,7 +1,7 @@
 package dal;
 
-import util.DBConnectionInt;
-import util.singletonDBConnection;
+import util.DbConnectionInt;
+import util.singletonDbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,10 +14,10 @@ import model.Event;
 import model.Organizer;
 
 public class EventDAO{
-	private DBConnectionInt dbConnection;
+	private DbConnectionInt dbConnection;
 
     public EventDAO() {
-        dbConnection = singletonDBConnection.getInstance();
+        dbConnection = singletonDbConnection.getInstance();
     }
 	
     public void createEvent(Event event, Organizer organizer)

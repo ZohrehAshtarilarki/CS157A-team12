@@ -12,3 +12,6 @@
 *.bak
 
 /build/
+
+/target
+

@@ -2,8 +2,8 @@ package dal;
 
 import model.Attendee;
 import model.User;
-import util.DBConnectionInt;
-import util.singletonDBConnection;
+import util.DbConnectionInt;
+import util.singletonDbConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttendeeDAO {
-    private DBConnectionInt dbConnection;
+    private DbConnectionInt dbConnection;
 
     public AttendeeDAO() {
-        dbConnection = singletonDBConnection.getInstance();
+        dbConnection = singletonDbConnection.getInstance();
     }
 
     public void createAttendee(Attendee attendee) {
