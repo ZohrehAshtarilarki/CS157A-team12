@@ -34,6 +34,6 @@
         <button type="submit" name="action" value="register">Register</button>
     </div>
 </form>
-<p>Already have an account? <a href="login.jsp">Login</a></p>
+<p>Already have an account? <a href="${pageContext.request.contextPath}/views/login.jsp">Login</a></p>
 </body>
 </html>
