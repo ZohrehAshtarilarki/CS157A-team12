@@ -35,6 +35,6 @@
 <% } %>
 <!-- Use an absolute path instead of a relative path.
  This will ensure that no matter where the link is clicked from, it always redirects to the correct path. -->
-<p>Don't have an account? <a href="${pageContext.request.contextPath}/views/registeration.jsp">Create an Account</a></p>
+<p>Don't have an account? <a href="${pageContext.request.contextPath}/views/registration.jsp">Create an Account</a></p>
 </body>
 </html>

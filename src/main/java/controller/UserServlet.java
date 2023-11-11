@@ -26,8 +26,6 @@ public class UserServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        //System.out.println("this is the action string");
-        //System.out.println(action);
         if (action != null) {
             switch (action) {
                 case "update":
@@ -40,7 +38,6 @@ public class UserServlet extends HttpServlet {
                     registerUser(request, response);
                     break;
                 case "login":
-                    //System.out.println("I am in login");
                     loginUser(request, response);
                     break;
                 default:
@@ -78,12 +75,14 @@ public class UserServlet extends HttpServlet {
         String sjsuEmail = request.getParameter("sjsuEmail");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String role = request.getParameter("role");
 
         User user = new User();
         user.setSjsuId(sjsuId);
         user.setSjsuEmail(sjsuEmail);
         user.setUsername(username);
         user.setPassword(password);
+        user.setRole(role);
 
         // The core Logic of the Registration application is present here. We are going
         // to insert user data in to the database.
@@ -99,11 +98,11 @@ public class UserServlet extends HttpServlet {
         else {
             String errorMessage = "Authentication failed. Please check your username and password.";
             request.setAttribute("message", errorMessage);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/registeration.jsp");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/registration.jsp");
             dispatcher.forward(request, response);
         }
         // Redirect or forward to a success page
-//        response.sendRedirect("home.jsp");
+        //response.sendRedirect("/views/home.jsp");
     }
 
     private void loginUser(HttpServletRequest request, HttpServletResponse response)
@@ -142,17 +141,19 @@ public class UserServlet extends HttpServlet {
         String sjsuEmail = request.getParameter("sjsuEmail");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String role = request.getParameter("role");
 
         User user = new User();
         user.setSjsuId(sjsuId);
         user.setSjsuEmail(sjsuEmail);
         user.setUsername(username);
         user.setPassword(password);
+        user.setRole(role);
 
         userDAO.updateUser(user);
 
         // Redirect or forward to a success page
-        response.sendRedirect("home.jsp");
+        response.sendRedirect("/views/home.jsp");
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
@@ -162,7 +163,7 @@ public class UserServlet extends HttpServlet {
         userDAO.deleteUser(sjsuId);
 
         // Redirect or forward to a success page
-        response.sendRedirect("home.jsp");
+        response.sendRedirect("/views/home.jsp");
     }
 
     private void getUserById(HttpServletRequest request, HttpServletResponse response)

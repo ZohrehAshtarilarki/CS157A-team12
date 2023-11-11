@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Event;
-import model.Organizer;
+import model.EventOrganizer;
 
 public class EventDAO{
 	private DbConnectionInt dbConnection;
@@ -20,7 +20,7 @@ public class EventDAO{
         dbConnection = singletonDbConnection.getInstance();
     }
 	
-    public void createEvent(Event event, Organizer organizer)
+    public void createEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String insertQuery = "INSERT INTO Event (eventID, eventName, date, time, description, category) VALUES (?,?,?,?,?) WHERE ? IN (SELECT SJSUID FROM Organizer)";
@@ -34,10 +34,10 @@ public class EventDAO{
     		ps1.setTime(4, event.getTime());
     		ps1.setString(5, event.getDescription());
     		ps1.setString(6, event.getCategory());
-    		ps1.setInt(7, organizer.getSjsuId());
+    		ps1.setInt(7, eventOrganizer.getSjsuId());
     		
     		PreparedStatement ps2 = connection.prepareStatement(addManage);
-    		ps2.setInt(1, organizer.getSjsuId());
+    		ps2.setInt(1, eventOrganizer.getSjsuId());
     		ps2.setInt(2, event.getEventID());
     	} catch (SQLException e)
     	{
@@ -47,7 +47,7 @@ public class EventDAO{
     	}
     }
     
-    public void editEvent(Event event, Organizer organizer)
+    public void editEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String editQuery = "UPDATE Event NATURAL JOIN Manage SET eventName=?, date=?, time=?, description=?, category=? WHERE SJSUID = ? AND eventID = ?";
@@ -59,7 +59,7 @@ public class EventDAO{
     		ps.setTime(3, event.getTime());
     		ps.setString(4, event.getDescription());
     		ps.setString(5, event.getCategory());
-    		ps.setInt(6, organizer.getSjsuId());
+    		ps.setInt(6, eventOrganizer.getSjsuId());
     		ps.setInt(7, event.getEventID());
     	} catch (SQLException e)
     	{
@@ -69,7 +69,7 @@ public class EventDAO{
     	}
     }
     
-    public void deleteEvent(Event event, Organizer organizer)
+    public void deleteEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String deleteQuery = "DELETE FROM Event NATURAL JOIN Manage WHERE eventID=? AND SJSUID = ?)";
@@ -77,7 +77,7 @@ public class EventDAO{
     	try {
     		PreparedStatement ps = connection.prepareStatement(deleteQuery);
     		ps.setInt(1, event.getEventID());
-    		ps.setInt(2, organizer.getSjsuId());
+    		ps.setInt(2, eventOrganizer.getSjsuId());
     	} catch (SQLException e)
     	{
     		e.printStackTrace();

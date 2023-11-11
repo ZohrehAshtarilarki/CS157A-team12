@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 // Singleton Database Connection
 public class singletonDbConnection implements DbConnectionInt {
-    private static singletonDbConnection instance;
     private Connection connection;
 
     private static final String URL = "jdbc:mysql://localhost:3306/EventManagement";
@@ -24,15 +23,15 @@ public class singletonDbConnection implements DbConnectionInt {
         }
     }
 
+    //Instance holder pattern helps manage resources efficiently, ensuring that the overhead of connecting to
+    // the database is incurred just once.
+    // This inner class holds the instance of the database connection
+    private static final class InstanceHolder {
+        private static final singletonDbConnection instance = new singletonDbConnection();
+    }
+
     public static singletonDbConnection getInstance() {
-        if (instance == null) {
-            synchronized (singletonDbConnection.class) {
-                if (instance == null) {
-                    instance = new singletonDbConnection();
-                }
-            }
-        }
-        return instance;
+        return InstanceHolder.instance;
     }
 
     public Connection getConnection() {

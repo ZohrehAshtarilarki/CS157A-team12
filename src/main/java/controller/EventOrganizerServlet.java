@@ -5,19 +5,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
 
-import dal.OrganizerDAO;
-import model.Organizer;
+import dal.EventOrganizerDAO;
+import model.EventOrganizer;
 import java.io.IOException;
 import java.util.List;
 
 
-public class OrganizerServlet extends HttpServlet {
-    private OrganizerDAO organizerDAO;
+public class EventOrganizerServlet extends HttpServlet {
+    private EventOrganizerDAO organizerDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        organizerDAO = new OrganizerDAO();
+        organizerDAO = new EventOrganizerDAO();
     }
 
     @Override
@@ -64,12 +64,12 @@ public class OrganizerServlet extends HttpServlet {
         int organizerId = Integer.parseInt(request.getParameter("organizerId"));
         String organizationName = request.getParameter("organizationName");
 
-        Organizer organizer = new Organizer();
-        organizer.setSjsuId(sjsuId);
-        organizer.setOrganizerId(organizerId);
-        organizer.setOrganizationName(organizationName);
+        EventOrganizer eventOrganizer = new EventOrganizer();
+        eventOrganizer.setSjsuId(sjsuId);
+        eventOrganizer.setOrganizerId(organizerId);
+        eventOrganizer.setOrganizationName(organizationName);
 
-        organizerDAO.createOrganizer(organizer);
+        organizerDAO.createOrganizer(eventOrganizer);
 
         // Redirect or forward to a success page
         response.sendRedirect("success.jsp");
@@ -80,12 +80,12 @@ public class OrganizerServlet extends HttpServlet {
     	int organizerId = Integer.parseInt(request.getParameter("organizerId"));
         String organizationName = request.getParameter("organizationName");
 
-        Organizer organizer = new Organizer();
-        organizer.setSjsuId(sjsuId);
-        organizer.setOrganizerId(organizerId);
-        organizer.setOrganizationName(organizationName);
+        EventOrganizer eventOrganizer = new EventOrganizer();
+        eventOrganizer.setSjsuId(sjsuId);
+        eventOrganizer.setOrganizerId(organizerId);
+        eventOrganizer.setOrganizationName(organizationName);
 
-        organizerDAO.updateOrganizer(organizer);
+        organizerDAO.updateOrganizer(eventOrganizer);
 
         // Redirect or forward to a success page
         response.sendRedirect("success.jsp");
@@ -103,18 +103,18 @@ public class OrganizerServlet extends HttpServlet {
     private void getOrganizerById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
 
-        Organizer organizer = organizerDAO.getOrganizerById(sjsuId);
+        EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(sjsuId);
 
         // Use the retrieved organizer as needed, e.g., display it on a JSP page
-        request.setAttribute("organizer", organizer);
+        request.setAttribute("organizer", eventOrganizer);
         request.getRequestDispatcher("organizerDetails.jsp").forward(request, response);
     }
 
     private void getAllOrganizers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Organizer> organizerList = organizerDAO.getAllOrganizers();
+        List<EventOrganizer> eventOrganizerList = organizerDAO.getAllOrganizers();
 
         // Use the retrieved list of organizers as needed, e.g., display it on a JSP page
-        request.setAttribute("organizerList", organizerList);
+        request.setAttribute("organizerList", eventOrganizerList);
         request.getRequestDispatcher("organizerList.jsp").forward(request, response);
     }
 

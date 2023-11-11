@@ -1,6 +1,6 @@
 package dal;
 
-import model.Organizer;
+import model.EventOrganizer;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
 
@@ -12,22 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class OrganizerDAO {
-    private DbConnectionInt dbConnection;
+public class EventOrganizerDAO {
+    private final DbConnectionInt dbConnection;
 
-    public OrganizerDAO() {
+    public EventOrganizerDAO() {
         dbConnection = singletonDbConnection.getInstance();
     }
 
-    public void createOrganizer(Organizer organizer) {
+    public void createOrganizer(EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
         String insertQuery = "INSERT INTO Organizer (SJSUID, OrganizerID, OrganizationName) VALUES (?, ?, ?)";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, organizer.getSjsuId());
-            preparedStatement.setInt(2, organizer.getOrganizerId());
-            preparedStatement.setString(3, organizer.getOrganizationName());
+            preparedStatement.setInt(1, eventOrganizer.getSjsuId());
+            preparedStatement.setInt(2, eventOrganizer.getOrganizerId());
+            preparedStatement.setString(3, eventOrganizer.getOrganizationName());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -38,15 +38,15 @@ public class OrganizerDAO {
         }
     }
 
-    public void updateOrganizer(Organizer organizer) {
+    public void updateOrganizer(EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
         String updateQuery = "UPDATE Organizer SET OrganizerID=?, OrganizationName=? WHERE SJSUID=?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-            preparedStatement.setInt(1, organizer.getOrganizerId());
-            preparedStatement.setString(2, organizer.getOrganizationName());
-            preparedStatement.setInt(3, organizer.getSjsuId());
+            preparedStatement.setInt(1, eventOrganizer.getOrganizerId());
+            preparedStatement.setString(2, eventOrganizer.getOrganizationName());
+            preparedStatement.setInt(3, eventOrganizer.getSjsuId());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -74,10 +74,10 @@ public class OrganizerDAO {
         }
     }
 
-    public Organizer getOrganizerById(int sjsuId) {
+    public EventOrganizer getOrganizerById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Organizer WHERE SJSUID = ?";
-        Organizer organizer = null;
+        EventOrganizer eventOrganizer = null;
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
@@ -86,10 +86,10 @@ public class OrganizerDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                organizer = new Organizer();
-                organizer.setSjsuId(resultSet.getInt("SJSUID"));
-                organizer.setOrganizerId(resultSet.getInt("OrganizerID"));
-                organizer.setOrganizationName(resultSet.getString("OrganizationName"));
+                eventOrganizer = new EventOrganizer();
+                eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
+                eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
+                eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -98,25 +98,25 @@ public class OrganizerDAO {
             dbConnection.closeConnection();
         }
 
-        return organizer;
+        return eventOrganizer;
     }
 
-    public List<Organizer> getAllOrganizers() {
+    public List<EventOrganizer> getAllOrganizers() {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Organizer";
-        List<Organizer> organizerList = new ArrayList<>();
+        List<EventOrganizer> eventOrganizerList = new ArrayList<>();
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Organizer organizer = new Organizer();
-                organizer.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                organizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
-                organizer.setOrganizationName(resultSet.getString("OrganizationName"));
+                EventOrganizer eventOrganizer = new EventOrganizer();
+                eventOrganizer.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
+                eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
+                eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
 
-                organizerList.add(organizer);
+                eventOrganizerList.add(eventOrganizer);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,6 +125,6 @@ public class OrganizerDAO {
             dbConnection.closeConnection();
         }
 
-        return organizerList;
+        return eventOrganizerList;
     }
 }

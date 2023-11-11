@@ -20,7 +20,7 @@ public class UserDAO {
 
     public String registerUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password, Role) VALUES (?, ?, ?, ?, ?)";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
@@ -28,6 +28,7 @@ public class UserDAO {
             preparedStatement.setString(2, user.getSjsuEmail());
             preparedStatement.setString(3, user.getUsername());
             preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setString(5, user.getRole());
 
             int i = preparedStatement.executeUpdate();
             //Just to ensure data has been inserted into the database
@@ -45,7 +46,7 @@ public class UserDAO {
 
     public void updateUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String updateQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=? WHERE SJSUID=?";
+        String updateQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
@@ -53,6 +54,7 @@ public class UserDAO {
             preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPassword());
             preparedStatement.setInt(4, user.getSjsuId());
+            preparedStatement.setString(5, user.getRole());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -155,6 +157,7 @@ public class UserDAO {
                 user.setSjsuEmail(resultSet.getString("SJSUEmail"));
                 user.setUsername(resultSet.getString("Username"));
                 user.setPassword(resultSet.getString("Password"));
+                user.setRole(resultSet.getString("Role"));
 
                 userList.add(user);
             }

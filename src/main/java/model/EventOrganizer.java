@@ -1,6 +1,6 @@
 package model;
 
-public class Organizer extends User{
+public class EventOrganizer extends User{
 	private int organizerId;
 	private String organizationName;
 	

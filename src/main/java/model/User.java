@@ -5,16 +5,18 @@ public class User {
     private String sjsuEmail;
     private String username;
     private String password;
+    private String role;
 
     // Default constructor
     public User() {}
 
     // Parameterized constructor
-    public User(int sjsuId, String sjsuEmail, String username, String password) {
+    public User(int sjsuId, String sjsuEmail, String username, String password, String role) {
         this.sjsuId = sjsuId;
         this.sjsuEmail = sjsuEmail;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     // Getters and setters for all fields
@@ -48,5 +50,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

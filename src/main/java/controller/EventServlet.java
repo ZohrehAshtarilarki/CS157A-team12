@@ -11,15 +11,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Event;
-import model.Organizer;
-import dal.OrganizerDAO;
+import model.EventOrganizer;
+import dal.EventOrganizerDAO;
 
 public class EventServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     
 	private EventDAO eventDAO;
-	private OrganizerDAO organizerDAO;
+	private EventOrganizerDAO organizerDAO;
 	
 	@Override
 	public void init() throws ServletException {
@@ -75,9 +75,9 @@ public class EventServlet extends HttpServlet {
 		int SJSUID = Integer.parseInt(request.getParameter("SJSUID"));
 		
 		Event event = new Event(eventID, eventName, date, time, description, category);
-		Organizer organizer = organizerDAO.getOrganizerById(SJSUID);
+		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
 		
-		eventDAO.createEvent(event, organizer);
+		eventDAO.createEvent(event, eventOrganizer);
 		
 		response.sendRedirect("success.jsp");
 	}
@@ -93,9 +93,9 @@ public class EventServlet extends HttpServlet {
 		int SJSUID = Integer.parseInt(request.getParameter("SJSUID"));
 		
 		Event event = new Event(eventID, eventName, date, time, description, category);
-		Organizer organizer = organizerDAO.getOrganizerById(SJSUID);
+		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
 		
-		eventDAO.editEvent(event, organizer);
+		eventDAO.editEvent(event, eventOrganizer);
 		
 		response.sendRedirect("success.jsp");
 	}
@@ -111,9 +111,9 @@ public class EventServlet extends HttpServlet {
 		int SJSUID = Integer.parseInt(request.getParameter("SJSUID"));
 		
 		Event event = new Event(eventID, eventName, date, time, description, category);
-		Organizer organizer = organizerDAO.getOrganizerById(SJSUID);
+		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
 		
-		eventDAO.deleteEvent(event, organizer);
+		eventDAO.deleteEvent(event, eventOrganizer);
 		
 		response.sendRedirect("success.jsp");
 	}

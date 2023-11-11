@@ -14,7 +14,7 @@
 <h1>Create an Account</h1>
 <form action="${pageContext.request.contextPath}/UserServlet" method="post">
     <input type="hidden" name="action" value="register">
-    <div>
+    <div >
         <label for="sjsuId">SJSUID:</label>
         <input type="text" name="sjsuId" id="sjsuId" required>
     </div>
@@ -30,6 +30,15 @@
         <label for="password">Password:</label>
         <input type="password" name="password" id="password" required>
     </div>
+    <br> <!-- Line break added here -->
+    <div>
+        <label for="role">Role:</label>
+        <select name="role" id="role" required>
+            <option value="Attendee">Attendee</option>
+            <option value="EventOrganizer">EventOrganizer</option>
+        </select>
+    </div>
+    <br> <!-- Line break added here -->
     <div>
         <button type="submit" name="action" value="register">Register</button>
     </div>
