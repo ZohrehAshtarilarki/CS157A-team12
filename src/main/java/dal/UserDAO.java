@@ -1,9 +1,9 @@
 package dal;
 
+import model.Attendee;
 import model.User;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,17 +20,18 @@ public class UserDAO {
 
     public String registerUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password, Role) VALUES (?, ?, ?, ?, ?)";
+        String insertUserQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password, Role) VALUES (?, ?, ?, ?, ?)";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, user.getSjsuId());
-            preparedStatement.setString(2, user.getSjsuEmail());
-            preparedStatement.setString(3, user.getUsername());
-            preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setString(5, user.getRole());
+            // Insert user
+            PreparedStatement UserStm = connection.prepareStatement(insertUserQuery);
+            UserStm.setInt(1, user.getSjsuId());
+            UserStm.setString(2, user.getSjsuEmail());
+            UserStm.setString(3, user.getUsername());
+            UserStm.setString(4, user.getPassword());
+            UserStm.setString(5, user.getRole());
 
-            int i = preparedStatement.executeUpdate();
+            int i = UserStm.executeUpdate();
             //Just to ensure data has been inserted into the database
             if(i != 0)	return "SUCCESS";
         } catch (SQLException e) {

@@ -61,18 +61,18 @@ public class EventOrganizerServlet extends HttpServlet {
 
     private void createOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        int organizerId = Integer.parseInt(request.getParameter("organizerId"));
+        //int organizerId = Integer.parseInt(request.getParameter("organizerId"));
         String organizationName = request.getParameter("organizationName");
 
         EventOrganizer eventOrganizer = new EventOrganizer();
         eventOrganizer.setSjsuId(sjsuId);
-        eventOrganizer.setOrganizerId(organizerId);
+        //eventOrganizer.setOrganizerId(organizerId);
         eventOrganizer.setOrganizationName(organizationName);
 
         organizerDAO.createOrganizer(eventOrganizer);
 
         // Redirect or forward to a success page
-        response.sendRedirect("success.jsp");
+        //response.sendRedirect("success.jsp");
     }
 
     private void updateOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,7 +82,7 @@ public class EventOrganizerServlet extends HttpServlet {
 
         EventOrganizer eventOrganizer = new EventOrganizer();
         eventOrganizer.setSjsuId(sjsuId);
-        eventOrganizer.setOrganizerId(organizerId);
+        //eventOrganizer.setOrganizerId(organizerId);
         eventOrganizer.setOrganizationName(organizationName);
 
         organizerDAO.updateOrganizer(eventOrganizer);

@@ -9,6 +9,19 @@
 <html>
 <head>
     <title>Sign Up</title>
+    <!--  use JavaScript to dynamically show or hide the input field based on the selected role  -->
+    <script>
+        //show or hide the "Organization Name" field based on the selected role
+        function toggleOrganizationField() {
+            var role = document.getElementById("role").value;
+            var orgField = document.getElementById("organizationField");
+            if (role === "EventOrganizer") {
+                orgField.style.display = "block";
+            } else {
+                orgField.style.display = "none";
+            }
+        }
+    </script>
 </head>
 <body>
 <h1>Create an Account</h1>
@@ -33,10 +46,17 @@
     <br> <!-- Line break added here -->
     <div>
         <label for="role">Role:</label>
-        <select name="role" id="role" required>
+        <!-- onchange event listener calls this function whenever the user changes the selected role-->
+        <select name="role" id="role" onchange="toggleOrganizationField()" required>
             <option value="Attendee">Attendee</option>
             <option value="EventOrganizer">EventOrganizer</option>
         </select>
+    </div>
+    <br> <!-- Line break added here -->
+    <!-- Organization Name Field, initially hidden and will only be displayed if "EventOrganizer" is selected. -->
+    <div id="organizationField" style="display:none;">
+        <label for="organizationName">Organization Name:</label>
+        <input type="text" name="organizationName" id="organizationName">
     </div>
     <br> <!-- Line break added here -->
     <div>
@@ -44,5 +64,9 @@
     </div>
 </form>
 <p>Already have an account? <a href="${pageContext.request.contextPath}/views/login.jsp">Login</a></p>
+<script>
+    // Ensure the field is set correctly if the page reloads
+    toggleOrganizationField();
+</script>
 </body>
 </html>

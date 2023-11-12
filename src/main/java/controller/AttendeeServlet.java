@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.ServletException;
-
 import dal.AttendeeDAO;
 import model.Attendee;
 import java.io.IOException;
@@ -58,24 +57,23 @@ public class AttendeeServlet extends HttpServlet {
         }
     }
 
-    private void createAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void createAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
 
         Attendee attendee = new Attendee();
         attendee.setSjsuId(sjsuId);
-        attendee.setAttendeeId(attendeeId);
 
         attendeeDAO.createAttendee(attendee);
 
         // Redirect or forward to a success page
-        response.sendRedirect("success.jsp");
+        //response.sendRedirect("/views/home.jsp");
     }
 
-    private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
         int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
 
+        // Create Attendee object
         Attendee attendee = new Attendee();
         attendee.setSjsuId(sjsuId);
         attendee.setAttendeeId(attendeeId);
@@ -83,7 +81,7 @@ public class AttendeeServlet extends HttpServlet {
         attendeeDAO.updateAttendee(attendee);
 
         // Redirect or forward to a success page
-        response.sendRedirect("success.jsp");
+        //response.sendRedirect("success.jsp");
     }
 
     private void deleteAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

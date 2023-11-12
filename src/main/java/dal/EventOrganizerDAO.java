@@ -21,15 +21,14 @@ public class EventOrganizerDAO {
 
     public void createOrganizer(EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO Organizer (SJSUID, OrganizerID, OrganizationName) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO EventOrganizer (SJSUID, OrganizationName) VALUES (?, ?)";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, eventOrganizer.getSjsuId());
-            preparedStatement.setInt(2, eventOrganizer.getOrganizerId());
-            preparedStatement.setString(3, eventOrganizer.getOrganizationName());
+            PreparedStatement OrganizerStm = connection.prepareStatement(insertQuery);
+            OrganizerStm.setInt(1, eventOrganizer.getSjsuId());
+            OrganizerStm.setString(2, eventOrganizer.getOrganizationName());
 
-            preparedStatement.executeUpdate();
+            OrganizerStm.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle exceptions appropriately later
@@ -40,11 +39,11 @@ public class EventOrganizerDAO {
 
     public void updateOrganizer(EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
-        String updateQuery = "UPDATE Organizer SET OrganizerID=?, OrganizationName=? WHERE SJSUID=?";
+        String updateQuery = "UPDATE EventOrganizer SET OrganizerID=?, OrganizationName=? WHERE SJSUID=?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-            preparedStatement.setInt(1, eventOrganizer.getOrganizerId());
+            //preparedStatement.setInt(1, eventOrganizer.getOrganizerId());
             preparedStatement.setString(2, eventOrganizer.getOrganizationName());
             preparedStatement.setInt(3, eventOrganizer.getSjsuId());
 
@@ -59,7 +58,7 @@ public class EventOrganizerDAO {
 
     public void deleteOrganizer(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String deleteQuery = "DELETE FROM Organizer WHERE SJSUID = ?";
+        String deleteQuery = "DELETE FROM EventOrganizer WHERE SJSUID = ?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
@@ -76,7 +75,7 @@ public class EventOrganizerDAO {
 
     public EventOrganizer getOrganizerById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Organizer WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM EventOrganizer WHERE SJSUID = ?";
         EventOrganizer eventOrganizer = null;
 
         try {
@@ -88,7 +87,7 @@ public class EventOrganizerDAO {
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
-                eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
+                //eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
             }
         } catch (SQLException e) {
@@ -103,7 +102,7 @@ public class EventOrganizerDAO {
 
     public List<EventOrganizer> getAllOrganizers() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Organizer";
+        String selectQuery = "SELECT * FROM EventOrganizer";
         List<EventOrganizer> eventOrganizerList = new ArrayList<>();
 
         try {
@@ -113,7 +112,7 @@ public class EventOrganizerDAO {
             while (resultSet.next()) {
                 EventOrganizer eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
+                //eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
 
                 eventOrganizerList.add(eventOrganizer);

@@ -1,10 +1,8 @@
 package dal;
 
 import model.Attendee;
-import model.User;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,22 +11,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AttendeeDAO {
-    private DbConnectionInt dbConnection;
+    private final DbConnectionInt dbConnection;
 
     public AttendeeDAO() {
         dbConnection = singletonDbConnection.getInstance();
     }
 
+
     public void createAttendee(Attendee attendee) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO Attendee (SJSUID, AttendeeID) VALUES (?, ?)";
+        String insertQuery = "INSERT INTO Attendee (SJSUID) VALUES (?)";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
-            preparedStatement.setInt(1, attendee.getSjsuId());
-            preparedStatement.setInt(2, attendee.getAttendeeId());
+            // Start transaction
+            connection.setAutoCommit(false);
 
-            preparedStatement.executeUpdate();
+            //AttendeeID is auto-generated, we don't need to set it manually
+            PreparedStatement AttendeeStm = connection.prepareStatement(insertQuery);
+            AttendeeStm.setInt(1, attendee.getSjsuId());
+
+            AttendeeStm.executeUpdate();
+
+            // Commit transaction
+            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle exceptions appropriately later

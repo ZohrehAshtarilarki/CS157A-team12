@@ -1,21 +1,23 @@
 package controller;
 
+import dal.AttendeeDAO;
+import dal.EventOrganizerDAO;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import model.Attendee;
+import model.EventOrganizer;
 import model.User;
 import dal.UserDAO;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 @WebServlet(name = "UserServlet", urlPatterns = { "/UserServlet" })
 public class UserServlet extends HttpServlet {
     private UserDAO userDAO;
-
     @Override
     public void init() throws ServletException {
         super.init();
@@ -77,6 +79,7 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
         String role = request.getParameter("role");
 
+        // Create user object
         User user = new User();
         user.setSjsuId(sjsuId);
         user.setSjsuEmail(sjsuEmail);
@@ -86,20 +89,38 @@ public class UserServlet extends HttpServlet {
 
         // The core Logic of the Registration application is present here. We are going
         // to insert user data in to the database.
-        String userRegistered = userDAO.registerUser(user);
+        String registeredUser = userDAO.registerUser(user);
 
         // On success, you can display a message to user on Home page
-        if (userRegistered.equals("SUCCESS")) {
+        if (registeredUser.equals("SUCCESS")) {
+            // Ensure that after creating a user, it also triggers the creation of an attendee
+            // Attendee creation when the user role is "Attendee"
+            if (user.getRole().equals("Attendee")) {
+                // Create an Attendee object and set properties
+                Attendee attendee = new Attendee();
+                attendee.setSjsuId(user.getSjsuId());
+
+                // Create the attendee using AttendeeDAO
+                AttendeeDAO attendeeDAO = new AttendeeDAO();
+                attendeeDAO.createAttendee(attendee);
+            }
+
+            // Check if user registration is successful
+            // Check if the role is EventOrganizer
+            if (user.getRole().equals("EventOrganizer")) {
+                String organizationName = request.getParameter("organizationName");
+                // Logic to handle EventOrganizer record creation
+                // This could involve creating an EventOrganizer object and using EventOrganizerDAO to store it
+                EventOrganizer eventOrganizer = new EventOrganizer();
+                eventOrganizer.setSjsuId(user.getSjsuId());
+                eventOrganizer.setOrganizationName(organizationName);
+
+                EventOrganizerDAO eventOrganizerDAO = new EventOrganizerDAO();
+                eventOrganizerDAO.createOrganizer(eventOrganizer);
+            }
             String successMessage = "Authentication succeed. Please login.";
             request.setAttribute("message", successMessage);
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
-        }
-        // On Failure, display a meaningful message to the User.
-        else {
-            String errorMessage = "Authentication failed. Please check your username and password.";
-            request.setAttribute("message", errorMessage);
-            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/registration.jsp");
-            dispatcher.forward(request, response);
         }
         // Redirect or forward to a success page
         //response.sendRedirect("/views/home.jsp");
