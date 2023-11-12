@@ -123,7 +123,7 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
         // Redirect or forward to a success page
-        //response.sendRedirect("/views/home.jsp");
+        //response.sendRedirect("/views/attendeeHome.jsp");
     }
 
     private void loginUser(HttpServletRequest request, HttpServletResponse response)
@@ -136,8 +136,11 @@ public class UserServlet extends HttpServlet {
         try {
             User user = userDAO.getUserByUsername(username);
             if (user != null && user.getPassword().equals(password)) {
-                // User authenticated successfully, redirect to a login success page
-                String path = request.getContextPath() + "/views/home.jsp";
+                String path = getString(request, user);
+                System.out.println("User role: " + user.getRole());
+                System.out.println("Redirecting to: " + path);
+
+                // Determine the redirect path based on the user's role
                 response.sendRedirect(path);
             } else {
                 // Authentication failed, set an error message and forward to the login page
@@ -153,6 +156,25 @@ public class UserServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/login.jsp");
             dispatcher.forward(request, response);
         }
+    }
+
+    private String getString(HttpServletRequest request, User user) {
+        String path = request.getContextPath();
+        // Check if the role is null
+        if (user.getRole() != null) {
+            switch (user.getRole()) {
+                case "Attendee":
+                    path += "/views/attendeeHome.jsp";
+                    break;
+                case "EventOrganizer":
+                    path += "/views/eventOrganizerHome.jsp";
+                    break;
+                default:
+                    path += "/views/defaultHome.jsp"; // Default home page if role is unknown
+                    break;
+            }
+        }
+        return path;
     }
 
 
@@ -174,7 +196,7 @@ public class UserServlet extends HttpServlet {
         userDAO.updateUser(user);
 
         // Redirect or forward to a success page
-        response.sendRedirect("/views/home.jsp");
+        response.sendRedirect("/views/attendeeHome.jsp");
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
@@ -184,7 +206,7 @@ public class UserServlet extends HttpServlet {
         userDAO.deleteUser(sjsuId);
 
         // Redirect or forward to a success page
-        response.sendRedirect("/views/home.jsp");
+        response.sendRedirect("/views/attendeeHome.jsp");
     }
 
     private void getUserById(HttpServletRequest request, HttpServletResponse response)

@@ -66,7 +66,7 @@ public class AttendeeServlet extends HttpServlet {
         attendeeDAO.createAttendee(attendee);
 
         // Redirect or forward to a success page
-        //response.sendRedirect("/views/home.jsp");
+        //response.sendRedirect("/views/attendeeHome.jsp");
     }
 
     private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {

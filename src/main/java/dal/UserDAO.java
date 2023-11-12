@@ -1,6 +1,5 @@
 package dal;
 
-import model.Attendee;
 import model.User;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
@@ -100,6 +99,7 @@ public class UserDAO {
                 user.setSjsuEmail(resultSet.getString("SJSUEmail"));
                 user.setUsername(resultSet.getString("Username"));
                 user.setPassword(resultSet.getString("Password"));
+                user.setRole(resultSet.getString("Role"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -117,9 +117,6 @@ public class UserDAO {
         User user = null;
 
         try {
-//            if (!(connection != null && connection.isValid(2))){
-//                System.out.println("Connection has died");
-//            }
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             preparedStatement.setString(1, username);
 
@@ -131,12 +128,21 @@ public class UserDAO {
                 user.setSjsuEmail(resultSet.getString("SJSUEmail"));
                 user.setUsername(resultSet.getString("Username"));
                 user.setPassword(resultSet.getString("Password"));
+                user.setRole(resultSet.getString("Role"));
             }
+            resultSet.close();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
             // Handle exceptions appropriately later
         } finally {
-            dbConnection.closeConnection();
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
 
         return user;
