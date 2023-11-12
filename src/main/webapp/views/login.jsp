@@ -10,31 +10,34 @@
 <html>
 <head>
   <title>Login</title>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
 </head>
 <body>
-<h1>Login</h1>
-<form action="${pageContext.request.contextPath}/UserServlet" method="post">
-  <input type="hidden" name="action" value="login">
-  <div>
-    <label for="username">Username:</label>
-    <input type="text" name="username" id="username" required>
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" required>
-  </div>
-  <div>
+<nav>
+  <div class="nav-brand">SAN JOSE STATE UNIVERSITY</div>
+</nav>
+<div class="login-container">
+  <h1>EventSJSU Login</h1>
+  <form class="login-form" action="${pageContext.request.contextPath}/UserServlet" method="post">
+    <input type="hidden" name="action" value="login">
+    <div class="input-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
     <button type="submit">Login</button>
+    <!-- Move this paragraph inside the login-container, below the button -->
+    <p>Don't have an account? <a href="${pageContext.request.contextPath}/views/registration.jsp">Create an Account</a></p>
+  </form>
+  <% String message = (String) request.getAttribute("message"); %>
+  <% if (message != null) { %>
+  <div class="error-message">
+    <%= message %>
   </div>
-</form>
-<% String message = (String) request.getAttribute("message"); %>
-<% if (message != null) { %>
-<div class="error-message">
-  <%= message %>
+  <% } %>
 </div>
-<% } %>
-<!-- Use an absolute path instead of a relative path.
- This will ensure that no matter where the link is clicked from, it always redirects to the correct path. -->
-<p>Don't have an account? <a href="${pageContext.request.contextPath}/views/registration.jsp">Create an Account</a></p>
 </body>
 </html>
