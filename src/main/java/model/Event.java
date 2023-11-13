@@ -11,10 +11,7 @@ public class Event{
 	private String description;
 	private String category;
 	
-	public Event()
-	{
-		
-	}
+	public Event() {}
 	
 	public Event(int eventID, String eventName, Date date, Time time, String description, String category)
 	{
@@ -62,6 +59,4 @@ public class Event{
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	
-	
 }

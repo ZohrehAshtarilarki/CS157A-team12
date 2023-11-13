@@ -136,12 +136,16 @@ public class UserServlet extends HttpServlet {
         try {
             User user = userDAO.getUserByUsername(username);
             if (user != null && user.getPassword().equals(password)) {
-                String path = getString(request, user);
-                System.out.println("User role: " + user.getRole());
-                System.out.println("Redirecting to: " + path);
+                // User authenticated successfully, redirect to a login success page
+                String path = request.getContextPath() + "/views/home.jsp";
+                response.sendRedirect(path);
+                //String path = request.getContextPath();
+                //String path = getString(request, user);
+                //System.out.println("User role: " + user.getRole());
+                //System.out.println("Redirecting to: " + path);
 
                 // Determine the redirect path based on the user's role
-                response.sendRedirect(path);
+                //response.sendRedirect(path);
             } else {
                 // Authentication failed, set an error message and forward to the login page
                 String errorMessage = "Authentication failed. Please check your username and password.";
@@ -157,17 +161,17 @@ public class UserServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
     }
-
+/*
     private String getString(HttpServletRequest request, User user) {
         String path = request.getContextPath();
         // Check if the role is null
         if (user.getRole() != null) {
             switch (user.getRole()) {
                 case "Attendee":
-                    path += "/views/attendeeDash.jsp";
+                    path += "/views/home.jsp";
                     break;
                 case "EventOrganizer":
-                    path += "/views/organizerDash.jsp";
+                    path += "/views/home.jsp";
                     break;
                 default:
                     path += "/views/defaultHome.jsp"; // Default home page if role is unknown
@@ -176,7 +180,7 @@ public class UserServlet extends HttpServlet {
         }
         return path;
     }
-
+*/
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {

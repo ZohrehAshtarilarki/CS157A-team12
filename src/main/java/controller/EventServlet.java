@@ -2,11 +2,13 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.List;
 
 import dal.EventDAO;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,10 +16,8 @@ import model.Event;
 import model.EventOrganizer;
 import dal.EventOrganizerDAO;
 
+@WebServlet(name = "EventServlet", urlPatterns = { "/EventServlet" })
 public class EventServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    
 	private EventDAO eventDAO;
 	private EventOrganizerDAO organizerDAO;
 	
@@ -25,8 +25,9 @@ public class EventServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		eventDAO = new EventDAO();
+		organizerDAO = new EventOrganizerDAO();
 	}
-	
+/*
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
@@ -45,7 +46,7 @@ public class EventServlet extends HttpServlet {
 			}	
 		}
 	}
-	
+*/
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String action = request.getParameter("action");
@@ -55,16 +56,18 @@ public class EventServlet extends HttpServlet {
 			switch (action) {
 			case "getEventByID":
 				getEventByID(request, response);
+				break; // Add break statement
 			case "getAllEvents":
 				getAllEvents(request, response);
+				break; // Add break statement
 			default:
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
 		}
 	}
-	
-	
-	public void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+/*
+
+	public void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
 		Date date = Date.valueOf(request.getParameter("date"));
@@ -81,7 +84,7 @@ public class EventServlet extends HttpServlet {
 		
 		response.sendRedirect("success.jsp");
 	}
-	
+
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
@@ -99,6 +102,7 @@ public class EventServlet extends HttpServlet {
 		
 		response.sendRedirect("success.jsp");
 	}
+
 	
 	public void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
@@ -117,7 +121,7 @@ public class EventServlet extends HttpServlet {
 		
 		response.sendRedirect("success.jsp");
 	}
-	
+	*/
 	public void getEventByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		
@@ -127,12 +131,12 @@ public class EventServlet extends HttpServlet {
         request.getRequestDispatcher("eventDetails.jsp").forward(request, response);
 		
 	}
-	
+
 	public void getAllEvents(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		List<Event> list = eventDAO.getAllEvents();
 		
         request.setAttribute("eventList", list);
-        request.getRequestDispatcher("eventList.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/home.jsp").forward(request, response);
 		
 	}
 	

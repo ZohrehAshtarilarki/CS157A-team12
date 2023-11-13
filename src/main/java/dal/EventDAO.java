@@ -14,12 +14,12 @@ import model.Event;
 import model.EventOrganizer;
 
 public class EventDAO{
-	private DbConnectionInt dbConnection;
+	private final DbConnectionInt dbConnection;
 
     public EventDAO() {
         dbConnection = singletonDbConnection.getInstance();
     }
-	
+	/*
     public void createEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
@@ -83,7 +83,7 @@ public class EventDAO{
     		e.printStackTrace();
     	}
     }
-    
+    */
     public Event getEventById(int eventID) {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Event WHERE eventID = ?";
@@ -114,7 +114,7 @@ public class EventDAO{
 
         return event;
     }
-    
+
     public List<Event> getAllEvents() {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Event";
