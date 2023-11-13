@@ -75,7 +75,7 @@ public class EventOrganizerDAO {
 
     public EventOrganizer getOrganizerById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM EventOrganizer WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM Organizer WHERE SJSUID = ?";
         EventOrganizer eventOrganizer = null;
 
         try {
@@ -86,9 +86,9 @@ public class EventOrganizerDAO {
 
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
-                eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
+                eventOrganizer.setSjsuId(resultSet.getInt("sjsuid"));
                 //eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
-                eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
+                eventOrganizer.setOrganizationName(resultSet.getString("organizationname"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

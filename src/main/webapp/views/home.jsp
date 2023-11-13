@@ -30,6 +30,17 @@
 </header>
 <h1>Welcome to the Home Page</h1>
 
+<div class="button-container">
+			<button>
+				<a href="${pageContext.request.contextPath}/views/createEvent.jsp">Create
+					Event</a>
+			</button>
+			<button>
+				<a href="${pageContext.request.contextPath}/views/registerEvent.jsp">Register
+					Event</a>
+			</button>
+</div>
+		
 <!-- Trigger the retrieval of all events when the page loads -->
 <form class="homeForm" action="${pageContext.request.contextPath}/EventServlet" method="get">
     <input type="hidden" name="action" value="getAllEvents">
@@ -37,9 +48,8 @@
 </form>
 
 <!-- Displaying the list of events -->
-<section>
-    <h2>Upcoming Events</h2>
-    <ul>
+<h2>Upcoming Events</h2>
+<div class="events-container">
         <%
             Object eventListObj = request.getAttribute("eventList");
             List<Event> events = null;
@@ -54,12 +64,15 @@
             if (events != null && !events.isEmpty()) {
                 for (Event event : events) {
         %>
-        <li>
-            <h3><%= event.getEventName() %></h3>
-            <p>Date: <%= event.getDate() %></p>
-            <p>Time: <%= event.getTime() %></p>
-            <p>Description: <%= event.getDescription() %></p>
+        <ul id="event-list">
+        <li class="event-item">
+        	<div class="event-id"><%= event.getEventID() %></div>
+            <div class="event-title"><%= event.getEventName() %></div>
+            <div class="event-date">Date: <%= event.getDate() %></div>
+            <div class="event-time">Time: <%= event.getTime() %></div>
+            <div class="event-description">Description: <%= event.getDescription() %></div>
         </li>
+        </ul>
         <%
             }
         } else {
@@ -68,8 +81,7 @@
         <%
             }
         %>
-    </ul>
-</section>
+</div>
 
 <script>
     // Automatically submit the form to trigger the event list retrieval

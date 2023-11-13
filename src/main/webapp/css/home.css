@@ -1,0 +1,74 @@
+@charset "UTF-8";
+.container {
+    text-align: center;
+}
+
+.button-container {
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20vh; /* This ensures the container takes the full height of the viewport */
+}
+
+.button-container button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #0055a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.button-container button a {
+    text-decoration: none;
+    color: white;
+}
+
+.button-container button:hover {
+    background-color: #f7ca18;
+}
+
+
+.events-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+   	gap: 20px;
+}
+
+.event-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.event-id {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.event-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.event-date {
+    color: #777;
+}
+
+.event-time {
+    color: #777;
+}
+
+.event-description {
+    color: #555;
+}
+
+.event-item {
+    margin-bottom: 20px;
+}
