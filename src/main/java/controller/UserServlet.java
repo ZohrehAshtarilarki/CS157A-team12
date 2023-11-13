@@ -123,7 +123,7 @@ public class UserServlet extends HttpServlet {
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
         // Redirect or forward to a success page
-        //response.sendRedirect("/views/attendeeHome.jsp");
+        //response.sendRedirect("/views/attendeeDash.jsp");
     }
 
     private void loginUser(HttpServletRequest request, HttpServletResponse response)
@@ -164,10 +164,10 @@ public class UserServlet extends HttpServlet {
         if (user.getRole() != null) {
             switch (user.getRole()) {
                 case "Attendee":
-                    path += "/views/attendeeHome.jsp";
+                    path += "/views/attendeeDash.jsp";
                     break;
                 case "EventOrganizer":
-                    path += "/views/eventOrganizerHome.jsp";
+                    path += "/views/organizerDash.jsp";
                     break;
                 default:
                     path += "/views/defaultHome.jsp"; // Default home page if role is unknown
@@ -196,7 +196,7 @@ public class UserServlet extends HttpServlet {
         userDAO.updateUser(user);
 
         // Redirect or forward to a success page
-        response.sendRedirect("/views/attendeeHome.jsp");
+        response.sendRedirect("/views/attendeeDash.jsp");
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
@@ -206,7 +206,7 @@ public class UserServlet extends HttpServlet {
         userDAO.deleteUser(sjsuId);
 
         // Redirect or forward to a success page
-        response.sendRedirect("/views/attendeeHome.jsp");
+        response.sendRedirect("/views/attendeeDash.jsp");
     }
 
     private void getUserById(HttpServletRequest request, HttpServletResponse response)

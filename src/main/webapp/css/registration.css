@@ -1,13 +1,13 @@
 @charset "UTF-8";
 
 /*
-Written by Long Nguyen
+Written By Long Nguyen
 */
 
-.login-container {
+main {
     justify-content: center;
     align-items: center;
-    height: 50vh; /* Adjust the height as needed */
+    height: 80vh; /* Adjust the height as needed */
     margin: 20px;
     border: 2px solid #0055a8;
     border-radius: 10px;
@@ -17,20 +17,28 @@ Written by Long Nguyen
     text-align: center;
 }
 
-.form-group {
+main h1 {
+    font-size: 36px;
+    color: #0055a8;
+    margin-bottom: 20px;
+}
+
+main form {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
 }
 
-label {
+main label {
     display: block;
     margin-bottom: 10px;
     font-weight: bold;
 }
 
-input[type="text"],
-input[type="password"] {
+main input[type="text"],
+main input[type="email"],
+main input[type="password"],
+main input[type="number"] {
     width: calc(100% - 20px);
     padding: 10px;
     font-size: 16px;
@@ -39,7 +47,7 @@ input[type="password"] {
     margin-bottom: 15px;
 }
 
-button {
+main button {
     background-color: #0055a8;
     color: white;
     padding: 12px 24px;
@@ -50,6 +58,6 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+main button:hover {
     background-color: #003366;
 }
