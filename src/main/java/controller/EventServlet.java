@@ -121,9 +121,11 @@ public class EventServlet extends HttpServlet {
 		if (action != null)
 		{
 			switch (action) {
+/*
 			case "getEventByID":
 				getEventByID(request, response);
 				break; // Add break statement
+*/
 			case "getAllEvents":
 				getAllEvents(request, response);
 				break; // Add break statement
@@ -188,17 +190,31 @@ public class EventServlet extends HttpServlet {
 		
 		response.sendRedirect("success.jsp");
 	}
-	*/
-	public void getEventByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		int eventID = Integer.parseInt(request.getParameter("eventID"));
+	
+	
+	public void getEventByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String eventIDParam = request.getParameter("eventID");
+		int eventID = 0;
+		if (eventIDParam != null && !eventIDParam.isEmpty()) {
+			try {
+				eventID = Integer.parseInt(eventIDParam);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
 		
-		Event event = eventDAO.getEventById(eventID);
-		
-        request.setAttribute("event", event);
-        request.getRequestDispatcher("eventDetails.jsp").forward(request, response);
-		
+	    Event event = eventDAO.getEventById(eventID);
+
+	    System.out.println(eventID);
+	    System.out.println("event: " + event);
+
+	    request.setAttribute("event", event);
+
+	    RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp");
+	    dispatcher.forward(request, response);
 	}
 
+*/
 	public void getAllEvents(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		List<Event> list = eventDAO.getAllEvents();
 		

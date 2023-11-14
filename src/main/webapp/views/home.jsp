@@ -35,10 +35,6 @@
 				<a href="${pageContext.request.contextPath}/views/createEvent.jsp">Create
 					Event</a>
 			</button>
-			<button>
-				<a href="${pageContext.request.contextPath}/views/registerEvent.jsp">Register
-					Event</a>
-			</button>
 </div>
 		
 <!-- Trigger the retrieval of all events when the page loads -->
@@ -66,11 +62,10 @@
         %>
         <ul id="event-list">
         <li class="event-item">
-        	<div class="event-id"><%= event.getEventID() %></div>
+        <a href="${pageContext.request.contextPath}/views/eventInfo.jsp?eventID=<%=event.getEventID()%>">
             <div class="event-title"><%= event.getEventName() %></div>
-            <div class="event-date">Date: <%= event.getDate() %></div>
-            <div class="event-time">Time: <%= event.getTime() %></div>
-            <div class="event-description">Description: <%= event.getDescription() %></div>
+            <div class="event-date"><%= event.getDate() %></div>
+        </a>
         </li>
         </ul>
         <%
