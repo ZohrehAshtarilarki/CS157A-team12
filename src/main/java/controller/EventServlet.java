@@ -43,18 +43,40 @@ public class EventServlet extends HttpServlet {
 			switch (action) {
 			case "registerEvent":
 				registerEvent(request,response);
+				break;
 			case "createEvent":
 				createEvent(request, response);
-/*
-			case "delete":
+				break;
+			case "deleteEvent":
 				deleteEvent(request, response);
-*/
+				break;
 			default:
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}	
 		}
 	}
 	
+	private void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		int eventid = Integer.parseInt(request.getParameter("eventid"));
+		int sjsuid = Integer.parseInt(request.getParameter("sjsuid"));
+		
+		Event event = eventDAO.getEventById(eventid);
+		EventOrganizer organizer = organizerDAO.getOrganizerById(sjsuid);
+		
+		
+		if(event == null)
+		{
+			String failed = "Deletion Failed. Please check your ID and eventID (you can only delete event that you created).";
+			request.setAttribute("message", failed);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/views/deleteEvent.jsp");
+			dispatcher.forward(request, response);
+		}
+		
+		eventDAO.deleteEvent(event, organizer);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
+	}
+
 	private void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int eventId = Integer.parseInt(request.getParameter("eventid"));
         int organizerId = Integer.parseInt(request.getParameter("sjsuid"));

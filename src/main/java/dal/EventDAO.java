@@ -48,6 +48,7 @@ public class EventDAO{
     		dbConnection.closeConnection();
     	}
     }
+    
  
 /*    
     public void editEvent(Event event, EventOrganizer eventOrganizer)
@@ -71,27 +72,37 @@ public class EventDAO{
     		dbConnection.closeConnection();
     	}
     }
+*/
     
     public void deleteEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
-    	String deleteQuery = "DELETE FROM Event NATURAL JOIN Manage WHERE eventID=? AND SJSUID = ?)";
+    	String deleteQuery1 = "DELETE FROM Event WHERE eventID=? AND ? IN (SELECT sjsuID FROM Manage WHERE eventID=?);";
+    	String deleteQuery2 = "DELETE FROM Manage WHERE eventID=? AND SJSUID=?;";
     	
     	try {
-    		PreparedStatement ps = connection.prepareStatement(deleteQuery);
-    		ps.setInt(1, event.getEventID());
-    		ps.setInt(2, eventOrganizer.getSjsuId());
+    		PreparedStatement ps1 = connection.prepareStatement(deleteQuery1);
+    		ps1.setInt(1, event.getEventID());
+    		ps1.setInt(2, eventOrganizer.getSjsuId());
+    		ps1.setInt(3, event.getEventID());
+    		
+    		ps1.executeUpdate();
+    		
+    		PreparedStatement ps2 = connection.prepareStatement(deleteQuery2);
+        	ps2.setInt(1, event.getEventID());
+        	ps2.setInt(2, eventOrganizer.getSjsuId());
+        	ps2.executeUpdate();
+ 
     	} catch (SQLException e)
     	{
     		e.printStackTrace();
     	}
     }
-    */
     
     public void registerEvent(Event event, Attendee attendee)
     {
     	Connection connection = dbConnection.getConnection();
-    	String checkinQuery = "INSERT INTO Register (sjsuid, eventid, ischeckin) VALUES (?,?,?);";
+    	String checkinQuery = "INSERT INTO Register (SJSUID, eventID, isCheckIn) VALUES (?,?,?);";
     	
     	try {
     		PreparedStatement ps = connection.prepareStatement(checkinQuery);

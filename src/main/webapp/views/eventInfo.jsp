@@ -5,8 +5,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet"
-	href=" ${pageContext.request.contextPath}/css/header.css">
+<link rel="stylesheet" href=" ${pageContext.request.contextPath}/css/header.css">
+<link rel="stylesheet" href=" ${pageContext.request.contextPath}/css/createEvent.css">
+
 <title>Event Details</title>
 </head>
 <body>
@@ -18,6 +19,7 @@
 			</ul>
 		</nav>
 	</header>
+	<main>
 	<%
 	String eventIDParam = request.getParameter("eventID");
 	int eventID = 0;
@@ -44,7 +46,6 @@
 			Description:
 			<%=event.getDescription()%></div>
 	</div>
-
 	<form action="${pageContext.request.contextPath}/EventServlet"
 		method="post">
 		<input type="hidden" name="action" value="registerEvent">
@@ -60,6 +61,6 @@
 			<button type="submit" name="action" value="registerEvent">Register</button>
 		</div>
 	</form>
-
+</main>
 </body>
 </html>
