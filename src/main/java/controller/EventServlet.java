@@ -64,7 +64,7 @@ public class EventServlet extends HttpServlet {
 		EventOrganizer organizer = organizerDAO.getOrganizerById(sjsuid);
 		
 		
-		if(event == null)
+		if(eventDAO.deleteEvent(event, organizer) == 0 || event == null)
 		{
 			String failed = "Deletion Failed. Please check your ID and eventID (you can only delete event that you created).";
 			request.setAttribute("message", failed);

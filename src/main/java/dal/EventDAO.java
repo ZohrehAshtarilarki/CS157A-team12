@@ -74,7 +74,7 @@ public class EventDAO{
     }
 */
     
-    public void deleteEvent(Event event, EventOrganizer eventOrganizer)
+    public int deleteEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String deleteQuery1 = "DELETE FROM Event WHERE eventID=? AND ? IN (SELECT sjsuID FROM Manage WHERE eventID=?);";
@@ -86,7 +86,11 @@ public class EventDAO{
     		ps1.setInt(2, eventOrganizer.getSjsuId());
     		ps1.setInt(3, event.getEventID());
     		
-    		ps1.executeUpdate();
+    		int i = ps1.executeUpdate();
+    		if (i == 0)
+    		{
+    			return 0;
+    		}
     		
     		PreparedStatement ps2 = connection.prepareStatement(deleteQuery2);
         	ps2.setInt(1, event.getEventID());
@@ -97,6 +101,7 @@ public class EventDAO{
     	{
     		e.printStackTrace();
     	}
+    	return 1;
     }
     
     public void registerEvent(Event event, Attendee attendee)
