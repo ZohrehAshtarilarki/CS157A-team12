@@ -4,30 +4,32 @@ import java.sql.Date;
 import java.sql.Time;
 
 public class Event{
-	private int eventID;
+	private int eventId;
 	private String eventName;
 	private Date date;
 	private Time time;
 	private String description;
 	private String category;
-	
+	private boolean requiresTicket;
+
 	public Event() {}
-	
-	public Event(int eventID, String eventName, Date date, Time time, String description, String category)
+
+	public Event(int eventId, String eventName, Date date, Time time, String description, String category,
+				 boolean requiresTicket)
 	{
-		this.eventID = eventID;
+		this.eventId = eventId;
 		this.eventName = eventName;
 		this.date = date;
 		this.time = time;
 		this.description = description;
 		this.category = category;
 	}
-	
+
 	public int getEventID() {
-		return eventID;
+		return eventId;
 	}
-	public void setEventID(int eventID) {
-		this.eventID = eventID;
+	public void setEventID(int eventId) {
+		this.eventId = eventId;
 	}
 	public String getEventName() {
 		return eventName;
@@ -59,4 +61,6 @@ public class Event{
 	public void setCategory(String category) {
 		this.category = category;
 	}
+	public boolean isRequiresTicket() { return requiresTicket; }
+	public void setRequiresTicket(boolean requiresTicket) { this.requiresTicket = requiresTicket; }
 }

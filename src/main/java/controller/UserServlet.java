@@ -18,9 +18,15 @@ import java.util.List;
 @WebServlet(name = "UserServlet", urlPatterns = { "/UserServlet" })
 public class UserServlet extends HttpServlet {
     private UserDAO userDAO;
+
+    /* init() is a lifecycle method that is called by the servlet
+    container to initialize the servlet before it starts handling requests
+    */
     @Override
     public void init() throws ServletException {
+        // calls the init() method of the superclass
         super.init();
+        // Initialize an instance of 'UserDAO' and assign it to the 'userDAO' variable
         userDAO = new UserDAO();
     }
 
@@ -73,6 +79,7 @@ public class UserServlet extends HttpServlet {
     private void registerUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         // Copying all the input parameters in to local variables
+        // Parameter names are used in the jsp files, they should be exactly the same
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
         String sjsuEmail = request.getParameter("sjsuEmail");
         String username = request.getParameter("username");

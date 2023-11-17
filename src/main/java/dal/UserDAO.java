@@ -43,7 +43,46 @@ public class UserDAO {
         // On failure, send a message from here.
         return "Oops.. Something went wrong there..!";
     }
+/*
+    public User loginUser(String username, String password) {
+        Connection connection = dbConnection.getConnection();
+        String selectUserQuery = "SELECT * FROM User WHERE Username = ? AND Password = ?";
+        User user = null;
 
+        try {
+            PreparedStatement UserStm = connection.prepareStatement(selectUserQuery);
+            UserStm.setString(1, username);
+            UserStm.setString(2, password);
+
+            ResultSet rs = UserStm.executeQuery();
+
+            if (rs.next()) {
+                // User found
+                user = new User();
+                user.setSjsuId(rs.getInt("SJSUID"));
+                user.setSjsuEmail(rs.getString("SJSUEmail"));
+                user.setUsername(rs.getString("Username"));
+                user.setPassword(rs.getString("Password"));
+                user.setRole(rs.getString("Role"));
+            }
+            rs.close();
+            UserStm.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately later
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return user;
+    }
+*/
     public void updateUser(User user) {
         Connection connection = dbConnection.getConnection();
         String updateQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";

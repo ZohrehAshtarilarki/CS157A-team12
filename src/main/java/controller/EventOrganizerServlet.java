@@ -60,9 +60,9 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void createOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+    	int sjsuId = Integer.parseInt(request.getParameter("SJSUID"));
         //int organizerId = Integer.parseInt(request.getParameter("organizerId"));
-        String organizationName = request.getParameter("organizationName");
+        String organizationName = request.getParameter("OrganizationName");
 
         EventOrganizer eventOrganizer = new EventOrganizer();
         eventOrganizer.setSjsuId(sjsuId);
@@ -76,9 +76,9 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void updateOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-    	int organizerId = Integer.parseInt(request.getParameter("organizerId"));
-        String organizationName = request.getParameter("organizationName");
+    	int sjsuId = Integer.parseInt(request.getParameter("SJSUIDd"));
+    	int organizerId = Integer.parseInt(request.getParameter("OrganizerID"));
+        String organizationName = request.getParameter("OrganizationName");
 
         EventOrganizer eventOrganizer = new EventOrganizer();
         eventOrganizer.setSjsuId(sjsuId);
@@ -92,7 +92,7 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void deleteOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+    	int sjsuId = Integer.parseInt(request.getParameter("SJSUID"));
 
         organizerDAO.deleteOrganizer(sjsuId);
 
@@ -101,7 +101,7 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void getOrganizerById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+    	int sjsuId = Integer.parseInt(request.getParameter("SJSUID"));
 
         EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(sjsuId);
 

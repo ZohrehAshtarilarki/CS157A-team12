@@ -7,9 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Attendee;
 import model.Event;
-import model.EventOrganizer;
+import model.User;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
 
@@ -19,26 +18,29 @@ public class EventDAO{
     public EventDAO() {
         dbConnection = singletonDbConnection.getInstance();
     }
-    
+
+
+    /*
     public void createEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
-    	String insertQuery = "INSERT INTO Event (eventID, eventName, date, time, description, category) VALUES (?,?,?,?,?,?)";
-    	String addManage = "INSERT INTO Manage (SJSUID, eventID) VALUES (?,?)";
-    	
+    	String insertQuery = "INSERT INTO Event (EventName, Date, Time, Description, Category) VALUES (?,?,?,?,?)";
+    	String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
+
     	try {
     		PreparedStatement ps1 = connection.prepareStatement(insertQuery);
-    		ps1.setInt(1, event.getEventID());
-    		ps1.setString(2, event.getEventName());
-    		ps1.setDate(3, event.getDate());
-    		ps1.setTime(4, event.getTime());
-    		ps1.setString(5, event.getDescription());
-    		ps1.setString(6, event.getCategory());
-    		
+            //EventID is auto-generated, we don't need to set it manually
+    		//ps1.setInt(1, event.getEventID());
+    		ps1.setString(1, event.getEventName());
+    		ps1.setDate(2, event.getDate());
+    		ps1.setTime(3, event.getTime());
+    		ps1.setString(4, event.getDescription());
+    		ps1.setString(5, event.getCategory());
+
     		PreparedStatement ps2 = connection.prepareStatement(addManage);
     		ps2.setInt(1, eventOrganizer.getSjsuId());
     		ps2.setInt(2, event.getEventID());
-    		
+
     		ps1.executeUpdate();
     		ps2.executeUpdate();
     	} catch (SQLException e)
@@ -48,13 +50,13 @@ public class EventDAO{
     		dbConnection.closeConnection();
     	}
     }
- 
-/*    
+
+
     public void editEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String editQuery = "UPDATE Event NATURAL JOIN Manage SET eventName=?, date=?, time=?, description=?, category=? WHERE SJSUID = ? AND eventID = ?";
-    	
+
     	try {
     		PreparedStatement ps = connection.prepareStatement(editQuery);
     		ps.setString(1, event.getEventName());
@@ -71,12 +73,12 @@ public class EventDAO{
     		dbConnection.closeConnection();
     	}
     }
-    
+
     public void deleteEvent(Event event, EventOrganizer eventOrganizer)
     {
     	Connection connection = dbConnection.getConnection();
     	String deleteQuery = "DELETE FROM Event NATURAL JOIN Manage WHERE eventID=? AND SJSUID = ?)";
-    	
+
     	try {
     		PreparedStatement ps = connection.prepareStatement(deleteQuery);
     		ps.setInt(1, event.getEventID());
@@ -87,15 +89,15 @@ public class EventDAO{
     	}
     }
     */
-    
-    public void registerEvent(Event event, Attendee attendee)
+
+    public void registerEvent(Event event, User user)
     {
     	Connection connection = dbConnection.getConnection();
-    	String checkinQuery = "INSERT INTO Register (sjsuid, eventid, ischeckin) VALUES (?,?,?);";
-    	
+        String checkinQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?,?,?)";
+
     	try {
     		PreparedStatement ps = connection.prepareStatement(checkinQuery);
-    		ps.setInt(1, attendee.getSjsuId());
+    		ps.setInt(1, user.getSjsuId());
     		ps.setInt(2, event.getEventID());
     		ps.setBoolean(3, false);
     		ps.executeUpdate();
@@ -105,10 +107,10 @@ public class EventDAO{
     		dbConnection.closeConnection();
     	}
     }
-    
+
     public Event getEventById(int eventID) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Event WHERE eventID = ?";
+        String selectQuery = "SELECT * FROM Event WHERE EventID = ?";
         Event event = null;
 
         try {
@@ -119,13 +121,14 @@ public class EventDAO{
 
             if (resultSet.next()) {
                 event = new Event();
-                event.setEventID(Integer.parseInt(resultSet.getString("eventID")));
-                event.setEventName(resultSet.getString("eventName"));
-                event.setDate(resultSet.getDate("date"));
-                event.setTime(resultSet.getTime("time"));
-                event.setDescription(resultSet.getString("description"));
-                event.setCategory(resultSet.getNString("category"));
-                
+                event.setEventID(Integer.parseInt(resultSet.getString("EventID")));
+                event.setEventName(resultSet.getString("EventName"));
+                event.setDate(resultSet.getDate("Date"));
+                event.setTime(resultSet.getTime("Time"));
+                event.setDescription(resultSet.getString("Description"));
+                event.setCategory(resultSet.getNString("Category"));
+                event.setRequiresTicket(resultSet.getBoolean("RequiresTicket"));
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -148,13 +151,14 @@ public class EventDAO{
 
             while (resultSet.next()) {
             	Event event = new Event();
-                event.setEventID(Integer.parseInt(resultSet.getString("eventID")));
-                event.setEventName(resultSet.getString("eventName"));
-                event.setDate(resultSet.getDate("date"));
-                event.setTime(resultSet.getTime("time"));
-                event.setDescription(resultSet.getString("description"));
-                event.setCategory(resultSet.getNString("category"));
-                
+                event.setEventID(Integer.parseInt(resultSet.getString("EventID")));
+                event.setEventName(resultSet.getString("EventName"));
+                event.setDate(resultSet.getDate("Date"));
+                event.setTime(resultSet.getTime("Time"));
+                event.setDescription(resultSet.getString("Description"));
+                event.setCategory(resultSet.getNString("Category"));
+                event.setRequiresTicket(resultSet.getBoolean("RequiresTicket"));
+
                 eventList.add(event);
             }
         } catch (SQLException e) {

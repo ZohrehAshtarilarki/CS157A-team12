@@ -56,5 +56,44 @@ public class TicketDAO {
         return null;
     }
 
-    // Additional methods like updateTicket, deleteTicket, etc.
+    // Method to retrieve tickets by user ID
+    public List<Ticket> getTicketsByUserID(String sjsuID) {
+        List<Ticket> tickets = new ArrayList<>();
+        Connection connection = dbConnection.getConnection();
+        /*
+        Automatically join the Ticket and Register tables based on the common column(s).
+        In this case, it's assumed that EventID is the common column.
+         */
+        String sql = "SELECT t.TicketID, t.EventID, t.TicketBarcode FROM Ticket t " +
+                "NATURAL JOIN Register r " +
+                "WHERE r.SJSUID = ?";
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, sjsuID);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Ticket ticket = new Ticket(
+                        resultSet.getString("TicketID"),
+                        resultSet.getString("EventID"),
+                        resultSet.getString("TicketBarcode")
+                );
+                tickets.add(ticket);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return tickets;
+    }
+
 }
