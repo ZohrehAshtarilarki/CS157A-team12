@@ -48,12 +48,15 @@ public class EventServlet extends HttpServlet {
 				case "registerEvent":
 					registerEvent(request,response);
 					break;
+					/*
 				case "createEvent":
 					createEvent(request, response);
 					break;
 				case "deleteEvent":
 					deleteEvent(request, response);
 					break;
+
+					 */
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
@@ -99,7 +102,7 @@ public class EventServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}
-
+/*
 	private void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventId = Integer.parseInt(request.getParameter("eventId"));
 		int organizerId = Integer.parseInt(request.getParameter("sjsuId"));
@@ -143,7 +146,7 @@ public class EventServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}
-
+*/
 	private void registerEvent(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		/* ------> For debugging
 		String sjsuidStr = request.getParameter("sjsuId");
@@ -174,6 +177,7 @@ public class EventServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
+	/*
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
@@ -191,7 +195,7 @@ public class EventServlet extends HttpServlet {
 
 		response.sendRedirect("success.jsp");
 	}
-/*
+
 	public void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
