@@ -45,65 +45,20 @@ public class EventServlet extends HttpServlet {
 		if (action != null)
 		{
 			switch (action) {
-			case "registerEvent":
-				registerEvent(request,response);
-				break;
-			//case "createEvent":
-				//createEvent(request, response);
-/*
-			case "delete":
-				deleteEvent(request, response);
-*/
-			default:
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+				case "registerEvent":
+					registerEvent(request,response);
+					break;
+				case "createEvent":
+					createEvent(request, response);
+					break;
+				case "deleteEvent":
+					deleteEvent(request, response);
+					break;
+				default:
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
 		}
 	}
-	/*
-	private void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int eventId = Integer.parseInt(request.getParameter("eventid"));
-        int organizerId = Integer.parseInt(request.getParameter("sjsuid"));
-        String eventName = request.getParameter("eventname");
-        String eventDateStr = request.getParameter("eventdate");
-        String eventTimeStr = request.getParameter("eventtime");
-        String eventDescription = request.getParameter("eventdescription");
-        String eventCategory = request.getParameter("eventcategory");
-
-        Date eventDate = null;
-        Time eventTime = null;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-
-        try {
-            if (eventDateStr != null && !eventDateStr.isEmpty()) {
-                java.util.Date utilDate = dateFormat.parse(eventDateStr);
-                eventDate = new Date(utilDate.getTime());
-            }
-
-            if (eventTimeStr != null && !eventTimeStr.isEmpty()) {
-                java.util.Date utilTime = timeFormat.parse(eventTimeStr);
-                eventTime = new Time(utilTime.getTime());
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Event ID: " + eventId);
-        System.out.println("Organizer ID: " + organizerId);
-        System.out.println("Event Name: " + eventName);
-        System.out.println("Event Date: " + eventDate);
-        System.out.println("Event Time: " + eventTime);
-        System.out.println("Event Description: " + eventDescription);
-        System.out.println("Event Category: " + eventCategory);
-
-        Event event = new Event(eventId,eventName,eventDate,eventTime,eventDescription,eventCategory);
-        EventOrganizer organizer = organizerDAO.getOrganizerById(organizerId);
-
-        eventDAO.createEvent(event, organizer);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
-	    dispatcher.forward(request, response);
-        }
-*/
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -112,16 +67,81 @@ public class EventServlet extends HttpServlet {
 		if (action != null)
 		{
 			switch (action) {
-			case "getEventByID":
-				getEventByID(request, response);
-				break; // Add break statement
-			case "getAllEvents":
-				getAllEvents(request, response);
-				break; // Add break statement
-			default:
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+				case "getEventByID":
+					getEventByID(request, response);
+					break; // Add break statement
+				case "getAllEvents":
+					getAllEvents(request, response);
+					break; // Add break statement
+				default:
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
 		}
+	}
+
+	private void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		int eventid = Integer.parseInt(request.getParameter("eventId"));
+		int sjsuid = Integer.parseInt(request.getParameter("sjsuId"));
+
+		Event event = eventDAO.getEventById(eventid);
+		EventOrganizer organizer = organizerDAO.getOrganizerById(sjsuid);
+
+
+		if(eventDAO.deleteEvent(event, organizer) == 0 || event == null)
+		{
+			String failed = "Deletion Failed. Please check your ID and eventID (you can only delete event that you created).";
+			request.setAttribute("message", failed);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/views/deleteEvent.jsp");
+			dispatcher.forward(request, response);
+		}
+
+		eventDAO.deleteEvent(event, organizer);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	private void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		int eventId = Integer.parseInt(request.getParameter("eventId"));
+		int organizerId = Integer.parseInt(request.getParameter("sjsuId"));
+		String eventName = request.getParameter("eventName");
+		String eventDateStr = request.getParameter("eventDate");
+		String eventTimeStr = request.getParameter("eventTime");
+		String eventDescription = request.getParameter("eventDescription");
+		String eventCategory = request.getParameter("eventCategory");
+
+		Date eventDate = null;
+		Time eventTime = null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+		try {
+			if (eventDateStr != null && !eventDateStr.isEmpty()) {
+				java.util.Date utilDate = dateFormat.parse(eventDateStr);
+				eventDate = new Date(utilDate.getTime());
+			}
+
+			if (eventTimeStr != null && !eventTimeStr.isEmpty()) {
+				java.util.Date utilTime = timeFormat.parse(eventTimeStr);
+				eventTime = new Time(utilTime.getTime());
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("Event ID: " + eventId);
+		System.out.println("Organizer ID: " + organizerId);
+		System.out.println("Event Name: " + eventName);
+		System.out.println("Event Date: " + eventDate);
+		System.out.println("Event Time: " + eventTime);
+		System.out.println("Event Description: " + eventDescription);
+		System.out.println("Event Category: " + eventCategory);
+
+		Event event = new Event(eventId,eventName,eventDate,eventTime,eventDescription,eventCategory);
+		EventOrganizer organizer = organizerDAO.getOrganizerById(organizerId);
+
+		eventDAO.createEvent(event, organizer);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
 	}
 
 	private void registerEvent(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -153,44 +173,6 @@ public class EventServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}
-/*
-	public void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-		int eventID = Integer.parseInt(request.getParameter("eventID"));
-		int organizerId = Integer.parseInt(request.getParameter("sjsuId"));
-		String eventName = request.getParameter("eventName");
-		String eventDateStr = request.getParameter("eventDate");
-		String eventTimeStr = request.getParameter("eventTime");
-		String eventDescription = request.getParameter("eventDescription");
-		String eventCategory = request.getParameter("eventCategory");
-		boolean eventTicket = Boolean.parseBoolean(request.getParameter("requiresTicket"));
-
-
-		Date eventDate = null;
-		Time eventTime = null;
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-
-		try {
-			if (eventDateStr != null && !eventDateStr.isEmpty()) {
-				java.util.Date utilDate = dateFormat.parse(eventDateStr);
-				eventDate = new Date(utilDate.getTime());
-			}
-
-			if (eventTimeStr != null && !eventTimeStr.isEmpty()) {
-				java.util.Date utilTime = timeFormat.parse(eventTimeStr);
-				eventTime = new Time(utilTime.getTime());
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		Event event = new Event(eventID, eventName, eventDate, eventTime, eventDescription, eventCategory, eventTicket);
-		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
-
-		eventDAO.createEvent(event, eventOrganizer);
-
-		response.sendRedirect("success.jsp");
-	}
 
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
@@ -209,8 +191,7 @@ public class EventServlet extends HttpServlet {
 
 		response.sendRedirect("success.jsp");
 	}
-
-
+/*
 	public void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
