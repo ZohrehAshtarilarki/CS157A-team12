@@ -7,6 +7,7 @@
 --%>
 <%@ page import="java.util.List"%>
 <%@ page import="model.Event"%>
+<%@ page import="model.User" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 
 <!DOCTYPE html>
@@ -23,6 +24,14 @@
             <li><a href="#">SJSUEvent</a></li>
             <li>
                 <a href="${pageContext.request.contextPath}/views/home.jsp">Home</a>
+                <%
+                    String sjsuId = (String) session.getAttribute("SJSUID");
+                    if (sjsuId != null) {
+                %>
+                <a href="${pageContext.request.contextPath}/views/attendeeDash.jsp">Dashboard</a>
+                <%
+                    }
+                %>
                 <a href="${pageContext.request.contextPath}/views/login.jsp">Log Out</a>
             </li>
         </ul>

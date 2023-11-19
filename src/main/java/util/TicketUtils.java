@@ -2,10 +2,16 @@ package util;
 
 import java.util.UUID;
 
-// utility function for generating a unique identifier for a ticket
 public class TicketUtils {
+
+    // Method for generating a unique barcode
     public static String generateUniqueBarcode() {
-        // Generate a random UUID (Universally Unique Identifier)
+        return UUID.randomUUID().toString();
+    }
+
+    // Method for generating a unique ticket ID
+    public static String generateUniqueTicketId() {
+        // UUID to generate a unique identifier
         return UUID.randomUUID().toString();
     }
 }

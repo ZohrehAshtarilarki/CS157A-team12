@@ -1,29 +1,33 @@
 package model;
 
 public class Ticket {
-    private String ticketId;
-    private String eventId;
+    private int ticketId;
+    private int eventId;
     private String ticketBarcode;
 
-    public Ticket(String ticketId, String eventId, String ticketBarcode) {
+    // New field for storing the user's ID since an attendee should register for the same event only one time
+    private int sjsuId;
+
+    public Ticket(int ticketId, int eventId, String ticketBarcode, int sjsuId) {
         this.ticketId = ticketId;
         this.eventId = eventId;
         this.ticketBarcode = ticketBarcode;
+        this.sjsuId = sjsuId;
     }
 
-    public String getTicketId() {
+    public int getTicketId() {
         return ticketId;
     }
 
-    public void setTicketId(String ticketId) {
+    public void setTicketId(int ticketId) {
         this.ticketId = ticketId;
     }
 
-    public String getEventId() {
+    public int getEventId() {
         return eventId;
     }
 
-    public void setEventId(String eventId) {
+    public void setEventId(int eventId) {
         this.eventId = eventId;
     }
 
@@ -33,6 +37,14 @@ public class Ticket {
 
     public void setTicketBarcode(String ticketBarcode) {
         this.ticketBarcode = ticketBarcode;
+    }
+
+    public int getSjsuId() {
+        return sjsuId;
+    }
+
+    public void setSjsuId(int sjsuId) {
+        this.sjsuId = sjsuId;
     }
 }
 

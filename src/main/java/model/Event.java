@@ -23,6 +23,7 @@ public class Event{
 		this.time = time;
 		this.description = description;
 		this.category = category;
+		this.requiresTicket = requiresTicket;
 	}
 
 	public int getEventID() {

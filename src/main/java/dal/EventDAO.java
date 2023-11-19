@@ -121,23 +121,58 @@ public class EventDAO{
         return 1;
     }
 
-    public void registerEvent(Event event, User user)
-    {
-    	Connection connection = dbConnection.getConnection();
-        String checkinQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?,?,?)";
+    public void registerEvent(Event event, User user) {
+        Connection connection = null;
+        PreparedStatement registerStatement = null;
+        PreparedStatement ticketStatement = null;
 
-    	try {
-    		PreparedStatement ps = connection.prepareStatement(checkinQuery);
-    		ps.setInt(1, user.getSjsuId());
-    		ps.setInt(2, event.getEventID());
-    		ps.setBoolean(3, false);
-    		ps.executeUpdate();
-    	}catch (SQLException e) {
-    		e.printStackTrace();
-    	} finally {
-    		dbConnection.closeConnection();
-    	}
+        try {
+            connection = dbConnection.getConnection();
+            connection.setAutoCommit(false); // Start transaction
+
+            if (event.isRequiresTicket()) {
+                // Register user for the event
+                String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
+                registerStatement = connection.prepareStatement(registerQuery);
+                registerStatement.setInt(1, user.getSjsuId());
+                registerStatement.setInt(2, event.getEventID());
+                registerStatement.setBoolean(3, false);
+                registerStatement.executeUpdate();
+
+                // Generate and insert a new ticket
+                String ticketQuery = "INSERT INTO Ticket (EventID, TicketBarcode) VALUES (?, ?)";
+                ticketStatement = connection.prepareStatement(ticketQuery);
+                ticketStatement.setInt(1, event.getEventID());
+                String ticketBarcode = util.TicketUtils.generateUniqueBarcode(); // Call to TicketUtils
+                ticketStatement.setString(2, ticketBarcode);
+                ticketStatement.executeUpdate();
+            } else {
+                String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
+                registerStatement = connection.prepareStatement(registerQuery);
+                registerStatement.setInt(1, user.getSjsuId());
+                registerStatement.setInt(2, event.getEventID());
+                registerStatement.setBoolean(3, false);
+                registerStatement.executeUpdate();
+            }
+
+            connection.commit(); // Commit transaction
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback(); // Rollback on error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } finally {
+            // Close resources
+            if (registerStatement != null) try { registerStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (ticketStatement != null) try { ticketStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
     }
+
 
     public Event getEventById(int eventID) {
         Connection connection = dbConnection.getConnection();

@@ -1,7 +1,6 @@
 package controller;
 
 import dal.TicketDAO;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,19 +18,23 @@ public class DownloadTicketServlet extends HttpServlet {
 
         // Fetch ticket details from the database
         TicketDAO ticketDAO = new TicketDAO();
-        Ticket ticket = (Ticket) ticketDAO.getTicketsByUserID(ticketID); // Implement this method in TicketDAO
+        Ticket ticket = ticketDAO.getTicketById(ticketID); // Use the correct method to get a single ticket
 
-        // Generate a ticket file (PDF, image, etc.) based on ticket details
-        byte[] ticketFile = TicketService.generateTicketFile(ticket);
+        if (ticket != null) {
+            // Generate a ticket file (PDF, image, etc.) based on ticket details
+            byte[] ticketFile = TicketService.generateTicketFile(ticket);
+            // Set response headers for file download
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=ticket-" + ticketID + ".pdf");
+            response.setContentLength(ticketFile.length);
 
-        // Set response headers for file download
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=ticket-" + ticketID + ".pdf");
-        response.setContentLength(ticketFile.length);
-
-        // Write file to response
-        ServletOutputStream outputStream = response.getOutputStream();
-        outputStream.write(ticketFile);
-        outputStream.close();
+            // Write file to response
+            ServletOutputStream outputStream = response.getOutputStream();
+            outputStream.write(ticketFile);
+            outputStream.close();
+        } else {
+            // Handle case where ticket is not found
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Ticket not found");
+        }
     }
 }

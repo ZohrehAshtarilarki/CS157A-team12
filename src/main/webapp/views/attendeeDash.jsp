@@ -18,25 +18,44 @@
 <h1>Welcome to the Attendee Home Page</h1>
 
 <%
-    String userID = (String) session.getAttribute("SJSUID");
-    TicketDAO ticketDAO = new TicketDAO();
-    List<Ticket> tickets = ticketDAO.getTicketsByUserID(userID);
+    String userIDStr = (String) session.getAttribute("SJSUID");
+    System.out.println("SJSUID: " + userIDStr); // Check if this prints the correct ID
 
-    if (tickets == null || tickets.isEmpty()) {
-        System.out.println("<p>No tickets available.</p>");
-    } else {
-        for (Ticket ticket : tickets) {
-            // Display each ticket's details
-            System.out.println("<div class='ticket'>");
-            System.out.println("<p>Event ID: " + ticket.getEventId() + "</p>");
-            System.out.println("<p>Ticket Barcode: " + ticket.getTicketBarcode() + "</p>");
-            // Link to download the ticket
-            System.out.println("<a href='/DownloadTicketServlet?ticketID=" + ticket.getTicketId() + "'>Download Ticket</a>");
-            System.out.println("</div>");
+    // Ensure userIDStr is not null and is a valid integer string
+    // if the string contains only whitespace, it's treated as empty using trim()
+    if (userIDStr != null && !userIDStr.trim().isEmpty()) {
+        try {
+            // Convert userID from a String to an int before passing it to the getTicketsByUserID method in the TicketDAO
+            int userID = Integer.parseInt(userIDStr);
+            TicketDAO ticketDAO = new TicketDAO();
+            List<Ticket> tickets = ticketDAO.getTicketsByUserID(userID);
+            System.out.println("Number of tickets retrieved: " + (tickets != null ? tickets.size() : "null"));
+            if (tickets != null && !tickets.isEmpty()) {
+                // Display each ticket's details
+                for (Ticket ticket : tickets) {
+%>
+<div class='ticket'>
+    <p>Event ID: <%= ticket.getEventId() %></p>
+    <p>Ticket Barcode: <%= ticket.getTicketBarcode() %></p>
+    <!-- Link to download the ticket -->
+    <a href='${pageContext.request.contextPath}/DownloadTicketServlet?ticketID=<%= ticket.getTicketId() %>'>Download Ticket</a>
+</div>
+<%
+    }
+} else {
+%>
+<p>No tickets available.</p>
+<%
+            }
+        } catch (NumberFormatException e) {
+            // Handle the case where userIDStr is not a valid integer
+            System.out.println("Error: Invalid userID format.");
         }
+    } else {
+        // Handle the case where userIDStr is null or empty
+        System.out.println("Error: userID is null or empty.");
     }
 %>
 
 </body>
 </html>
-

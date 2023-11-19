@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpSession;
 import model.Attendee;
 import model.EventOrganizer;
 import model.User;
@@ -138,11 +139,16 @@ public class UserServlet extends HttpServlet {
         // Retrieve login credentials from the request parameters
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        System.out.println("Username: " + username + ", password: "+password);
+        //System.out.println("Username: " + username + ", password: "+password);
 
         try {
             User user = userDAO.getUserByUsername(username);
             if (user != null && user.getPassword().equals(password)) {
+                // Redirecting user to the dashboard
+                HttpSession session = request.getSession();
+                String sjsuIdStr = String.valueOf(user.getSjsuId());
+                session.setAttribute("SJSUID", sjsuIdStr); // Store user in session
+
                 // User authenticated successfully, redirect to a login success page
                 String path = request.getContextPath() + "/views/home.jsp";
                 response.sendRedirect(path);
