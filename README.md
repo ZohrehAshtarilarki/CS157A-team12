@@ -48,7 +48,7 @@ The **Campus Event Management System** utilizes the following technologies:
 
 - **Database Management System (DBMS)**: MySQL Workbench
 - **Front-end**: HTML, CSS, JavaScript
-- **Back-end**: Java
+- **Back-end**: Java, Jakarta Servlet
 - **Authentication and Authorization**: Implements user authentication and role-based access control.
 
 ## Getting Started
@@ -58,8 +58,9 @@ To run the Campus Event Management System locally, follow these steps:
 1. Clone this repository to your local machine.
 2. Set up a MySQL database using the provided SQL scripts in the `database-scripts` directory.
 3. Configure the database connection in the application's configuration files (e.g., `db-config.xml`).
-4. Deploy the application using a Java web server (e.g., Apache Tomcat).
-5. Access the system through a web browser and start using it.
+4. Install required libraries such as: "pdfbox-2.0.30.jar", "commons-logging-1.2", "servlet-api.jar", "mysql-connector-java-8.0.29.jar"
+5. Deploy the application using a Java web server (e.g., Apache Tomcat).
+6. Access the system through a web browser and start using it.
 
 For detailed installation and configuration instructions, please refer to the project's documentation.
 
