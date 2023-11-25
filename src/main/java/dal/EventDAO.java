@@ -121,15 +121,29 @@ public class EventDAO{
         return 1;
     }
 
-    public void registerEvent(Event event, User user) {
+    public boolean registerEvent(Event event, User user) {
         Connection connection = null;
         PreparedStatement registerStatement = null;
         PreparedStatement ticketStatement = null;
+        PreparedStatement checkStatement;
 
         try {
             connection = dbConnection.getConnection();
             connection.setAutoCommit(false); // Start transaction
 
+            // Check if user is already registered for the event
+            String checkQuery = "SELECT COUNT(*) FROM Register WHERE SJSUID = ? AND EventID = ?";
+            checkStatement = connection.prepareStatement(checkQuery);
+            checkStatement.setInt(1, user.getSjsuId());
+            checkStatement.setInt(2, event.getEventID());
+
+            ResultSet rs = checkStatement.executeQuery();
+            // Retrieves the value of the first column in the current row
+            if (rs.next() && rs.getInt(1) > 0) {
+                // User is already registered for this event
+                System.out.println("User is already registered for this event.");
+                return false;
+            }
             if (event.isRequiresTicket()) {
                 // Register user for the event
                 String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
@@ -171,6 +185,7 @@ public class EventDAO{
             if (ticketStatement != null) try { ticketStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
+        return true;
     }
 
 
@@ -236,4 +251,62 @@ public class EventDAO{
 
         return eventList;
     }
+
+    /*
+    This implementation checks if a review exists for a specific event and user.
+    If it does, it updates the Rating. If not, it creates a new review with the given Rating.
+     */
+    public boolean saveRating(int eventId, int userId, int rating) {
+        Connection connection = null;
+        PreparedStatement checkStatement = null;
+        PreparedStatement updateStatement = null;
+
+        try {
+            connection = dbConnection.getConnection();
+            connection.setAutoCommit(false); // Start transaction
+
+            // Check if a review already exists
+            String checkQuery = "SELECT COUNT(*) FROM Review WHERE EventID = ? AND SJSUID = ?";
+            checkStatement = connection.prepareStatement(checkQuery);
+            checkStatement.setInt(1, eventId);
+            checkStatement.setInt(2, userId);
+
+            ResultSet rs = checkStatement.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                // Update existing review with new rating
+                String updateQuery = "UPDATE Review SET Rating = ? WHERE EventID = ? AND SJSUID = ?";
+                updateStatement = connection.prepareStatement(updateQuery);
+                updateStatement.setInt(1, rating);
+                updateStatement.setInt(2, eventId);
+                updateStatement.setInt(3, userId);
+            } else {
+                // Insert new review with rating
+                String insertQuery = "INSERT INTO Review (EventID, SJSUID, Rating) VALUES (?, ?, ?)";
+                updateStatement = connection.prepareStatement(insertQuery);
+                updateStatement.setInt(1, eventId);
+                updateStatement.setInt(2, userId);
+                updateStatement.setInt(3, rating);
+            }
+
+            updateStatement.executeUpdate();
+            connection.commit(); // Commit transaction
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback(); // Rollback on error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return false;
+        } finally {
+            // Close resources
+            if (checkStatement != null) try { checkStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (updateStatement != null) try { updateStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        }
+    }
+
 }

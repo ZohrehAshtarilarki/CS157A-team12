@@ -90,9 +90,13 @@ public class AttendeeDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                attendee = new Attendee();
-                attendee.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                attendee.setAttendeeId(Integer.parseInt(resultSet.getString("AttendeeID")));
+                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
+                String sjsuEmail = resultSet.getString("SJSUEmail");
+                String userName = resultSet.getString("Username");
+                String password = resultSet.getString("Password");
+                String role = resultSet.getString("Role");
+
+                attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -108,15 +112,20 @@ public class AttendeeDAO {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Attendee";
         List<Attendee> attendeeList = new ArrayList<>();
+        Attendee attendee;
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                Attendee attendee = new Attendee();
-                attendee.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                attendee.setAttendeeId(Integer.parseInt(resultSet.getString("AttendeeID")));
+                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
+                String sjsuEmail = resultSet.getString("SJSUEmail");
+                String userName = resultSet.getString("Username");
+                String password = resultSet.getString("Password");
+                String role = resultSet.getString("Role");
+
+                attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
 
                 attendeeList.add(attendee);
             }

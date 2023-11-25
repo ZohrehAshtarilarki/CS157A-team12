@@ -18,15 +18,15 @@
 <h1>Welcome to the Attendee Home Page</h1>
 
 <%
-    String userIDStr = (String) session.getAttribute("SJSUID");
+    Integer userIDStr = (Integer) session.getAttribute("SJSUID");
     System.out.println("SJSUID: " + userIDStr); // Check if this prints the correct ID
 
     // Ensure userIDStr is not null and is a valid integer string
     // if the string contains only whitespace, it's treated as empty using trim()
-    if (userIDStr != null && !userIDStr.trim().isEmpty()) {
+    if (userIDStr != null) {
         try {
             // Convert userID from a String to an int before passing it to the getTicketsByUserID method in the TicketDAO
-            int userID = Integer.parseInt(userIDStr);
+            int userID = userIDStr;
             TicketDAO ticketDAO = new TicketDAO();
             List<Ticket> tickets = ticketDAO.getTicketsByUserID(userID);
             System.out.println("Number of tickets retrieved: " + (tickets != null ? tickets.size() : "null"));

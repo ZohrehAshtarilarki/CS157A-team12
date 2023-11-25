@@ -17,6 +17,44 @@ body {
     text-align: center;
 }
 
+/* Styles for Reviews Section */
+.reviews-section {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.star-rating {
+    display: inline-block;
+}
+
+.star {
+    cursor: pointer;
+    color: rgb(128, 128, 128);
+    font-size: 30px;
+}
+
+.star.rated {
+    color: gold;
+}
+
+.star:hover,
+.star:hover ~ .star {
+    color: gold;
+}
+
+.success-message {
+    color: green;
+    text-align: center;
+    /* Additional styling as needed */
+}
+
+.error-message {
+    color: red;
+    text-align: center;
+    /* Additional styling as needed */
+}
+
+
 .register-button {
     background-color: #007bff;
     color: #fff;

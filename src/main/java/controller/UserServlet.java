@@ -87,13 +87,8 @@ public class UserServlet extends HttpServlet {
         String password = request.getParameter("password");
         String role = request.getParameter("role");
 
-        // Create user object
-        User user = new User();
-        user.setSjsuId(sjsuId);
-        user.setSjsuEmail(sjsuEmail);
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
+        // Create a User object with constructor parameters
+        User user = new User(sjsuId, sjsuEmail, username, password, role);
 
         // The core Logic of the Registration application is present here. We are going
         // to insert user data in to the database.
@@ -105,8 +100,8 @@ public class UserServlet extends HttpServlet {
             // Attendee creation when the user role is "Attendee"
             if (user.getRole().equals("Attendee")) {
                 // Create an Attendee object and set properties
-                Attendee attendee = new Attendee();
-                attendee.setSjsuId(user.getSjsuId());
+                Attendee attendee = new Attendee(sjsuId, sjsuEmail, username, password, role);
+                //attendee.setSjsuId(user.getSjsuId());
 
                 // Create the attendee using AttendeeDAO
                 AttendeeDAO attendeeDAO = new AttendeeDAO();
@@ -146,8 +141,8 @@ public class UserServlet extends HttpServlet {
             if (user != null && user.getPassword().equals(password)) {
                 // Redirecting user to the dashboard
                 HttpSession session = request.getSession();
-                String sjsuIdStr = String.valueOf(user.getSjsuId());
-                session.setAttribute("SJSUID", sjsuIdStr); // Store user in session
+                //String sjsuIdStr = String.valueOf(user.getSjsuId());
+                session.setAttribute("SJSUID", user.getSjsuId()); // Store user in session
 
                 // User authenticated successfully, redirect to a login success page
                 String path = request.getContextPath() + "/views/home.jsp";
@@ -234,7 +229,7 @@ public class UserServlet extends HttpServlet {
 
         // Use the retrieved user as needed, e.g., display it on a JSP page
         request.setAttribute("user", user);
-        request.getRequestDispatcher("userDetails.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/userDetails.jsp").forward(request, response);
     }
 
     private void getUserByUsername(HttpServletRequest request, HttpServletResponse response)

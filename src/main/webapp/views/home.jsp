@@ -24,10 +24,12 @@
             <li><a href="#">SJSUEvent</a></li>
             <li>
                 <a href="${pageContext.request.contextPath}/views/home.jsp">Home</a>
-                <%
-                    String sjsuId = (String) session.getAttribute("SJSUID");
-                    if (sjsuId != null) {
+               <%
+                   Integer sjsuId = (Integer) session.getAttribute("SJSUID");
+                   if (sjsuId != null) {
+
                 %>
+
                 <a href="${pageContext.request.contextPath}/views/attendeeDash.jsp">Dashboard</a>
                 <%
                     }

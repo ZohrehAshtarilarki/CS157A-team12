@@ -58,11 +58,18 @@ public class AttendeeServlet extends HttpServlet {
     }
 
     private void createAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Get all parameters from the request
+        // AttendeeID is auto-generated
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+        String sjsuEmail = request.getParameter("sjsuEmail");
+        String userName = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String role = request.getParameter("role");
 
-        Attendee attendee = new Attendee();
-        attendee.setSjsuId(sjsuId);
+        // Instantiate an Attendee object with all parameters
+        Attendee attendee = new Attendee(sjsuId, sjsuEmail, userName, password, role);
 
+        // Use the DAO to create a new Attendee record in the database
         attendeeDAO.createAttendee(attendee);
 
         // Redirect or forward to a success page
@@ -70,13 +77,21 @@ public class AttendeeServlet extends HttpServlet {
     }
 
     private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Get all parameters from the request
         int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
+        String sjsuEmail = request.getParameter("sjsuEmail");
+        String userName = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String role = request.getParameter("role");
 
-        // Create Attendee object
-        Attendee attendee = new Attendee();
+        // Instantiate an Attendee object with all parameters
+        Attendee attendee = new Attendee(sjsuId, sjsuEmail, userName, password, role);
+
         attendee.setSjsuId(sjsuId);
-        attendee.setAttendeeId(attendeeId);
+        attendee.setSjsuEmail(sjsuEmail);
+        attendee.setUsername(userName);
+        attendee.setPassword(password);
+        attendee.setRole(role);
 
         attendeeDAO.updateAttendee(attendee);
 

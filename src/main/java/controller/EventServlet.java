@@ -159,7 +159,8 @@ public class EventServlet extends HttpServlet {
 				response.sendRedirect(request.getContextPath() + "/views/attendeeDash.jsp");
 			} else {
 				// Handle ticket saving failure
-				request.setAttribute("errorMessage", "There was an error generating your ticket.");
+				// Set an attribute to indicate a duplicate ticket attempt
+				request.setAttribute("errorMessage", "You have already purchased a ticket for this event.");
 				RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp");
 				dispatcher.forward(request, response);
 			}
@@ -167,11 +168,10 @@ public class EventServlet extends HttpServlet {
 			// If no ticket is required, proceed with normal event registration
 			User user = userDAO.getUserById(Integer.parseInt(String.valueOf(sjsuId)));
 			eventDAO.registerEvent(event, user);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
-			dispatcher.forward(request, response);
+			// Redirect after successful registration
+			response.sendRedirect(request.getContextPath() + "/views/home.jsp");
 		}
 	}
-
 	/*
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
