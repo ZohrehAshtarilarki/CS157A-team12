@@ -21,7 +21,9 @@
 <main>
 	<%
 		String eventIDParam = request.getParameter("eventID");
+		String sjsuIDParam = request.getParameter("sjsuID");
 		int eventID = 0;
+		int sjsuID = 0;
 		if (eventIDParam != null && !eventIDParam.isEmpty()) {
 			try {
 				eventID = Integer.parseInt(eventIDParam);
@@ -29,8 +31,20 @@
 				e.printStackTrace();
 			}
 		}
+		if (sjsuIDParam != null && !sjsuIDParam.isEmpty()) {
+			try {
+				sjsuID = Integer.parseInt(sjsuIDParam);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
 		EventDAO eventDAO = new EventDAO();
 		Event event = eventDAO.getEventById(eventID);
+		int sjsuIDManage = eventDAO.getSJSUIDFromManageByEventID(eventID);
+		System.out.println(eventID);
+		System.out.println(sjsuIDManage);
+		System.out.println(sjsuID);
+		System.out.println(event);
 	%>
 
 	<div class="event-container">
@@ -40,14 +54,14 @@
 		<div class="event-description">Description: <%= event.getDescription() %></div>
 	</div>
 
-	<% if (event.isRequiresTicket()) { %>
+	<% if (event.isRequiresTicket() && sjsuIDManage != sjsuID) { %>
 	<div class="ticket-message">
 		<p>This event requires a ticket. Please purchase to attend.</p>
 		<!-- Purchase Ticket Button -->
 		<form action="${pageContext.request.contextPath}/EventServlet" method="post">
 			<input type="hidden" name="action" value="registerEvent">
 			<div>
-				<label for="sjsuidTicket">SJSUID:</label> <input type="text" name="sjsuId" id="sjsuidTicket" required>
+				<input type="hidden" name="sjsuId" id="sjsuidTicket" value="<%=sjsuID%>">
 			</div>
 			<div>
 				<input type="hidden" name="eventId" value="<%=eventID%>">
@@ -57,14 +71,14 @@
 			</div>
 		</form>
 	</div>
-	<% } else { %>
+	<% } else if (!event.isRequiresTicket() && sjsuIDManage != sjsuID) { %>
 	<div class="registration-message">
 		<p>You can register for this event below:</p>
 		<!-- Register Button -->
 		<form action="${pageContext.request.contextPath}/EventServlet" method="post">
 			<input type="hidden" name="action" value="registerEvent">
 			<div>
-				<label for="sjsuidRegister">SJSUID:</label> <input type="text" name="sjsuId" id="sjsuidRegister" required>
+				<input type="hidden" name="sjsuId" id="sjsuidRegister" value="<%=sjsuID%>">
 			</div>
 			<div>
 				<input type="hidden" name="eventId" value="<%=eventID%>">
@@ -74,7 +88,21 @@
 			</div>
 		</form>
 	</div>
-	<% } %>
+	<% } else if (sjsuIDManage == sjsuID){ %>
+		<form action="${pageContext.request.contextPath}/EventServlet"
+			method="post">
+			<input type="hidden" name="action" value="deleteEvent">
+			<div>
+			 <input type="hidden" name="eventid" id="eventid" value=<%=eventID%>>
+			</div>
+			<div>
+			 <input type="hidden" name="sjsuid" id="sjsuid" value=<%=sjsuID%>>
+			</div>
+			<div>
+				<button type="submit" name="action" value="deleteEvent">Delete</button>
+			</div>
+		</form>
+	<%} %>
 </main>
 </body>
 </html>

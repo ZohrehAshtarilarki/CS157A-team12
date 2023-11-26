@@ -15,38 +15,51 @@
 	</header>
 
 	<main>
+		<%
+		String sjsuIDParam = request.getParameter("sjsuID");
+		int sjsuid = 0;
+		if (sjsuIDParam != null && !sjsuIDParam.isEmpty()) {
+			try {
+				sjsuid = Integer.parseInt(sjsuIDParam);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		%>
 		<h1>Create Event</h1>
 		<form action="${pageContext.request.contextPath}/EventServlet"
 			method="post">
 			<input type="hidden" name="action" value="createEvent">
-			<div>
-				<label for="eventid">Event ID:</label> 
-				<input type="text" name="eventid" id="eventid" required>
+			<div> 
+				<input type="hidden" name="sjsuId" id="sjsuId" value=<%=sjsuid%>>
 			</div>
 			<div>
-				<label for="sjsuid">Organizer ID:</label> 
-				<input type="text" name="sjsuid" id="sjsuid" required>
+				<label for="eventName">Event Name:</label> 
+				<input type="text" name="eventName" id="eventName" required>
 			</div>
 			<div>
-				<label for="eventname">Event Name:</label> 
-				<input type="text" name="eventname" id="eventname" required>
+				<label for="eventDate">Event Date:</label> 
+				<input type="date" name="eventDate" id="eventDate" required>
 			</div>
 			<div>
-				<label for="eventdate">Event Date:</label> 
-				<input type="date" name="eventdate" id="eventdate" required>
+				<label for="eventTime">Event time:</label> 
+				<input type="time" name="eventTime" id="eventTime" required>
 			</div>
 			<div>
-				<label for="eventtime">Event time:</label> 
-				<input type="time" name="eventtime" id="eventtime" required>
+				<label for="eventDescription">Event Description:</label> 
+				<input type="text" name="eventDescription" id="eventDescription" required>
 			</div>
 			<div>
-				<label for="eventdescription">Event Description:</label> 
-				<input type="text" name="eventdescription" id="eventdescription" required>
+				<label for="eventCategory">Event Category:</label> 
+				<input type="text" name="eventCategory" id="eventCategory" required>
 			</div>
 			<div>
-				<label for="eventcategory">Event Category:</label> 
-				<input type="text" name="eventcategory" id="eventcategory" required>
-			</div>
+            <label for="requiresTicket">Ticket Required:</label>
+            <select name="requiresTicket" id="requiresTicket" required>
+                <option value="1">True</option>
+                <option value="0">False</option>
+            </select>
+        </div>
 			<div>
 				<button type="submit" name="action" value="createEvent">Create</button>
 			</div>

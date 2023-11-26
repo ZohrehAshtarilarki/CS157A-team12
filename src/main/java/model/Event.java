@@ -25,6 +25,17 @@ public class Event{
 		this.category = category;
 		this.requiresTicket = requiresTicket;
 	}
+	
+	public Event(String eventName, Date date, Time time, String description, String category,
+			 boolean requiresTicket)
+{
+	this.eventName = eventName;
+	this.date = date;
+	this.time = time;
+	this.description = description;
+	this.category = category;
+	this.requiresTicket = requiresTicket;
+}
 
 	public int getEventID() {
 		return eventId;

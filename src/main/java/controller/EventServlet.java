@@ -98,7 +98,6 @@ public class EventServlet extends HttpServlet {
 	}
 
 	private void createEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int eventId = Integer.parseInt(request.getParameter("eventId"));
 		int organizerId = Integer.parseInt(request.getParameter("sjsuId"));
 		String eventName = request.getParameter("eventName");
 		String eventDateStr = request.getParameter("eventDate");
@@ -127,11 +126,14 @@ public class EventServlet extends HttpServlet {
 			e.printStackTrace();
 		}
 
-		Event event = new Event(eventId, eventName, eventDateSql, eventTimeSql, eventDescription,
+		Event event = new Event(eventName, eventDateSql, eventTimeSql, eventDescription,
 								eventCategory, requiresTicket);
 		EventOrganizer organizer = organizerDAO.getOrganizerById(organizerId);
+		System.out.println(organizer);
 
-		eventDAO.createEvent(event, organizer);
+		eventDAO.createEvent(event);
+		int eventID = eventDAO.getEventIDbyName(eventName);
+		eventDAO.addDatatoManage(eventID, organizer);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}

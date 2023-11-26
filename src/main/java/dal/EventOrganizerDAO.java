@@ -81,13 +81,12 @@ public class EventOrganizerDAO {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
             preparedStatement.setInt(1, sjsuId);
-
+            
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
-                eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
             }
         } catch (SQLException e) {

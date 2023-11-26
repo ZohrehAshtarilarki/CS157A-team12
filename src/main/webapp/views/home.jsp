@@ -38,10 +38,11 @@
     </nav>
 </header>
 <h1>Welcome to the Home Page</h1>
+<% String sjsuid = (String) session.getAttribute("SJSUID"); %>
 
 <div class="button-container">
 			<button>
-				<a href="${pageContext.request.contextPath}/views/createEvent.jsp">Create
+				<a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuid%>">Create
 					Event</a>
 			</button>
 			<button>
@@ -69,13 +70,14 @@
                     events = (List<Event>) tempList;
                 }
             }
+            
 
             if (events != null && !events.isEmpty()) {
                 for (Event event : events) {
         %>
         <ul id="event-list">
         <li class="event-item">
-        <a href="${pageContext.request.contextPath}/views/eventInfo.jsp?eventID=<%=event.getEventID()%>">
+        <a href="${pageContext.request.contextPath}/views/eventInfo.jsp?eventID=<%=event.getEventID()%>&sjsuID=<%=sjsuid%>">
             <div class="event-title"><%= event.getEventName() %></div>
             <div class="event-date"><%= event.getDate() %></div>
         </a>
