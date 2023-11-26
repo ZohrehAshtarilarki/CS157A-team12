@@ -58,7 +58,6 @@
 %>
 <div class='ticket-item'>
     <p>Event ID: <%= ticket.getEventId() %></p>
-    <p>Ticket Barcode: <%= ticket.getTicketBarcode() %></p>
     <!-- Link to download the ticket -->
     <a href='${pageContext.request.contextPath}/DownloadTicketServlet?ticketID=<%= ticket.getTicketId() %>'>Download Ticket</a>
 </div>
