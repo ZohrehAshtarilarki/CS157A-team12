@@ -45,10 +45,6 @@
 				<a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuid%>">Create
 					Event</a>
 			</button>
-			<button>
-				<a href="${pageContext.request.contextPath}/views/deleteEvent.jsp">Delete
-					Event</a>
-			</button>
 </div>
 		
 <!-- Trigger the retrieval of all events when the page loads -->
