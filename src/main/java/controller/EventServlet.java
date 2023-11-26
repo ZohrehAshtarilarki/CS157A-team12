@@ -44,13 +44,9 @@ public class EventServlet extends HttpServlet {
 				case "createEvent":
 					createEvent(request, response);
 					break;
-					/*
-
 				case "deleteEvent":
 					deleteEvent(request, response);
 					break;
-
-					 */
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
@@ -77,8 +73,8 @@ public class EventServlet extends HttpServlet {
 	}
 
 	private void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int eventid = Integer.parseInt(request.getParameter("eventId"));
-		int sjsuid = Integer.parseInt(request.getParameter("sjsuId"));
+		int eventid = Integer.parseInt(request.getParameter("eventid"));
+		int sjsuid = Integer.parseInt(request.getParameter("sjsuid"));
 
 		Event event = eventDAO.getEventById(eventid);
 		EventOrganizer organizer = organizerDAO.getOrganizerById(sjsuid);
