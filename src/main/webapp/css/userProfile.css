@@ -1,0 +1,103 @@
+@charset "UTF-8";
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto; /* Adjusted for content size */
+    margin: 20px;
+    border: 2px solid #0055a8;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+main h1 {
+    font-size: 36px;
+    color: #0055a8;
+    margin-bottom: 20px;
+}
+
+main form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+main div {
+    margin-bottom: 15px;
+}
+
+main label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group {
+    text-align: center; /* Center-align the content of the form-group */
+    display: flex; /* Use flexbox */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center-align children */
+    width: 100%; /* Full width */
+}
+
+.form-group label {
+    display: block; /* Make the label a block element */
+    margin-bottom: 5px; /* Spacing between label and input */
+}
+
+.form-group input {
+    width: calc(100% - 20px); /* Full width with padding */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px; /* Spacing after the input */
+    text-align: center; /* Center-align the text inside the input */
+}
+
+
+main input[type="text"],
+main input[type="email"],
+main input[type="password"],
+main input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+main input[type="text"]:read-only,
+main input[type="email"]:read-only,
+main input[type="password"]:read-only,
+main input[type="number"]:read-only {
+    background-color: #e9e9e9; /* Lighter background for read-only fields */
+}
+
+main button {
+    background-color: #0055a8;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+main button:hover {
+    background-color: #003366;
+}

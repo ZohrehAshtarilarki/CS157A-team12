@@ -44,13 +44,9 @@ public class EventServlet extends HttpServlet {
 				case "createEvent":
 					createEvent(request, response);
 					break;
-					/*
-
 				case "deleteEvent":
 					deleteEvent(request, response);
 					break;
-
-					 */
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
@@ -128,7 +124,7 @@ public class EventServlet extends HttpServlet {
 		}
 
 		Event event = new Event(eventId, eventName, eventDateSql, eventTimeSql, eventDescription,
-								eventCategory, requiresTicket);
+				eventCategory, requiresTicket);
 		EventOrganizer organizer = organizerDAO.getOrganizerById(organizerId);
 
 		eventDAO.createEvent(event, organizer);
@@ -214,16 +210,16 @@ public class EventServlet extends HttpServlet {
 
 		Event event = eventDAO.getEventById(eventID);
 
-        request.setAttribute("event", event);
-        request.getRequestDispatcher("/views/eventInfo.jsp").forward(request, response);
+		request.setAttribute("event", event);
+		request.getRequestDispatcher("/views/eventInfo.jsp").forward(request, response);
 
 	}
 
 	public void getAllEvents(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		List<Event> list = eventDAO.getAllEvents();
 
-        request.setAttribute("eventList", list);
-        request.getRequestDispatcher("/views/home.jsp").forward(request, response);
+		request.setAttribute("eventList", list);
+		request.getRequestDispatcher("/views/home.jsp").forward(request, response);
 
 	}
 

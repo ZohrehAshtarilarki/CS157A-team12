@@ -14,7 +14,7 @@ import util.DbConnectionInt;
 import util.singletonDbConnection;
 
 public class EventDAO{
-	private final DbConnectionInt dbConnection;
+    private final DbConnectionInt dbConnection;
 
     public EventDAO() {
         dbConnection = singletonDbConnection.getInstance();
@@ -231,7 +231,7 @@ public class EventDAO{
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-            	Event event = new Event();
+                Event event = new Event();
                 event.setEventID(Integer.parseInt(resultSet.getString("EventID")));
                 event.setEventName(resultSet.getString("EventName"));
                 event.setDate(resultSet.getDate("Date"));
@@ -251,62 +251,4 @@ public class EventDAO{
 
         return eventList;
     }
-
-    /*
-    This implementation checks if a review exists for a specific event and user.
-    If it does, it updates the Rating. If not, it creates a new review with the given Rating.
-     */
-    public boolean saveRating(int eventId, int userId, int rating) {
-        Connection connection = null;
-        PreparedStatement checkStatement = null;
-        PreparedStatement updateStatement = null;
-
-        try {
-            connection = dbConnection.getConnection();
-            connection.setAutoCommit(false); // Start transaction
-
-            // Check if a review already exists
-            String checkQuery = "SELECT COUNT(*) FROM Review WHERE EventID = ? AND SJSUID = ?";
-            checkStatement = connection.prepareStatement(checkQuery);
-            checkStatement.setInt(1, eventId);
-            checkStatement.setInt(2, userId);
-
-            ResultSet rs = checkStatement.executeQuery();
-            if (rs.next() && rs.getInt(1) > 0) {
-                // Update existing review with new rating
-                String updateQuery = "UPDATE Review SET Rating = ? WHERE EventID = ? AND SJSUID = ?";
-                updateStatement = connection.prepareStatement(updateQuery);
-                updateStatement.setInt(1, rating);
-                updateStatement.setInt(2, eventId);
-                updateStatement.setInt(3, userId);
-            } else {
-                // Insert new review with rating
-                String insertQuery = "INSERT INTO Review (EventID, SJSUID, Rating) VALUES (?, ?, ?)";
-                updateStatement = connection.prepareStatement(insertQuery);
-                updateStatement.setInt(1, eventId);
-                updateStatement.setInt(2, userId);
-                updateStatement.setInt(3, rating);
-            }
-
-            updateStatement.executeUpdate();
-            connection.commit(); // Commit transaction
-            return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (connection != null) {
-                try {
-                    connection.rollback(); // Rollback on error
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            return false;
-        } finally {
-            // Close resources
-            if (checkStatement != null) try { checkStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (updateStatement != null) try { updateStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
-        }
-    }
-
 }

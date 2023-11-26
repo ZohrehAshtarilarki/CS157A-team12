@@ -1,5 +1,6 @@
 package controller;
 
+import jakarta.servlet.RequestDispatcher;
 import model.Review;
 import dal.ReviewDAO;
 import jakarta.servlet.ServletException;
@@ -21,22 +22,64 @@ public class ReviewServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        // Handling a POST request to add a new review
-        int eventId = Integer.parseInt(request.getParameter("eventId"));
-        int attendeeId = Integer.parseInt(request.getParameter("attendeeId"));
+            throws IOException, ServletException {
+        // Retrieve parameters from the request
+        String eventIdStr = request.getParameter("eventId");
+        String attendeeIdStr = request.getParameter("attendeeId");
         String reviewText = request.getParameter("reviewText");
-        float rating = Float.parseFloat(request.getParameter("rating"));
+        String ratingStr = request.getParameter("rating");
 
+        int eventId, attendeeId;
+        float rating;
+
+        // Try to parse eventId and attendeeId from the request parameters
+        try {
+            eventId = Integer.parseInt(eventIdStr);
+            attendeeId = Integer.parseInt(attendeeIdStr);
+            rating = Float.parseFloat(ratingStr);
+        } catch (NumberFormatException e) {
+            // Handle the case where eventId or attendeeId is not a valid integer
+            request.setAttribute("errorMessage", "Invalid event ID or attendee ID.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/errorPage.jsp");
+            dispatcher.forward(request, response);
+            return;
+        }
+
+        try {
+            rating = Float.parseFloat(ratingStr);
+        } catch (NumberFormatException e) {
+            // Handle the case where rating is not a valid float
+            request.setAttribute("errorMessage", "Invalid rating format.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/errorPage.jsp");
+            dispatcher.forward(request, response);
+            return;
+        }
+
+        // Create a new review object and save it
         Review review = new Review(eventId, attendeeId, reviewText, rating);
         boolean result = reviewDAO.createReview(review);
 
+        // Calculate the average rating and count
+        double averageRating = reviewDAO.getAverageRatingForEvent(eventId);
+        int ratingCount = reviewDAO.getRatingCountForEvent(eventId);
+
+        // Set the average rating and count as request attributes
+        request.setAttribute("averageRating", averageRating);
+        request.setAttribute("ratingCount", ratingCount);
+
         if (result) {
-            response.sendRedirect("/views/eventInfo.jsp");
+            // Forward to eventInfo.jsp with the included data
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp?eventId=" + eventId);
+            dispatcher.forward(request, response);
         } else {
-            response.sendRedirect("/views/eventInfo.jsp");
+            // Set an error message and forward back to eventInfo.jsp
+            request.setAttribute("errorMessage", "There was an error submitting your review. Please try again.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp?eventId=" + eventId);
+            dispatcher.forward(request, response);
         }
     }
+
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

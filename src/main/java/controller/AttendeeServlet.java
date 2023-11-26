@@ -1,5 +1,6 @@
 package controller;
 
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import model.Attendee;
 import java.io.IOException;
 import java.util.List;
 
+@WebServlet(name = "AttendeeServlet", urlPatterns = { "/AttendeeServlet" })
 public class AttendeeServlet extends HttpServlet {
     private AttendeeDAO attendeeDAO;
 
@@ -77,27 +79,45 @@ public class AttendeeServlet extends HttpServlet {
     }
 
     private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Get all parameters from the request
-        int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String sjsuEmail = request.getParameter("sjsuEmail");
-        String userName = request.getParameter("userName");
-        String password = request.getParameter("password");
-        String role = request.getParameter("role");
+        try {
+            // Get all parameters from the request
+            int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+            String sjsuEmail = request.getParameter("sjsuEmail");
+            String userName = request.getParameter("userName");
+            String password = request.getParameter("password");
+            String role = request.getParameter("role");
 
-        // Instantiate an Attendee object with all parameters
-        Attendee attendee = new Attendee(sjsuId, sjsuEmail, userName, password, role);
+            // Instantiate an Attendee object with all parameters
+            Attendee attendee = new Attendee(sjsuId, sjsuEmail, userName, password, role);
 
-        attendee.setSjsuId(sjsuId);
-        attendee.setSjsuEmail(sjsuEmail);
-        attendee.setUsername(userName);
-        attendee.setPassword(password);
-        attendee.setRole(role);
+            attendee.setSjsuId(sjsuId);
+            attendee.setSjsuEmail(sjsuEmail);
+            attendee.setUsername(userName);
+            attendee.setPassword(password);
+            attendee.setRole(role);
 
-        attendeeDAO.updateAttendee(attendee);
+            // Update the attendee in the database
+            boolean updateSuccessful = attendeeDAO.updateAttendee(attendee);
 
-        // Redirect or forward to a success page
-        //response.sendRedirect("success.jsp");
+            if (updateSuccessful) {
+                // Send a success message
+                request.getSession().setAttribute("message", "Attendee update successful.");
+            } else {
+                // Send a failure message if the update was not successful
+                request.getSession().setAttribute("message", "Failed to update attendee.");
+            }
+            // Redirect to the profile page
+            response.sendRedirect(request.getContextPath() + "/views/userProfile.jsp");
+
+        } catch (NumberFormatException e) {
+            // Handle the NumberFormatException
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid number format for SJSU ID");
+        } catch (Exception e) {
+            // Handle other exceptions
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred: " + e.getMessage());
+        }
     }
+
 
     private void deleteAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));

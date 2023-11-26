@@ -134,15 +134,13 @@ public class UserServlet extends HttpServlet {
         // Retrieve login credentials from the request parameters
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        //System.out.println("Username: " + username + ", password: "+password);
 
         try {
             User user = userDAO.getUserByUsername(username);
             if (user != null && user.getPassword().equals(password)) {
-                // Redirecting user to the dashboard
+                // Creates a new session for a period of interaction between a user and a web application
                 HttpSession session = request.getSession();
-                //String sjsuIdStr = String.valueOf(user.getSjsuId());
-                session.setAttribute("SJSUID", user.getSjsuId()); // Store user in session
+                session.setAttribute("SJSUID",  user.getSjsuId()); // Store user in session
 
                 // User authenticated successfully, redirect to a login success page
                 String path = request.getContextPath() + "/views/home.jsp";

@@ -37,6 +37,10 @@ body {
     color: gold;
 }
 
+.yellow-star {
+    color: yellow;
+}
+
 .star:hover,
 .star:hover ~ .star {
     color: gold;
@@ -51,7 +55,6 @@ body {
 .error-message {
     color: red;
     text-align: center;
-    /* Additional styling as needed */
 }
 
 

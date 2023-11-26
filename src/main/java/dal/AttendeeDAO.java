@@ -43,23 +43,46 @@ public class AttendeeDAO {
         }
     }
 
-    public void updateAttendee(Attendee attendee) {
+    public boolean updateAttendee(Attendee attendee) {
         Connection connection = dbConnection.getConnection();
-        String updateQuery = "UPDATE Attendee SET AttendeeID=? WHERE SJSUID=?";
+        boolean updateResult = false;
 
+        // SQL query to update the User table
+        String updateUserQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
+
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-            preparedStatement.setInt(1, attendee.getAttendeeId());
-            preparedStatement.setInt(2, attendee.getSjsuId());
+            // Prepare the statement for updating the User table
+            preparedStatement = connection.prepareStatement(updateUserQuery);
+            preparedStatement.setString(1, attendee.getSjsuEmail());
+            preparedStatement.setString(2, attendee.getUsername());
+            preparedStatement.setString(3, attendee.getPassword());
+            preparedStatement.setString(4, attendee.getRole());
+            preparedStatement.setInt(5, attendee.getSjsuId());
 
-            preparedStatement.executeUpdate();
+            // Execute the update
+            int affectedRows = preparedStatement.executeUpdate();
+            updateResult = affectedRows > 0; // true if the update affected at least one row
+
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions appropriately later
+            // Consider logging this exception or handle it appropriately
         } finally {
+            // Close resources
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             dbConnection.closeConnection();
         }
+
+        return updateResult;
     }
+
+
 
     public void deleteAttendee(int sjsuId) {
         Connection connection = dbConnection.getConnection();

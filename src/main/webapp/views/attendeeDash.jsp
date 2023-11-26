@@ -13,10 +13,32 @@
 <html>
 <head>
     <title>Attendee Home Page</title>
+    <link rel='stylesheet' href='${pageContext.request.contextPath}/css/header.css'>
+    <link rel='stylesheet' href='${pageContext.request.contextPath}/css/attendeeDash.css'>
 </head>
 <body>
+<header>
+    <nav>
+        <ul>
+            <li><a href="#">SJSUEvent</a></li>
+            <li>
+                <%
+                    Integer sjsuId = (Integer) session.getAttribute("SJSUID");
+                    if (sjsuId != null) {
+                %>
+                <a href="${pageContext.request.contextPath}/views/home.jsp">Home</a>
+                <a href="${pageContext.request.contextPath}/views/userProfile.jsp">Profile</a>
+                <a href="${pageContext.request.contextPath}/views/login.jsp">Log Out</a>
+                <%
+                    }
+                %>
+            </li>
+        </ul>
+    </nav>
+</header>
 <h1>Welcome to the Attendee Home Page</h1>
 
+<div class="tickets-container">
 <%
     Integer userIDStr = (Integer) session.getAttribute("SJSUID");
     System.out.println("SJSUID: " + userIDStr); // Check if this prints the correct ID
@@ -34,7 +56,7 @@
                 // Display each ticket's details
                 for (Ticket ticket : tickets) {
 %>
-<div class='ticket'>
+<div class='ticket-item'>
     <p>Event ID: <%= ticket.getEventId() %></p>
     <p>Ticket Barcode: <%= ticket.getTicketBarcode() %></p>
     <!-- Link to download the ticket -->
@@ -56,6 +78,6 @@
         System.out.println("Error: userID is null or empty.");
     }
 %>
-
+</div>
 </body>
 </html>

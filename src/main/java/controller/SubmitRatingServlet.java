@@ -1,6 +1,7 @@
 package controller;
 
 import dal.EventDAO;
+import dal.ReviewDAO;
 import dal.UserDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -36,12 +37,13 @@ public class SubmitRatingServlet extends HttpServlet {
         int rating = Integer.parseInt(request.getParameter("rating"));
 
         // Instantiate EventDAO class to handle the database operation
-        EventDAO eventDAO = new EventDAO();
+        ReviewDAO reviewDAO = new ReviewDAO();
 
         // Call the method in DAO class to save the rating to the database
-        boolean result = eventDAO.saveRating(eventId, sjsuId, rating);
+        boolean result = reviewDAO.saveRating(eventId, sjsuId, rating);
 
         if (result) {
+            EventDAO eventDAO = new EventDAO();
             // Fetch the event details again to include in the forwarded request
             Event event = eventDAO.getEventById(eventId);
 

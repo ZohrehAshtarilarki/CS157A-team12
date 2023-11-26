@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Create Event</title>
+<title>Delete Event</title>
 <link rel='stylesheet'
 	href='${pageContext.request.contextPath}/css/header.css'>
 <link rel='stylesheet'
@@ -17,7 +17,7 @@
 	</header>
 
 	<main>
-		<h1>Create Event</h1>
+		<h1>Delete Event</h1>
 		<form action="${pageContext.request.contextPath}/EventServlet"
 			method="post">
 			<input type="hidden" name="action" value="deleteEvent">
@@ -30,7 +30,7 @@
 					name="sjsuid" id="sjsuid" required>
 			</div>
 			<div>
-				<button type="submit" name="action" value="createEvent">Delete</button>
+				<button type="submit" name="action" value="deleteEvent">Delete</button>
 			</div>
 		</form>
 		<%

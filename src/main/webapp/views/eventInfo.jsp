@@ -69,12 +69,12 @@
 	%>
 
 
-<%-- Success and Error Message Display for Submitting Review--%>
+	<%-- Success and Error Message Display for Submitting Review--%>
 	<% if (request.getAttribute("successMessage") != null) { %>
-		<p class="success-message"><%= request.getAttribute("successMessage") %></p>
+	<p class="success-message"><%= request.getAttribute("successMessage") %></p>
 	<% } %>
 	<% if (request.getAttribute("errorMessage") != null) { %>
-		<p class="error-message"><%= request.getAttribute("errorMessage") %></p>
+	<p class="error-message"><%= request.getAttribute("errorMessage") %></p>
 	<% } %>
 
 	<br> <!-- Line break added here -->
@@ -105,41 +105,41 @@
 		<button type="button" onclick="submitRating()">Submit Rating</button>
 	</form>
 
-		<%
+	<%
 		TicketDAO ticketDAO = new TicketDAO();
 		boolean ticketExists = false;
 
 		if (sjsuId != null && eventId != null) {
-		// Check if the ticket already exists for this user and event
-		ticketExists = ticketDAO.hasTicketForEvent(sjsuId, eventId);
+			// Check if the ticket already exists for this user and event
+			ticketExists = ticketDAO.hasTicketForEvent(sjsuId, eventId);
 		}
 
 		if (event != null && event.isRequiresTicket()) {
-		if (ticketExists) {
-		%>
-		<p class="error-message">Ticket already exists for this event and user.</p>
-			<%
-        } else {
-%>
-		<div class="ticket-message">
-			<p>This event requires a ticket. Please purchase to attend.</p>
-			<!-- Purchase Ticket Button -->
-			<form action="${pageContext.request.contextPath}/EventServlet" method="post">
-				<input type="hidden" name="action" value="registerEvent">
-				<div>
-					<label for="sjsuidTicket">SJSUID:</label> <input type="text" name="sjsuId" id="sjsuidTicket" required>
-				</div>
-				<div>
-					<input type="hidden" name="eventId" value="<%=eventId%>">
-				</div>
-				<div>
-					<button type="submit">Purchase Ticket</button>
-				</div>
-			</form>
-		</div>
-			<%
-        }
-    } else { %>
+			if (ticketExists) {
+	%>
+	<p class="error-message">Ticket already exists for this event and user.</p>
+	<%
+	} else {
+	%>
+	<div class="ticket-message">
+		<p>This event requires a ticket. Please purchase to attend.</p>
+		<!-- Purchase Ticket Button -->
+		<form action="${pageContext.request.contextPath}/EventServlet" method="post">
+			<input type="hidden" name="action" value="registerEvent">
+			<div>
+				<label for="sjsuidTicket">SJSUID:</label> <input type="text" name="sjsuId" id="sjsuidTicket" required>
+			</div>
+			<div>
+				<input type="hidden" name="eventId" value="<%=eventId%>">
+			</div>
+			<div>
+				<button type="submit">Purchase Ticket</button>
+			</div>
+		</form>
+	</div>
+	<%
+		}
+	} else { %>
 	<div class="registration-message">
 		<p>You can register for this event below:</p>
 		<!-- Register Button -->

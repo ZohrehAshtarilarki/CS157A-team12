@@ -1,5 +1,10 @@
 @charset "UTF-8";
+
 .container {
+    text-align: center;
+}
+
+h1 {
     text-align: center;
 }
 
