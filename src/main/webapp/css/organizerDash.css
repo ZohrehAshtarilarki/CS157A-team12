@@ -1,0 +1,138 @@
+@charset "UTF-8";
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+}
+
+.button-container,
+#btnShowAttendees {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #0055a8;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#btnShowAttendees:hover {
+    background-color: #f7ca18;
+}
+
+/* Style for Modal (Popup) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto; /* 10% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Adjust as necessary */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Styles for Attendee List inside the Modal */
+.attendee-list {
+    margin: 20px auto;
+    width: 100%;
+    text-align: left;
+}
+
+.attendee {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #eef2f7;
+    border-radius: 5px;
+}
+
+.attendee span {
+    font-size: 18px;
+}
+
+.attendee button {
+    padding: 5px 10px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.attendee button:hover {
+    background-color: #c9302c;
+}
+
+.attendee input[type="submit"] {
+    padding: 5px 10px;
+    background-color: #d9534f; /* Red background */
+    color: white; /* White text */
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+.attendee input[type="submit"]:hover {
+    background-color: #c9302c; /* Darker red on hover */
+}
+
+/* Styles for success and error messages */
+.message {
+    text-align: center; /* Center the text */
+    font-size: 1.2em; /* Make it slightly larger */
+    margin: 20px auto; /* Centering the block */
+    padding: 10px;
+    border-radius: 5px;
+    width: 50%; /* Adjust width as necessary */
+    box-sizing: border-box; /* Include padding and border in the width */
+}
+
+.success {
+    color: #28a745; /* Green text */
+    background-color: #e2f0e4; /* Light green background */
+    border: 1px solid #c3e6cb; /* Subtle border */
+}
+
+.error {
+    color: #dc3545; /* Red text */
+    background-color: #f8d7da; /* Light red background */
+    border: 1px solid #f5c6cb; /* Subtle border */
+}

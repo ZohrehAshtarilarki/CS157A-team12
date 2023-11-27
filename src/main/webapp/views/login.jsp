@@ -29,7 +29,7 @@
 <div class="login-container">
   <h1>Login</h1>
   <form class="loginForm" action="${pageContext.request.contextPath}/UserServlet" method="post">
-    <input type="hidden" name="action" value="login">
+    <input type="hidden" name="action" value="loginUser">
     <div class="form-group">
       <label for="username">Username:</label>
       <input type="text" name="username" id="username" required>

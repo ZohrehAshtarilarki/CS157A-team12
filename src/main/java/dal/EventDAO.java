@@ -251,4 +251,31 @@ public class EventDAO{
 
         return eventList;
     }
+
+    public Event getEventByName(String eventName) {
+        String sql = "SELECT * FROM Event WHERE EventName = ?";
+        Event event = null;
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, eventName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    event = new Event();
+                    event.setEventID(Integer.parseInt(rs.getString("EventID")));
+                    event.setEventName(rs.getString("EventName"));
+                    event.setDate(rs.getDate("Date"));
+                    event.setTime(rs.getTime("Time"));
+                    event.setDescription(rs.getString("Description"));
+                    event.setCategory(rs.getNString("Category"));
+                    event.setRequiresTicket(rs.getBoolean("RequiresTicket"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately later
+        }
+        return event;
+    }
 }

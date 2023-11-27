@@ -107,7 +107,7 @@ public class AttendeeServlet extends HttpServlet {
                 request.getSession().setAttribute("message", "Failed to update attendee.");
             }
             // Redirect to the profile page
-            response.sendRedirect(request.getContextPath() + "/views/userProfile.jsp");
+            response.sendRedirect(request.getContextPath() + "/views/attendeeProfile.jsp");
 
         } catch (NumberFormatException e) {
             // Handle the NumberFormatException
@@ -119,14 +119,27 @@ public class AttendeeServlet extends HttpServlet {
     }
 
 
-    private void deleteAttendee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+    private void deleteAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
 
-        attendeeDAO.deleteAttendee(sjsuId);
-
-        // Redirect or forward to a success page
-        response.sendRedirect("success.jsp");
+        try {
+            System.out.println("Attempting to delete attendee with SJSUID: " + sjsuId);
+            attendeeDAO.deleteAttendee(sjsuId);
+            System.out.println("Deletion successful for SJSUID: " + sjsuId);
+            // Set a success message as a request attribute
+            request.setAttribute("message", "Attendee successfully deleted.");
+            // Forward to the JSP page to display the message
+            request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Deletion failed for SJSUID: " + sjsuId);
+            // Set an error message as a request attribute
+            request.setAttribute("error", "Error while deleting attendee.");
+            // Forward to the JSP page to display the error message
+            request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
+        }
     }
+
 
     private void getAttendeeById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
@@ -135,17 +148,24 @@ public class AttendeeServlet extends HttpServlet {
 
         // Use the retrieved attendee as needed, e.g., display it on a JSP page
         request.setAttribute("attendee", attendee);
-        request.getRequestDispatcher("attendeeDetails.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
     }
 
     private void getAllAttendees(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Attendee> attendeeList = attendeeDAO.getAllAttendees();
+        List<Attendee> list = attendeeDAO.getAllAttendees();
 
         // Use the retrieved list of attendees as needed, e.g., display it on a JSP page
-        request.setAttribute("attendeeList", attendeeList);
-        request.getRequestDispatcher("attendeeList.jsp").forward(request, response);
+        request.setAttribute("attendeeList", list);
+        request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
     }
 
+    private void getAttendeeByName(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String attendeeName = request.getParameter("userName");
+        Attendee attendee = attendeeDAO.getAttendeeByName(attendeeName);
+
+        request.setAttribute("attendee", attendee);
+        request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
+    }
     @Override
     public void destroy() {
         // Clean up resources if needed

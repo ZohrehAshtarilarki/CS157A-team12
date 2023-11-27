@@ -10,7 +10,7 @@
 <head>
     <title>Profile</title>
     <link rel='stylesheet' href='${pageContext.request.contextPath}/css/header.css'>
-    <link rel='stylesheet' href='${pageContext.request.contextPath}/css/userProfile.css'>
+    <link rel='stylesheet' href='${pageContext.request.contextPath}/css/attendeeProfile.css'>
     <script>
         // Function to show an alert if there's a message
         function showMessage() {

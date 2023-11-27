@@ -41,7 +41,7 @@
 <main>
     <h1>Create an Account</h1>
     <form action="${pageContext.request.contextPath}/UserServlet" method="post">
-        <input type="hidden" name="action" value="register">
+        <input type="hidden" name="action" value="registerUser">
         <div>
             <label for="sjsuId">SJSUID:</label>
             <input type="text" name="sjsuId" id="sjsuId" required>

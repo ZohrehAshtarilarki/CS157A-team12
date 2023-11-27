@@ -1,5 +1,6 @@
 package controller;
 
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 
+@WebServlet(name = "EventOrganizerServlet", urlPatterns = { "/EventOrganizerServlet" })
 public class EventOrganizerServlet extends HttpServlet {
     private EventOrganizerDAO organizerDAO;
 
@@ -60,13 +62,17 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void createOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("SJSUID"));
-        //int organizerId = Integer.parseInt(request.getParameter("organizerId"));
+        // Get all parameters from the request
+        // OrganizerID is auto-generated
+        int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+        String sjsuEmail = request.getParameter("sjsuEmail");
+        String userName = request.getParameter("userName");
+        String password = request.getParameter("password");
+        String role = request.getParameter("role");
         String organizationName = request.getParameter("OrganizationName");
 
-        EventOrganizer eventOrganizer = new EventOrganizer();
-        eventOrganizer.setSjsuId(sjsuId);
-        //eventOrganizer.setOrganizerId(organizerId);
+        // Instantiate an EventOrganizer object with all parameters
+        EventOrganizer eventOrganizer = new EventOrganizer(sjsuId, sjsuEmail, userName, password, role, organizationName);
         eventOrganizer.setOrganizationName(organizationName);
 
         organizerDAO.createOrganizer(eventOrganizer);
@@ -76,19 +82,45 @@ public class EventOrganizerServlet extends HttpServlet {
     }
 
     private void updateOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("SJSUIDd"));
-    	int organizerId = Integer.parseInt(request.getParameter("OrganizerID"));
-        String organizationName = request.getParameter("OrganizationName");
+        try {
+            int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+            String sjsuEmail = request.getParameter("sjsuEmail");
+            String userName = request.getParameter("userName");
+            String password = request.getParameter("password");
+            String role = request.getParameter("role");
+            String organizationName = request.getParameter("organizationName");
 
-        EventOrganizer eventOrganizer = new EventOrganizer();
-        eventOrganizer.setSjsuId(sjsuId);
-        //eventOrganizer.setOrganizerId(organizerId);
-        eventOrganizer.setOrganizationName(organizationName);
+            // Instantiate an EventOrganizer object with all parameters
+            EventOrganizer eventOrganizer = new EventOrganizer(sjsuId, sjsuEmail, userName, password, role, organizationName);
 
-        organizerDAO.updateOrganizer(eventOrganizer);
+            eventOrganizer.setSjsuId(sjsuId);
+            eventOrganizer.setSjsuEmail(sjsuEmail);
+            eventOrganizer.setUsername(userName);
+            eventOrganizer.setPassword(password);
+            eventOrganizer.setRole(role);
+            eventOrganizer.setOrganizationName(organizationName);
 
-        // Redirect or forward to a success page
-        response.sendRedirect("success.jsp");
+
+            // Update the attendee in the database
+            boolean updateSuccessful =  organizerDAO.updateOrganizer(eventOrganizer);
+
+            if (updateSuccessful) {
+                // Send a success message
+                request.getSession().setAttribute("message", "Organizer update successful.");
+            } else {
+                // Send a failure message if the update was not successful
+                request.getSession().setAttribute("message", "Failed to update organizer.");
+            }
+            // Redirect to the profile page
+            response.sendRedirect(request.getContextPath() + "/views/organizerProfile.jsp");
+
+        } catch (NumberFormatException e) {
+            // Handle the NumberFormatException
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid number format for SJSU ID");
+        } catch (Exception e) {
+            // Handle other exceptions
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred: " + e.getMessage());
+        }
     }
 
     private void deleteOrganizer(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -37,24 +37,69 @@ public class EventOrganizerDAO {
         }
     }
 
-    public void updateOrganizer(EventOrganizer eventOrganizer) {
-        Connection connection = dbConnection.getConnection();
-        String updateQuery = "UPDATE EventOrganizer SET OrganizerID=?, OrganizationName=? WHERE SJSUID=?";
+    public boolean updateOrganizer(EventOrganizer eventOrganizer) {
+        if (eventOrganizer == null) {
+            // Early return if the eventOrganizer object is null
+            return false;
+        }
+
+        Connection connection = null;
+        boolean updateResult = false;
+
+        String updateOrganizerQuery = "UPDATE EventOrganizer SET OrganizationName=? WHERE SJSUID=?";
+        String updateUserQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
-            //preparedStatement.setInt(1, eventOrganizer.getOrganizerId());
-            preparedStatement.setString(2, eventOrganizer.getOrganizationName());
-            preparedStatement.setInt(3, eventOrganizer.getSjsuId());
+            connection = dbConnection.getConnection();
+            connection.setAutoCommit(false); // Start transaction
 
-            preparedStatement.executeUpdate();
+            // Update User table
+            try (PreparedStatement preparedStatement = connection.prepareStatement(updateUserQuery)) {
+                preparedStatement.setString(1, eventOrganizer.getSjsuEmail());
+                preparedStatement.setString(2, eventOrganizer.getUsername());
+                preparedStatement.setString(3, eventOrganizer.getPassword());
+                preparedStatement.setString(4, eventOrganizer.getRole());
+                preparedStatement.setInt(5, eventOrganizer.getSjsuId());
+
+                int userAffectedRows = preparedStatement.executeUpdate();
+                updateResult = userAffectedRows > 0;
+            }
+
+            // Update EventOrganizer table
+            try (PreparedStatement preparedStatement2 = connection.prepareStatement(updateOrganizerQuery)) {
+                preparedStatement2.setString(1, eventOrganizer.getOrganizationName());
+                preparedStatement2.setInt(2, eventOrganizer.getSjsuId());
+
+                int organizerAffectedRows = preparedStatement2.executeUpdate();
+                updateResult = updateResult && organizerAffectedRows > 0;
+            }
+
+            connection.commit(); // Commit transaction if all updates are successful
+
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.rollback(); // Rollback transaction in case of an error
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    // Handle rollback exception appropriately
+                }
+            }
             e.printStackTrace();
-            // Handle exceptions appropriately later
+            // Handle exceptions appropriately
         } finally {
-            dbConnection.closeConnection();
+            if (connection != null) {
+                try {
+                    connection.close(); // Ensure connection is closed
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    // Handle closing exception appropriately
+                }
+            }
         }
+        return updateResult;
     }
+
 
     public void deleteOrganizer(int sjsuId) {
         Connection connection = dbConnection.getConnection();

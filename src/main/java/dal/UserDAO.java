@@ -43,65 +43,41 @@ public class UserDAO {
         // On failure, send a message from here.
         return "Oops.. Something went wrong there..!";
     }
-/*
-    public User loginUser(String username, String password) {
+
+    public boolean updateUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String selectUserQuery = "SELECT * FROM User WHERE Username = ? AND Password = ?";
-        User user = null;
-
-        try {
-            PreparedStatement UserStm = connection.prepareStatement(selectUserQuery);
-            UserStm.setString(1, username);
-            UserStm.setString(2, password);
-
-            ResultSet rs = UserStm.executeQuery();
-
-            if (rs.next()) {
-                // User found
-                user = new User();
-                user.setSjsuId(rs.getInt("SJSUID"));
-                user.setSjsuEmail(rs.getString("SJSUEmail"));
-                user.setUsername(rs.getString("Username"));
-                user.setPassword(rs.getString("Password"));
-                user.setRole(rs.getString("Role"));
-            }
-            rs.close();
-            UserStm.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately later
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        return user;
-    }
-*/
-    public void updateUser(User user) {
-        Connection connection = dbConnection.getConnection();
+        boolean updateResult = false;
         String updateQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
 
+        PreparedStatement preparedStatement = null;
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement = connection.prepareStatement(updateQuery);
             preparedStatement.setString(1, user.getSjsuEmail());
             preparedStatement.setString(2, user.getUsername());
             preparedStatement.setString(3, user.getPassword());
-            preparedStatement.setInt(4, user.getSjsuId());
-            preparedStatement.setString(5, user.getRole());
+            preparedStatement.setString(4, user.getRole());
+            preparedStatement.setInt(5, user.getSjsuId());
 
-            preparedStatement.executeUpdate();
+
+            // Execute the update
+            int affectedRows = preparedStatement.executeUpdate();
+            updateResult = affectedRows > 0; // true if the update affected at least one row
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions appropriately later
+            // Consider logging this exception or handle it appropriately
         } finally {
+            // Close resources
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
             dbConnection.closeConnection();
         }
+
+        return updateResult;
     }
 
     public void deleteUser(int sjsuId) {
