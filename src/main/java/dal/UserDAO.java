@@ -3,10 +3,8 @@ package dal;
 import model.User;
 import util.DbConnectionInt;
 import util.singletonDbConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +32,40 @@ public class UserDAO {
             //Just to ensure data has been inserted into the database
             if(i != 0)	return "SUCCESS";
         } catch (SQLException e) {
+            if(e instanceof SQLIntegrityConstraintViolationException) {
+                // This exception is thrown when a duplicate primary key is inserted
+                return "User with SJSUID " + user.getSjsuId() + " already exists.";
+            }
+            System.out.println("DB operation failure. reason:\n");
+            e.printStackTrace();
+        } finally {
+            dbConnection.closeConnection();
+        }
+        return "Oops.. Something went wrong there..!";
+    }
+
+    public boolean checkUserExists(int sjsuId) {
+        Connection connection = dbConnection.getConnection();
+        String checkUserQuery = "SELECT * FROM User WHERE SJSUID = ?";
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement(checkUserQuery);
+            stmt.setInt(1, sjsuId);
+
+            ResultSet rs = stmt.executeQuery();
+            // If the result set is not empty, it means a user with this SJSUID exists
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
             System.out.println("DB operation failure. reason:\n");
             e.printStackTrace();
             // Handle exceptions appropriately later
         } finally {
             dbConnection.closeConnection();
         }
-        // On failure, send a message from here.
-        return "Oops.. Something went wrong there..!";
+
+        return false;
     }
 
     public boolean updateUser(User user) {

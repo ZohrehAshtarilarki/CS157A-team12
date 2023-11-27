@@ -88,6 +88,14 @@ public class UserServlet extends HttpServlet {
         String role = request.getParameter("role");
         String organizationName = request.getParameter("organizationName");
 
+        // Check if user with given sjsuId already exists
+        if (userDAO.checkUserExists(sjsuId)) {
+            String errorMessage = "User with SJSUID " + sjsuId + " already exists. Please try a different ID.";
+            request.setAttribute("error", errorMessage);
+            request.getRequestDispatcher("/views/registration.jsp").forward(request, response);
+            return;
+        }
+
         // Create a User object with constructor parameters
         User user = new User(sjsuId, sjsuEmail, username, password, role);
 
