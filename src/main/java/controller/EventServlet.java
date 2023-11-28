@@ -66,6 +66,9 @@ public class EventServlet extends HttpServlet {
 				case "getAllEvents":
 					getAllEvents(request, response);
 					break; // Add break statement
+				case "getEventByName": // New case for getting event by name
+					getEventByName(request, response);
+					break;
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
@@ -142,6 +145,12 @@ public class EventServlet extends HttpServlet {
 		int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
 		int eventId = Integer.parseInt(request.getParameter("eventId"));
 
+		/*
+		UserDAO userDAO = new UserDAO();
+		User user = userDAO.getUserById(sjsuId);
+		String role = user.getRole();
+		*/
+
 		Event event = eventDAO.getEventById(eventId);
 
 		// Check if the event requires ticketing
@@ -156,7 +165,7 @@ public class EventServlet extends HttpServlet {
 			boolean ticketSaved = ticketDAO.createTicket(ticket);
 
 			if (ticketSaved) {
-				// Redirect to the dashboard to view the ticket
+				// Redirect to the attendee dashboard to view the ticket
 				response.sendRedirect(request.getContextPath() + "/views/attendeeDash.jsp");
 			} else {
 				// Handle ticket saving failure
@@ -226,6 +235,19 @@ public class EventServlet extends HttpServlet {
 		request.setAttribute("eventList", list);
 		request.getRequestDispatcher("/views/home.jsp").forward(request, response);
 
+	}
+
+	private void getEventByName(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String eventName = request.getParameter("eventName");
+		Event event = eventDAO.getEventByName(eventName);
+
+		if (event != null) {
+			request.setAttribute("event", event);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/views/attendeeDash.jsp");
+			dispatcher.forward(request, response);
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Event not found");
+		}
 	}
 
 	@Override

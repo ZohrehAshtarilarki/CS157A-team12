@@ -40,8 +40,13 @@
 
 <main>
     <h1>Create an Account</h1>
+    <%-- Display error message if present using scriptlets--%>
+    <% if (request.getAttribute("error") != null) { %>
+    <div class="message error"><%= request.getAttribute("error") %></div>
+    <% } %>
+
     <form action="${pageContext.request.contextPath}/UserServlet" method="post">
-        <input type="hidden" name="action" value="register">
+        <input type="hidden" name="action" value="registerUser">
         <div>
             <label for="sjsuId">SJSUID:</label>
             <input type="text" name="sjsuId" id="sjsuId" required>

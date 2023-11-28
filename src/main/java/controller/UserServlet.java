@@ -37,16 +37,16 @@ public class UserServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action != null) {
             switch (action) {
-                case "update":
+                case "updateUser":
                     updateUser(request, response);
                     break;
-                case "delete":
+                case "deleteUser":
                     deleteUser(request, response);
                     break;
-                case "register":
+                case "registerUser":
                     registerUser(request, response);
                     break;
-                case "login":
+                case "loginUser":
                     loginUser(request, response);
                     break;
                 default:
@@ -86,6 +86,15 @@ public class UserServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String role = request.getParameter("role");
+        String organizationName = request.getParameter("organizationName");
+
+        // Check if user with given sjsuId already exists
+        if (userDAO.checkUserExists(sjsuId)) {
+            String errorMessage = "User with SJSUID " + sjsuId + " already exists. Please try a different ID.";
+            request.setAttribute("error", errorMessage);
+            request.getRequestDispatcher("/views/registration.jsp").forward(request, response);
+            return;
+        }
 
         // Create a User object with constructor parameters
         User user = new User(sjsuId, sjsuEmail, username, password, role);
@@ -101,7 +110,6 @@ public class UserServlet extends HttpServlet {
             if (user.getRole().equals("Attendee")) {
                 // Create an Attendee object and set properties
                 Attendee attendee = new Attendee(sjsuId, sjsuEmail, username, password, role);
-                //attendee.setSjsuId(user.getSjsuId());
 
                 // Create the attendee using AttendeeDAO
                 AttendeeDAO attendeeDAO = new AttendeeDAO();
@@ -111,11 +119,9 @@ public class UserServlet extends HttpServlet {
             // Check if user registration is successful
             // Check if the role is EventOrganizer
             if (user.getRole().equals("EventOrganizer")) {
-                String organizationName = request.getParameter("organizationName");
                 // Logic to handle EventOrganizer record creation
                 // This could involve creating an EventOrganizer object and using EventOrganizerDAO to store it
-                EventOrganizer eventOrganizer = new EventOrganizer();
-                eventOrganizer.setSjsuId(user.getSjsuId());
+                EventOrganizer eventOrganizer = new EventOrganizer(sjsuId, sjsuEmail,username,password,role, organizationName);
                 eventOrganizer.setOrganizationName(organizationName);
 
                 EventOrganizerDAO eventOrganizerDAO = new EventOrganizerDAO();
@@ -125,8 +131,6 @@ public class UserServlet extends HttpServlet {
             request.setAttribute("message", successMessage);
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         }
-        // Redirect or forward to a success page
-        //response.sendRedirect("/views/attendeeDash.jsp");
     }
 
     private void loginUser(HttpServletRequest request, HttpServletResponse response)
@@ -141,17 +145,12 @@ public class UserServlet extends HttpServlet {
                 // Creates a new session for a period of interaction between a user and a web application
                 HttpSession session = request.getSession();
                 session.setAttribute("SJSUID",  user.getSjsuId()); // Store user in session
+                // Determine user type and store it in session
+                session.setAttribute("Role", user.getRole());
 
                 // User authenticated successfully, redirect to a login success page
                 String path = request.getContextPath() + "/views/home.jsp";
                 response.sendRedirect(path);
-                //String path = request.getContextPath();
-                //String path = getString(request, user);
-                //System.out.println("User role: " + user.getRole());
-                //System.out.println("Redirecting to: " + path);
-
-                // Determine the redirect path based on the user's role
-                //response.sendRedirect(path);
             } else {
                 // Authentication failed, set an error message and forward to the login page
                 String errorMessage = "Authentication failed. Please check your username and password.";
@@ -167,46 +166,44 @@ public class UserServlet extends HttpServlet {
             dispatcher.forward(request, response);
         }
     }
-/*
-    private String getString(HttpServletRequest request, User user) {
-        String path = request.getContextPath();
-        // Check if the role is null
-        if (user.getRole() != null) {
-            switch (user.getRole()) {
-                case "Attendee":
-                    path += "/views/home.jsp";
-                    break;
-                case "EventOrganizer":
-                    path += "/views/home.jsp";
-                    break;
-                default:
-                    path += "/views/defaultHome.jsp"; // Default home page if role is unknown
-                    break;
-            }
-        }
-        return path;
-    }
-*/
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
-        String sjsuEmail = request.getParameter("sjsuEmail");
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String role = request.getParameter("role");
+        try {
+            // Get all parameters from the request
+            int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+            String sjsuEmail = request.getParameter("sjsuEmail");
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String role = request.getParameter("role");
 
-        User user = new User();
-        user.setSjsuId(sjsuId);
-        user.setSjsuEmail(sjsuEmail);
-        user.setUsername(username);
-        user.setPassword(password);
-        user.setRole(role);
+            User user = new User();
+            user.setSjsuId(sjsuId);
+            user.setSjsuEmail(sjsuEmail);
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setRole(role);
 
-        userDAO.updateUser(user);
+            // Update the attendee in the database
+            boolean updateSuccessful = userDAO.updateUser(user);
 
-        // Redirect or forward to a success page
-        response.sendRedirect("/views/attendeeDash.jsp");
+            if (updateSuccessful) {
+                // Send a success message
+                request.getSession().setAttribute("message", "Attendee update successful.");
+            } else {
+                // Send a failure message if the update was not successful
+                request.getSession().setAttribute("message", "Failed to update attendee.");
+            }
+            // Redirect to the profile page
+            response.sendRedirect(request.getContextPath() + "/views/attendeeProfile.jsp");
+
+        } catch (NumberFormatException e) {
+            // Handle the NumberFormatException
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid number format for SJSU ID");
+        } catch (Exception e) {
+            // Handle other exceptions
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred: " + e.getMessage());
+        }
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)

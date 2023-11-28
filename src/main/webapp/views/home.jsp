@@ -22,12 +22,23 @@
         <ul>
             <li><a href="#">SJSUEvent</a></li>
             <li>
+                <%-- Display the appropriate profile button based on the user type --%>
                 <%
                     Integer sjsuId = (Integer) session.getAttribute("SJSUID");
+                    String userType = (String) session.getAttribute("Role");
                     if (sjsuId != null) {
+                        if ("Attendee".equals(userType)) {
                 %>
                 <a href="${pageContext.request.contextPath}/views/attendeeDash.jsp">Dashboard</a>
-                <a href="${pageContext.request.contextPath}/views/userProfile.jsp">Profile</a>
+                <a href="${pageContext.request.contextPath}/views/attendeeProfile.jsp">Profile</a>
+                <%
+                } else if ("EventOrganizer".equals(userType)) {
+                %>
+                <a href="${pageContext.request.contextPath}/views/organizerDash.jsp">Dashboard</a>
+                <a href="${pageContext.request.contextPath}/views/organizerProfile.jsp">Profile</a>
+                <%
+                    }
+                %>
                 <a href="${pageContext.request.contextPath}/views/login.jsp">Log Out</a>
                 <%
                     }
@@ -48,7 +59,10 @@
     <input type="submit" style="display:none;">
 </form>
 
-<h2>Upcoming Events</h2>
+<div class="centered-container">
+    <h2>Upcoming Events</h2>
+</div>
+
 <div class="events-container">
     <%
         Object eventListObj = request.getAttribute("eventList");

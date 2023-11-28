@@ -1,8 +1,19 @@
 @charset "UTF-8";
 
 /*
-Written By Long Nguyen
+Written By Long Nguyen an Zohreh Ashtarilarki
 */
+
+/* Style for error message */
+.message.error {
+    color: red; /* Error text color */
+    background-color: #ffecec; /* Light red background */
+    border: 1px solid red; /* Red border */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
 
 main {
     justify-content: center;

@@ -8,6 +8,11 @@ h1 {
     text-align: center;
 }
 
+.centered-container {
+    text-align: center;
+    width: 100%;
+}
+
 .button-container {
 	display: flex;
     align-items: center;

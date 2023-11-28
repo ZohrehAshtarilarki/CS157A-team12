@@ -1,8 +1,9 @@
+
 <html>
 <head>
 <title>Register Event</title>
-<link rel='stylesheet' href='header.css'>
-<link rel='stylesheet' href='registeration.css'>
+	<link rel='stylesheet' href='${pageContext.request.contextPath}/views/header.css'>
+<link rel='stylesheet' href='${pageContext.request.contextPath}/views/registration.css'>
 </head>
 <body>
 	<header>

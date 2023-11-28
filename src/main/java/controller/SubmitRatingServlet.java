@@ -33,14 +33,31 @@ public class SubmitRatingServlet extends HttpServlet {
             return;
         }
 
-        int eventId = Integer.parseInt(request.getParameter("eventId"));
-        int rating = Integer.parseInt(request.getParameter("rating"));
+        String eventIdParam = request.getParameter("eventId");
+        String ratingParam = request.getParameter("rating");
 
-        // Instantiate EventDAO class to handle the database operation
+        if (eventIdParam == null || ratingParam == null) {
+            request.setAttribute("errorMessage", "Invalid event ID or rating.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp"); // Modified
+            dispatcher.forward(request, response);
+            return;
+        }
+
+        int eventId, rating;
+
+        try {
+            eventId = Integer.parseInt(eventIdParam);
+            rating = Integer.parseInt(ratingParam);
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid event ID or rating format.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp"); // Modified
+            dispatcher.forward(request, response);
+            return;
+        }
+
         ReviewDAO reviewDAO = new ReviewDAO();
-
-        // Call the method in DAO class to save the rating to the database
         boolean result = reviewDAO.saveRating(eventId, sjsuId, rating);
+
 
         if (result) {
             EventDAO eventDAO = new EventDAO();

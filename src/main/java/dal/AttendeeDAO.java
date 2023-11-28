@@ -82,24 +82,53 @@ public class AttendeeDAO {
         return updateResult;
     }
 
-
-
-    public void deleteAttendee(int sjsuId) {
+    public void deleteAttendee(int sjsuId) throws SQLException {
         Connection connection = dbConnection.getConnection();
-        String deleteQuery = "DELETE FROM Attendee WHERE SJSUID = ?";
+        // Start a transaction
+        connection.setAutoCommit(false);
+
+        String deleteAttendeeQuery = "DELETE FROM Attendee WHERE SJSUID = ?";
+        String deleteUserQuery = "DELETE FROM User WHERE SJSUID = ?";
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
+            // Delete from Attendee table
+            System.out.println("Preparing to delete from Attendee table.");
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteAttendeeQuery);
             preparedStatement.setInt(1, sjsuId);
+            int attendeeDeleteCount = preparedStatement.executeUpdate();
+            System.out.println("Rows deleted from Attendee table: " + attendeeDeleteCount);
 
-            preparedStatement.executeUpdate();
+            // Delete from User table
+            System.out.println("Preparing to delete from User table.");
+            preparedStatement = connection.prepareStatement(deleteUserQuery);
+            preparedStatement.setInt(1, sjsuId);
+            int userDeleteCount = preparedStatement.executeUpdate();
+            System.out.println("Rows deleted from User table: " + userDeleteCount);
+
+            // Commit transaction
+            connection.commit();
         } catch (SQLException e) {
+            // If there is an error, rollback the transaction
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
             e.printStackTrace();
             // Handle exceptions appropriately
         } finally {
+            try {
+                // Reset default commit behavior
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
             dbConnection.closeConnection();
         }
     }
+
 
     public Attendee getAttendeeById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
@@ -133,7 +162,9 @@ public class AttendeeDAO {
 
     public List<Attendee> getAllAttendees() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Attendee";
+        String selectQuery = "SELECT Attendee.SJSUID, User.SJSUEmail, User.UserName, User.Password, User.Role " +
+                             "FROM Attendee NATURAL JOIN User";
+
         List<Attendee> attendeeList = new ArrayList<>();
         Attendee attendee;
 
@@ -142,13 +173,12 @@ public class AttendeeDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
-                String sjsuEmail = resultSet.getString("SJSUEmail");
-                String userName = resultSet.getString("Username");
-                String password = resultSet.getString("Password");
-                String role = resultSet.getString("Role");
-
-                attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
+                attendee = new Attendee();
+                attendee.setSjsuId(resultSet.getInt("SJSUID"));
+                attendee.setSjsuEmail(resultSet.getString("SJSUEmail"));
+                attendee.setUsername(resultSet.getString("Username"));
+                attendee.setPassword(resultSet.getString("Password"));
+                attendee.setRole(resultSet.getString("Role"));
 
                 attendeeList.add(attendee);
             }
@@ -160,6 +190,36 @@ public class AttendeeDAO {
         }
 
         return attendeeList;
+    }
+
+    public Attendee getAttendeeByName(String username) {
+        Connection connection = dbConnection.getConnection();
+        String selectQuery = "SELECT * FROM Attendee WHERE SJSUID = ?";
+        Attendee attendee = null;
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+            preparedStatement.setString(1, String.valueOf(username));
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
+                String sjsuEmail = resultSet.getString("SJSUEmail");
+                String userName = resultSet.getString("Username");
+                String password = resultSet.getString("Password");
+                String role = resultSet.getString("Role");
+
+                attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately later
+        } finally {
+            dbConnection.closeConnection();
+        }
+
+        return attendee;
     }
 }
 
