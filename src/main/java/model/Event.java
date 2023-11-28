@@ -14,10 +14,9 @@ public class Event{
 
 	public Event() {}
 
-	public Event(int eventId, String eventName, Date date, Time time, String description, String category,
+	public Event(String eventName, Date date, Time time, String description, String category,
 				 boolean requiresTicket)
 	{
-		this.eventId = eventId;
 		this.eventName = eventName;
 		this.date = date;
 		this.time = time;

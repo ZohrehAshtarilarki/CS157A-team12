@@ -20,34 +20,46 @@ public class EventDAO{
         dbConnection = singletonDbConnection.getInstance();
     }
 
-    public void createEvent(Event event, EventOrganizer eventOrganizer)
+    public void createEvent(Event event)
     {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO Event (EventID, EventName, Date, Time, Description, Category) VALUES (?,?,?,?,?,?)";
-        String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
-
+        String insertQuery = "INSERT INTO Event (EventName, Date, Time, Description, Category, requiresTicket) VALUES (?,?,?,?,?,?)";
         try {
             PreparedStatement ps1 = connection.prepareStatement(insertQuery);
             //EventID is auto-generated, we don't need to set it manually
-            ps1.setInt(1, event.getEventID());
-            ps1.setString(2, event.getEventName());
-            ps1.setDate(3, event.getDate());
-            ps1.setTime(4, event.getTime());
-            ps1.setString(5, event.getDescription());
-            ps1.setString(6, event.getCategory());
-
-            PreparedStatement ps2 = connection.prepareStatement(addManage);
-            ps2.setInt(1, eventOrganizer.getSjsuId());
-            ps2.setInt(2, event.getEventID());
+            ps1.setString(1, event.getEventName());
+            ps1.setDate(2, event.getDate());
+            ps1.setTime(3, event.getTime());
+            ps1.setString(4, event.getDescription());
+            ps1.setString(5, event.getCategory());
+            ps1.setBoolean(6, event.isRequiresTicket());
 
             ps1.executeUpdate();
-            ps2.executeUpdate();
         } catch (SQLException e)
         {
             e.printStackTrace();
         } finally {
             dbConnection.closeConnection();
         }
+    }
+    
+    public void addDatatoManage(int eventID, EventOrganizer organizer)
+    {
+    	Connection connection = dbConnection.getConnection();
+    	String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
+    	 try {
+             PreparedStatement ps = connection.prepareStatement(addManage);
+             ps.setInt(1, organizer.getSjsuId());
+             ps.setInt(2, eventID);
+
+             ps.executeUpdate();
+ 
+         } catch (SQLException e)
+         {
+             e.printStackTrace();
+         } finally {
+             dbConnection.closeConnection();
+         }
     }
 
     /*
@@ -250,5 +262,25 @@ public class EventDAO{
         }
 
         return eventList;
+    }
+    
+    public int getEventIDbyName(String name)
+    {
+    	Connection connection = dbConnection.getConnection();
+    	String query = "Select * FROM Event WHERE eventName = ?;";
+    	int eventID = 0;
+    	try {
+    		PreparedStatement ps = connection.prepareStatement(query);
+    		ps.setString(1, name);
+    		ResultSet rs = ps.executeQuery();
+    		if(rs.next())
+    		{
+    			eventID = rs.getInt("eventID");
+    		}
+    	}catch (SQLException e)
+    	{
+    		e.printStackTrace();
+    	}
+    	return eventID;
     }
 }

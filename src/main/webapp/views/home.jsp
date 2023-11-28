@@ -39,7 +39,7 @@
 <h1>Welcome to the Home Page</h1>
 
 <div class="button-container">
-    <button><a href="${pageContext.request.contextPath}/views/createEvent.jsp">Create Event</a></button>
+    <button><a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuId%>">Create Event</a></button>
     <button><a href="${pageContext.request.contextPath}/views/deleteEvent.jsp">Delete Event</a></button>
 </div>
 
@@ -60,13 +60,12 @@
                 events = (List<Event>) tempList;
             }
         }
-
         if (events != null && !events.isEmpty()) {
             for (Event event : events) {
     %>
     <ul id="event-list">
         <li class="event-item">
-            <a href="${pageContext.request.contextPath}/views/eventInfo.jsp?eventID=<%=event.getEventID()%>">
+            <a href="${pageContext.request.contextPath}/views/eventInfo.jsp?eventID=<%=event.getEventID()%>&sjsuID=<%=sjsuId%>">
                 <div class="event-title"><%= event.getEventName() %></div>
                 <div class="event-date"><%= event.getDate() %></div>
             </a>
