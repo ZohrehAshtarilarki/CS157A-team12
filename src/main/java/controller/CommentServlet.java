@@ -57,8 +57,8 @@ public class CommentServlet extends HttpServlet {
 	private void addComment(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			int eventID = Integer.parseInt(request.getParameter("eventid"));
-			int sjsuID = Integer.parseInt(request.getParameter("sjsuid"));
+			int eventID = Integer.parseInt(request.getParameter("eventID"));
+			int sjsuID = Integer.parseInt(request.getParameter("sjsuID"));
 			String text = request.getParameter("commentText");
 
 			commentDAO.addComment(eventID, sjsuID, text);

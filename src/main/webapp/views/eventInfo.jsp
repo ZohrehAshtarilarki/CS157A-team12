@@ -227,11 +227,11 @@
 			<input type="hidden" name="action" value="addComment">
 			<div>
 				 <input type="hidden"
-					name="eventid" id="eventid" value=<%=eventId%>>
+					name="eventID" id="eventID" value=<%=eventId%>>
 			</div>
 			<div>
 				 <input type="hidden"
-					name="sjsuid" id="sjsuid" value=<%=sjsuid %>>
+					name="sjsuID" id="sjsuID" value=<%=sjsuid %>>
 			</div>
 			<div>
 				 <input type="text"
