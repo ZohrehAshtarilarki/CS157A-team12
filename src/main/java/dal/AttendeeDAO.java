@@ -218,7 +218,6 @@ public class AttendeeDAO {
         } finally {
             dbConnection.closeConnection();
         }
-
         return attendee;
     }
 }

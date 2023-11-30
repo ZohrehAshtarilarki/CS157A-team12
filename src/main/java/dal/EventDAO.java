@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import model.Event;
@@ -144,32 +145,27 @@ public class EventDAO{
                 System.out.println("User is already registered for this event.");
                 return false;
             }
-            if (event.isRequiresTicket()) {
-                // Register user for the event
-                String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
-                registerStatement = connection.prepareStatement(registerQuery);
-                registerStatement.setInt(1, user.getSjsuId());
-                registerStatement.setInt(2, event.getEventID());
-                registerStatement.setBoolean(3, false);
-                registerStatement.executeUpdate();
 
+            // Registration process
+            String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
+            registerStatement = connection.prepareStatement(registerQuery);
+            registerStatement.setInt(1, user.getSjsuId());
+            registerStatement.setInt(2, event.getEventID());
+            registerStatement.setBoolean(3, false);
+            registerStatement.executeUpdate();
+
+            if (event.isRequiresTicket()) {
                 // Generate and insert a new ticket
-                String ticketQuery = "INSERT INTO Ticket (EventID, TicketBarcode) VALUES (?, ?)";
+                String ticketQuery = "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)";
                 ticketStatement = connection.prepareStatement(ticketQuery);
                 ticketStatement.setInt(1, event.getEventID());
+                ticketStatement.setInt(2, user.getSjsuId());
                 String ticketBarcode = util.TicketUtils.generateUniqueBarcode(); // Call to TicketUtils
-                ticketStatement.setString(2, ticketBarcode);
+                ticketStatement.setString(3, ticketBarcode);
                 ticketStatement.executeUpdate();
-            } else {
-                String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
-                registerStatement = connection.prepareStatement(registerQuery);
-                registerStatement.setInt(1, user.getSjsuId());
-                registerStatement.setInt(2, event.getEventID());
-                registerStatement.setBoolean(3, false);
-                registerStatement.executeUpdate();
             }
-
             connection.commit(); // Commit transaction
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
             if (connection != null) {
@@ -179,13 +175,86 @@ public class EventDAO{
                     ex.printStackTrace();
                 }
             }
+            return false; // Return false if there's an exception
         } finally {
             // Close resources
-            if (registerStatement != null) try { registerStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (ticketStatement != null) try { ticketStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (registerStatement != null) registerStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (ticketStatement != null) ticketStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            try { if (connection != null) connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
-        return true;
+    }
+
+    public boolean isUserRegisteredForEvent(int userId, int eventId) {
+        System.out.println("UserID: " + userId + "eventId: "+ eventId);
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        boolean isUserRegistered = false;
+
+        try {
+            connection = dbConnection.getConnection();
+
+            // SQL query to check if the user is registered for the event
+            String query = "SELECT Count(*) AS Count FROM Register WHERE SJSUID = ? AND EventID = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, eventId);
+
+            resultSet = preparedStatement.executeQuery();
+
+            // If the count is greater than 0, the user is registered for the event
+            while(resultSet.next()) {
+                int countVal = resultSet.getInt("Count");
+                if (countVal > 0) {
+                    isUserRegistered = true;
+                } else {
+                    System.out.println("Query Result is empty");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle exception
+        } finally {
+            // Close resources to prevent resource leaks
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("isUserRegistered from function: "+ isUserRegistered);
+        return isUserRegistered;
+    }
+    public HashMap<String, Integer> getAttendeeCountForEvent(int sjsuId) {
+        System.out.println("SJSU ID of organizer: "+sjsuId);
+        String sql = "SELECT Event.EventName AS EventName, COUNT(Register.EventID) AS EventCount " +
+                "FROM Event " +
+                "JOIN Register ON Event.EventID = Register.EventID " +
+                "WHERE Event.EventID IN (SELECT EventID FROM Manage WHERE SJSUID = ?) " +
+                "GROUP BY Register.EventID";
+        System.out.println("Query result: "+sql);
+
+
+        HashMap<String, Integer> eventToCountMap = new HashMap<>();
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, sjsuId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String EventName = rs.getString("EventName");
+                    int EventCount = rs.getInt("EventCount");
+                    System.out.println("Event Name: "+EventName + " Event Count: "+ EventCount);
+                    eventToCountMap.put(EventName, EventCount);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();  // Log the exception
+        }
+        return eventToCountMap;
     }
 
 

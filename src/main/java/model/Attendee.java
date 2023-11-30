@@ -9,4 +9,8 @@ public class Attendee extends User{
 		// To call the constructor of the User class for initializing inherited fields.
 		super(sjsuId, sjsuEmail, username, password, role);
 	}
+
+	public int getAttendeeId() {return attendeeId;}
+
+	public void setAttendeeId(int attendeeId) {this.attendeeId = attendeeId;}
 }
