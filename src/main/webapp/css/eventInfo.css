@@ -1,12 +1,67 @@
 @charset "UTF-8";
+
+main {
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust the height as needed */
+    margin: 20px;
+    border: 2px solid #0055a8;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+main h1 {
+    font-size: 36px;
+    color: #0055a8;
+    margin-bottom: 20px;
+}
+
+main form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+main label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+main input[type="text"],
+main input[type="email"],
+main input[type="password"],
+main input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+main button {
+    background-color: #0055a8;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+main button:hover {
+    background-color: #003366;
+}
+
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background-color: #f4f4f4;
 }
 
@@ -22,6 +77,71 @@ body {
     margin-top: 20px;
     text-align: center;
 }
+
+/* Styles for Review Form */
+.review-form {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    padding: 20px;
+    text-align: center;
+}
+
+.review-form h3 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.review-form form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    width: 100%; /* Adjust as needed */
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group textarea {
+    width: 100%; /* Adjust as needed */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.form-group select {
+    width: 50%; /* Adjust as needed */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+/* Style for Submit Button in Review Form */
+.review-form button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.review-form button:hover {
+    background-color: #0056b3;
+}
+
 
 .star-rating {
     display: inline-block;
@@ -70,4 +190,99 @@ body {
 
 .register-button:hover {
     background-color: #0056b3;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    /*display: flex; !* Using flex to center modal content *!*/
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Adjust width as needed */
+    max-width: 600px; /* Maximum width */
+    display: none; /*Hidden by default*/
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Star Rating System */
+.star-rating {
+    display: inline-block;
+    font-size: 24px;
+    color: #cccccc; /* Default color */
+    cursor: pointer;
+}
+
+.star-rating .star {
+    font-size: 30px;
+    color: #cccccc; /* Inactive stars */
+}
+
+/* Hover styles */
+.star-rating .star:hover,
+.star-rating .star:hover ~ .star {
+    color: gold;
+}
+
+.star-rating .star.rated {
+    color: gold; /* Active stars */
+}
+
+/* This class will be added via JavaScript when the Reviews button is clicked */
+.modal-active {
+    display: flex; /* Using flex to center modal content */
+}
+
+/* This class will be toggled via JavaScript when the Write a Review button is clicked */
+.write-review-form-active {
+    display: block;
+}
+
+.review-star-rating {
+    font-size: 24px;
+    color: rgb(128, 128, 128);
+}
+
+.review-star-rating span.review-star {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.review-star-rating span.review-star.full {
+    color: rgb(255,215,0); /* Filled stars in gold */
+}
+
+.review-star-rating span.review-star.half:before {
+    content: '\2605';
+    position: absolute;
+    left: 0;
+    width: 50%;
+    overflow: hidden;
+    color: rgb(255,215,0); /* Half star in gold */
 }

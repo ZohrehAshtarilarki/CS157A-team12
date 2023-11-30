@@ -19,12 +19,12 @@ public class TicketDAO {
         dbConnection = singletonDbConnection.getInstance();
     }
 
-    public boolean hasTicketForEvent(int sjsuID, int eventId) {
+    public boolean hasTicketForEvent(int sjsuId, int eventId) {
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(
                      "SELECT COUNT(*) FROM Register WHERE SJSUID = ? AND EventID = ?")) {
 
-            statement.setInt(1, sjsuID);
+            statement.setInt(1, sjsuId);
             statement.setInt(2, eventId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -43,10 +43,11 @@ public class TicketDAO {
         if (!hasTicketForEvent(ticket.getSjsuId(), ticket.getEventId())) {
             try (Connection connection = dbConnection.getConnection();
                  PreparedStatement statement = connection.prepareStatement(
-                         "INSERT INTO Ticket (EventID, TicketBarcode) VALUES (?, ?)")) {
+                         "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)")) {
 
                 statement.setInt(1, ticket.getEventId());
-                statement.setString(2, ticket.getTicketBarcode());
+                statement.setInt(2, ticket.getSjsuId());
+                statement.setString(3, ticket.getTicketBarcode());
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -81,10 +82,11 @@ public class TicketDAO {
     // Method to retrieve tickets by user ID
     public List<Ticket> getTicketsByUserID(int sjsuId) {
         List<Ticket> tickets = new ArrayList<>();
-        try (Connection connection = dbConnection.getConnection();
+        try {
+            Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT t.TicketID, t.EventID, t.TicketBarcode FROM Ticket t " +
-                             "NATURAL JOIN Register r WHERE r.SJSUID = ?")) {
+                     "SELECT *  FROM Ticket" +
+                             " WHERE SJSUID= ?");
 
             statement.setInt(1, sjsuId);
             try (ResultSet resultSet = statement.executeQuery()) {

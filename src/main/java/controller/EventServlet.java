@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import dal.*;
@@ -69,6 +70,8 @@ public class EventServlet extends HttpServlet {
 				case "getEventByName": // New case for getting event by name
 					getEventByName(request, response);
 					break;
+				case "getAttendeeCountForEvent":
+					getAttendeeCountForEvent(request, response);
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
@@ -145,43 +148,66 @@ public class EventServlet extends HttpServlet {
 		int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
 		int eventId = Integer.parseInt(request.getParameter("eventId"));
 
-		/*
-		UserDAO userDAO = new UserDAO();
-		User user = userDAO.getUserById(sjsuId);
-		String role = user.getRole();
-		*/
-
 		Event event = eventDAO.getEventById(eventId);
+		User user = userDAO.getUserById(sjsuId);
+
+		// Register the user for the event (in both cases)
+		boolean registrationSuccessful = eventDAO.registerEvent(event, user);
+
+		// Set the registration status as an attribute
+		request.setAttribute("isUserRegistered", registrationSuccessful);
 
 		// Check if the event requires ticketing
 		if (event.isRequiresTicket()) {
-			// Generate a unique barcode
-			String ticketBarcode = TicketUtils.generateUniqueBarcode();
+			if (registrationSuccessful) {
+				// Generate a unique barcode and create a ticket
+				String ticketBarcode = TicketUtils.generateUniqueBarcode();
+				// TicketId is auto-generated in the database, pass 0 or a similar placeholder
+				Ticket ticket = new Ticket(0, eventId, ticketBarcode, sjsuId);
+				TicketDAO ticketDAO = new TicketDAO();
+				boolean ticketSaved = ticketDAO.createTicket(ticket);
 
-			// Assuming ticketId is auto-generated in the database, pass 0 or a similar placeholder
-			Ticket ticket = new Ticket(0, eventId, ticketBarcode, sjsuId);
-
-			TicketDAO ticketDAO = new TicketDAO();
-			boolean ticketSaved = ticketDAO.createTicket(ticket);
-
-			if (ticketSaved) {
-				// Redirect to the attendee dashboard to view the ticket
-				response.sendRedirect(request.getContextPath() + "/views/attendeeDash.jsp");
+				if (ticketSaved) {
+					// Redirect to the attendee dashboard to view the ticket
+					response.sendRedirect(request.getContextPath() + "/views/attendeeDash.jsp");
+					return;
+				} else {
+					// Handle ticket saving failure
+					// Set an attribute to indicate a duplicate ticket attempt
+					request.setAttribute("errorMessage", "Oops! Something went wrong.");
+				}
 			} else {
-				// Handle ticket saving failure
-				// Set an attribute to indicate a duplicate ticket attempt
-				request.setAttribute("errorMessage", "You have already purchased a ticket for this event.");
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp");
-				dispatcher.forward(request, response);
+				request.setAttribute("errorMessage", "Oops! Something went wrong.");
 			}
 		} else {
-			// If no ticket is required, proceed with normal event registration
-			User user = userDAO.getUserById(Integer.parseInt(String.valueOf(sjsuId)));
-			eventDAO.registerEvent(event, user);
-			// Redirect after successful registration
-			response.sendRedirect(request.getContextPath() + "/views/home.jsp");
+			if (!registrationSuccessful) {
+				// User has already registered for this non-ticketed event
+				request.setAttribute("errorMessage", "You have already registered for this event.");
+			} else {
+				// Redirect after successful registration without a ticket
+				response.sendRedirect(request.getContextPath() + "/views/home.jsp");
+				return;
+			}
 		}
+
+		// Forward to eventInfo.jsp in all cases
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
 	}
+
+	private void getAttendeeCountForEvent(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+
+		EventDAO eventDAO = new EventDAO();
+		HashMap<String, Integer> attendeeCount = eventDAO.getAttendeeCountForEvent(sjsuId);
+
+		// Forward this data to a JSP page
+		request.setAttribute("attendeeCount", attendeeCount);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/organizerDash.jsp");
+		dispatcher.forward(request, response);
+	}
+
 	/*
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));

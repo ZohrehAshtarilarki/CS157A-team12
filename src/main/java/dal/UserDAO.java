@@ -151,41 +151,31 @@ public class UserDAO {
     }
 
     public User getUserByUsername(String username) {
-        Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM User WHERE Username = ?";
         User user = null;
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+        try (Connection connection = dbConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+
             preparedStatement.setString(1, username);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                user = new User();
-                user.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                user.setSjsuEmail(resultSet.getString("SJSUEmail"));
-                user.setUsername(resultSet.getString("Username"));
-                user.setPassword(resultSet.getString("Password"));
-                user.setRole(resultSet.getString("Role"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    user = new User();
+                    user.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
+                    user.setSjsuEmail(resultSet.getString("SJSUEmail"));
+                    user.setUsername(resultSet.getString("Username"));
+                    user.setPassword(resultSet.getString("Password"));
+                    user.setRole(resultSet.getString("Role"));
+                }
             }
-            resultSet.close();
-            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            // Handle exceptions appropriately later
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
+            // Handle the exception later
         }
-
         return user;
     }
+
 
     public List<User> getAllUsers() {
         Connection connection = dbConnection.getConnection();

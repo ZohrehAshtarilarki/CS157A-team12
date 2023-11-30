@@ -132,7 +132,7 @@ public class EventOrganizerDAO {
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
-                eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
+                //eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
             }
         } catch (SQLException e) {
@@ -157,7 +157,7 @@ public class EventOrganizerDAO {
             while (resultSet.next()) {
                 EventOrganizer eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
+                //eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
 
                 eventOrganizerList.add(eventOrganizer);

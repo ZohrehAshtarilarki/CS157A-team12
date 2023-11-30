@@ -8,12 +8,15 @@ h1 {
     text-align: center;
 }
 
-.button-container,
-#btnShowAttendees {
+.button-group { /* Apply flexbox to the container of the buttons */
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 10px auto;
+}
+
+/* Common button styles */
+.button-group button {
     padding: 10px 20px;
     font-size: 16px;
     background-color: #0055a8;
@@ -22,11 +25,14 @@ h1 {
     border-radius: 5px;
     text-decoration: none;
     cursor: pointer;
+    margin-right: 25px; /* adds some space between the buttons */
 }
 
-#btnShowAttendees:hover {
+/* Hover effect for all buttons within .button-group */
+.button-group button:hover {
     background-color: #f7ca18;
 }
+
 
 /* Style for Modal (Popup) */
 .modal {
@@ -66,14 +72,16 @@ h1 {
     cursor: pointer;
 }
 
-/* Styles for Attendee List inside the Modal */
-.attendee-list {
+/* Styles for Attendee and Review List inside the Modal */
+.attendee-list,
+.review-list {
     margin: 20px auto;
     width: 100%;
     text-align: left;
 }
 
-.attendee {
+.attendee,
+.review {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -83,11 +91,13 @@ h1 {
     border-radius: 5px;
 }
 
-.attendee span {
+.attendee span,
+.review span {
     font-size: 18px;
 }
 
-.attendee button {
+.attendee button,
+.review button{
     padding: 5px 10px;
     background-color: #d9534f;
     color: white;
@@ -96,11 +106,13 @@ h1 {
     cursor: pointer;
 }
 
-.attendee button:hover {
+.attendee button:hover,
+.review button:hover {
     background-color: #c9302c;
 }
 
-.attendee input[type="submit"] {
+.attendee input[type="submit"],
+.review input[type="submit"] {
     padding: 5px 10px;
     background-color: #d9534f; /* Red background */
     color: white; /* White text */
@@ -110,7 +122,8 @@ h1 {
     transition: background-color 0.3s ease; /* Smooth transition for background color */
 }
 
-.attendee input[type="submit"]:hover {
+.attendee input[type="submit"]:hover,
+.review input[type="submit"]:hover {
     background-color: #c9302c; /* Darker red on hover */
 }
 
@@ -135,4 +148,28 @@ h1 {
     color: #dc3545; /* Red text */
     background-color: #f8d7da; /* Light red background */
     border: 1px solid #f5c6cb; /* Subtle border */
+}
+
+/* Style for each event entry in the modal */
+.event-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f0f0f0; /* Light grey background */
+    border-radius: 5px;
+}
+
+/* Style for event name */
+.event-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0055a8; /* Dark blue color */
+}
+
+/* Style for attendee count */
+.attendee-count {
+    font-size: 16px;
+    color: #333; /* Darker text for emphasis */
 }
