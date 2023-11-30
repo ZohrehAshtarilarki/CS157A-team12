@@ -22,12 +22,12 @@
 			method="post">
 			<input type="hidden" name="action" value="deleteEvent">
 			<div>
-				<label for="eventid">Event ID:</label> <input type="text"
-					name="eventid" id="eventid" required>
+				<label for="eventId">Event ID:</label> <input type="text"
+					name="eventId" id="eventId" required>
 			</div>
 			<div>
-				<label for="sjsuid">Organizer ID:</label> <input type="text"
-					name="sjsuid" id="sjsuid" required>
+				<label for="sjsuId">Organizer ID:</label> <input type="text"
+					name="sjsuId" id="sjsuId" required>
 			</div>
 			<div>
 				<button type="submit" name="action" value="deleteEvent">Delete</button>

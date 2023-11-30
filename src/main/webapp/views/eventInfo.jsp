@@ -2,7 +2,10 @@
 <%@ page import="model.Event"%>
 <%@ page import="dal.EventDAO"%>
 <%@ page import="dal.TicketDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="model.Comment" %>
 <%@ page import="dal.ReviewDAO" %>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +14,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/header.css">
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/createEvent.css">
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/css/comment.css">
+	
+	<script src="${pageContext.request.contextPath}/js/script.js"></script>
 
 	<script src="${pageContext.request.contextPath}/js/script.js"></script>
 	<title>Event Details</title>
@@ -55,7 +61,7 @@
 				request.setAttribute("errorMessage", "Invalid format for event ID.");
 			}
 		}
-
+		
 		Event event = null; // Declare the event variable
 		// Proceed to fetch event details from the database if a valid event ID is obtained
 		if (eventId != null) {
@@ -189,6 +195,150 @@
 				return;
 			}
 
+		<%-- Retrieve sjsuId from session and add it as a hidden field --%>
+		<% Integer sjsuId = (Integer) session.getAttribute("sjsuId");%>
+		<% if (sjsuId != null) { %>
+		<input type="hidden" name="sjsuId" value="<%=sjsuId%>">
+		<% } %>
+		
+		<%  
+		String sjsuIDParam = request.getParameter("sjsuID");
+		int sjsuid = 0;
+		if (sjsuIDParam != null && !sjsuIDParam.trim().isEmpty()) {
+			try {
+				sjsuid = Integer.parseInt(sjsuIDParam);
+			} catch (NumberFormatException e) {
+				// Log the exception and set an error message for invalid event ID format
+				e.printStackTrace();
+				request.setAttribute("errorMessage", "Invalid format for event ID.");
+			}
+		}
+		%>
+
+		<!-- Submit Rating Button -->
+		<button type="button" onclick="submitRating()">Submit Rating</button>
+	</form>
+
+	<%
+		TicketDAO ticketDAO = new TicketDAO();
+		boolean ticketExists = false;
+		
+		if (sjsuId != null && eventId != null) {
+			// Check if the ticket already exists for this user and event
+			ticketExists = ticketDAO.hasTicketForEvent(sjsuId, eventId);
+		}
+		if (event != null && event.isRequiresTicket()) {
+			if (ticketExists) {
+	%>
+	<p class="error-message">Ticket already exists for this event and user.</p>
+	<%
+	} else {
+	%>
+	<div class="ticket-message">
+		<p>This event requires a ticket. Please purchase to attend.</p>
+		<!-- Purchase Ticket Button -->
+		<form action="${pageContext.request.contextPath}/EventServlet" method="post">
+			<input type="hidden" name="action" value="registerEvent">
+			<div>
+				<input type="hidden" name="sjsuId" id="sjsuId" value="<%=sjsuid%>">
+			</div>
+			<div>
+				<input type="hidden" name="eventId" value="<%=eventId%>">
+			</div>
+			<div>
+				<button type="submit">Purchase Ticket</button>
+			</div>
+		</form>
+	</div>
+	<%
+		}
+	} else { %>
+	<div class="registration-message">
+		<p>You can register for this event below:</p>
+		<!-- Register Button -->
+		<form action="${pageContext.request.contextPath}/EventServlet" method="post">
+			<input type="hidden" name="action" value="registerEvent">
+			<div>
+				<input type="hidden" name="sjsuId" id="sjsuId" value="<%=sjsuid%>">
+			</div>
+			<div>
+				<input type="hidden" name="eventId" id="eventId" value="<%=eventId%>">
+			</div>
+			<div>
+				<button type="submit">Register</button>
+			</div>
+		</form>
+	</div>
+	<% } %>
+	
+	
+	<form class="commentForm" action="${pageContext.request.contextPath}/CommentServlet" method="get">
+    <input type="hidden" name="action" value="getAllCommentByEvent">
+    <input type="hidden" name="eventID" id="eventID" value="<%=eventId%>">
+    <input type="hidden" name="sjsuID" id="sjsuID" value="<%=sjsuid%>">
+    
+    <input type="submit" style="display:none;">
+	</form>
+	<div class="comment-box">
+	<h1>Comment</h1>
+	<%
+        Object commentListObj = request.getAttribute("commentList");
+        List<Comment> comments = null;
+
+        if (commentListObj instanceof List<?>) {
+            List<?> tempList = (List<?>) commentListObj;
+            if (!tempList.isEmpty() && tempList.get(0) instanceof Comment) {
+                comments = (List<Comment>) tempList;
+            }
+        }
+
+        if (comments != null && !comments.isEmpty()) {
+            for (Comment comment : comments) {
+            	
+    %>
+        <ul id="comment-list">
+        <li class="comment-item">
+            <a>
+                <div class="comment-title"><%= comment.getCommentText() %></div>
+            </a>
+        </li>
+    </ul>
+    <%
+        }
+    } else {
+    %>
+    <p>No Comment.</p>
+    <%
+        }
+    %>
+    <script>
+    // Automatically submit the form to trigger the event list retrieval
+    window.onload = function() {
+        document.querySelector('.commentForm').submit();
+    };
+	</script>
+    
+    <form action="${pageContext.request.contextPath}/CommentServlet"
+			method="post">
+			<input type="hidden" name="action" value="addComment">
+			<div>
+				 <input type="hidden"
+					name="eventID" id="eventID" value=<%=eventId%>>
+			</div>
+			<div>
+				 <input type="hidden"
+					name="sjsuID" id="sjsuID" value=<%=sjsuid %>>
+			</div>
+			<div>
+				 <input type="text"
+					name="commentText" id="commentText" placeHolder="Leave Your Comment Here" required>
+			</div>
+			<div>
+				<button type="submit" name="action" value="addComment">Comment</button>
+			</div>
+		</form>
+	</div>
+	
 			int user = (Integer) session.getAttribute("SJSUID");
 			EventDAO eventDAO = new EventDAO();
 			boolean isUserRegistered = eventDAO.isUserRegisteredForEvent(user, eventID);
