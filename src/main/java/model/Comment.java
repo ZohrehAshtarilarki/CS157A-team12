@@ -5,7 +5,7 @@ public class Comment {
 	private int eventID;
 	private int sjsuID;
 	private String commentText;
-	
+
 	public Comment(int eventID, int sjsuID, String commentText)
 	{
 		this.eventID = eventID;
@@ -17,7 +17,7 @@ public class Comment {
 		super();
 	}
 
-	
+
 	public int getCommentID() {
 		return commentID;
 	}
@@ -49,6 +49,6 @@ public class Comment {
 	public void setCommentText(String commentText) {
 		this.commentText = commentText;
 	}
-	
-	
+
+
 }

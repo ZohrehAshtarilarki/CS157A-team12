@@ -36,7 +36,6 @@ public class UserDAO {
                 // This exception is thrown when a duplicate primary key is inserted
                 return "User with SJSUID " + user.getSjsuId() + " already exists.";
             }
-            System.out.println("DB operation failure. reason:\n");
             e.printStackTrace();
         } finally {
             dbConnection.closeConnection();

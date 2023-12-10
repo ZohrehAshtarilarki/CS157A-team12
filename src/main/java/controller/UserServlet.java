@@ -224,7 +224,6 @@ public class UserServlet extends HttpServlet {
 
         // Use the retrieved user as needed, e.g., display it on a JSP page
         request.setAttribute("user", user);
-        request.getRequestDispatcher("/views/userDetails.jsp").forward(request, response);
     }
 
     private void getUserByUsername(HttpServletRequest request, HttpServletResponse response)
@@ -235,7 +234,6 @@ public class UserServlet extends HttpServlet {
 
         // Use the retrieved user as needed, e.g., display it on a JSP page
         request.setAttribute("user", user);
-        request.getRequestDispatcher("userDetails.jsp").forward(request, response);
     }
 
     private void getAllUsers(HttpServletRequest request, HttpServletResponse response)
@@ -244,7 +242,6 @@ public class UserServlet extends HttpServlet {
 
         // Use the retrieved list of users as needed, e.g., display it on a JSP page
         request.setAttribute("userList", userList);
-        request.getRequestDispatcher("userList.jsp").forward(request, response);
     }
 
     @Override

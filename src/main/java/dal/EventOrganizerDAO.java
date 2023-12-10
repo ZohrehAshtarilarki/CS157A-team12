@@ -100,24 +100,6 @@ public class EventOrganizerDAO {
         return updateResult;
     }
 
-
-    public void deleteOrganizer(int sjsuId) {
-        Connection connection = dbConnection.getConnection();
-        String deleteQuery = "DELETE FROM EventOrganizer WHERE SJSUID = ?";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
-            preparedStatement.setInt(1, sjsuId);
-
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately later
-        } finally {
-            dbConnection.closeConnection();
-        }
-    }
-
     public EventOrganizer getOrganizerById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM EventOrganizer WHERE SJSUID = ?";
@@ -132,7 +114,6 @@ public class EventOrganizerDAO {
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
                 eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
-                //eventOrganizer.setOrganizerId(resultSet.getInt("OrganizerID"));
                 eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
             }
         } catch (SQLException e) {
@@ -143,32 +124,5 @@ public class EventOrganizerDAO {
         }
 
         return eventOrganizer;
-    }
-
-    public List<EventOrganizer> getAllOrganizers() {
-        Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM EventOrganizer";
-        List<EventOrganizer> eventOrganizerList = new ArrayList<>();
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                EventOrganizer eventOrganizer = new EventOrganizer();
-                eventOrganizer.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                //eventOrganizer.setOrganizerId(Integer.parseInt(resultSet.getString("OrganizerID")));
-                eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
-
-                eventOrganizerList.add(eventOrganizer);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle exceptions appropriately later
-        } finally {
-            dbConnection.closeConnection();
-        }
-
-        return eventOrganizerList;
     }
 }

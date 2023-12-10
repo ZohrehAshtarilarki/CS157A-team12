@@ -1,19 +1,28 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 
-import dal.*;
+import dal.AttendeeDAO;
+import dal.EventDAO;
+import dal.EventOrganizerDAO;
+import dal.TicketDAO;
+import dal.UserDAO;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import model.*;
+import model.Event;
+import model.EventOrganizer;
+import model.Ticket;
+import model.User;
 import util.TicketUtils;
 
 @WebServlet(name = "EventServlet", urlPatterns = { "/EventServlet" })
@@ -47,6 +56,9 @@ public class EventServlet extends HttpServlet {
 					break;
 				case "deleteEvent":
 					deleteEvent(request, response);
+					break;
+				case "editEvent":
+					editEvent(request, response);
 					break;
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
@@ -108,11 +120,10 @@ public class EventServlet extends HttpServlet {
 		String eventCategory = request.getParameter("eventCategory");
 		String requiresTicketStr = request.getParameter("requiresTicket");
 		boolean requiresTicket = Boolean.parseBoolean(request.getParameter("requiresTicket"));
-
+		LocalTime localTime = LocalTime.parse(eventTimeStr);
+		Time sqlTime = Time.valueOf(localTime);
 		java.sql.Date eventDateSql = null;
-		java.sql.Time eventTimeSql = null;
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
 		try {
 			if (eventDateStr != null && !eventDateStr.isEmpty()) {
@@ -120,16 +131,12 @@ public class EventServlet extends HttpServlet {
 				eventDateSql = new java.sql.Date(utilDate.getTime());
 			}
 
-			if (eventTimeStr != null && !eventTimeStr.isEmpty()) {
-				java.util.Date utilTime = timeFormat.parse(eventTimeStr);
-				eventTimeSql = new java.sql.Time(utilTime.getTime());
-			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
-		Event event = new Event(eventName, eventDateSql, eventTimeSql, eventDescription,
-								eventCategory, requiresTicket);
+		Event event = new Event(eventName, eventDateSql, sqlTime, eventDescription,
+				eventCategory, requiresTicket);
 		EventOrganizer organizer = organizerDAO.getOrganizerById(organizerId);
 		System.out.println(requiresTicketStr);
 		System.out.println(requiresTicket);
@@ -141,8 +148,6 @@ public class EventServlet extends HttpServlet {
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}
-
-
 	private void registerEvent(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
@@ -208,43 +213,39 @@ public class EventServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	/*
 	public void editEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 		String eventName = request.getParameter("eventName");
-		Date date = Date.valueOf(request.getParameter("date"));
-		Time time = Time.valueOf(request.getParameter("time"));
-		String description = request.getParameter("description");
-		String category = request .getParameter("category");
+		String eventDateStr = request.getParameter("eventDate");
+		String eventTimeStr = request.getParameter("eventTime");
+		String description = request.getParameter("eventDescription");
+		String category = request .getParameter("eventCategory");
+		boolean requiresTicket = Boolean.parseBoolean(request.getParameter("requiresTicket"));
+		LocalTime localTime = LocalTime.parse(eventTimeStr);
+		Time sqlTime = Time.valueOf(localTime);
+		java.sql.Date eventDateSql = null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			if (eventDateStr != null && !eventDateStr.isEmpty()) {
+				java.util.Date utilDate = dateFormat.parse(eventDateStr);
+				eventDateSql = new java.sql.Date(utilDate.getTime());
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 
-		int SJSUID = Integer.parseInt(request.getParameter("SJSUID"));
+		Event event = eventDAO.getEventById(eventID);
+		event.setEventName(eventName);
+		event.setDate(eventDateSql);
+		event.setTime(sqlTime);
+		event.setDescription(description);
+		event.setCategory(category);
+		event.setRequiresTicket(requiresTicket);
 
-		Event event = new Event(eventID, eventName, date, time, description, category);
-		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
-
-		eventDAO.editEvent(event, eventOrganizer);
-
-		response.sendRedirect("success.jsp");
+		eventDAO.editEvent(event);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
 	}
-
-	public void deleteEvent(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-		int eventID = Integer.parseInt(request.getParameter("eventID"));
-		String eventName = request.getParameter("eventName");
-		Date date = Date.valueOf(request.getParameter("date"));
-		Time time = Time.valueOf(request.getParameter("time"));
-		String description = request.getParameter("description");
-		String category = request .getParameter("category");
-
-		int SJSUID = Integer.parseInt(request.getParameter("SJSUID"));
-
-		Event event = new Event(eventID, eventName, date, time, description, category);
-		EventOrganizer eventOrganizer = organizerDAO.getOrganizerById(SJSUID);
-
-		eventDAO.deleteEvent(event, eventOrganizer);
-
-		response.sendRedirect("success.jsp");
-	}
-	*/
 	public void getEventByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		int eventID = Integer.parseInt(request.getParameter("eventID"));
 

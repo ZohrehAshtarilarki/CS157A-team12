@@ -8,6 +8,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.Event" %>
+<%@ page import="model.Notification" %>
+<%@ page import="dal.EventDAO" %>
+<%@ page import="dal.NotificationDAO" %>
 
 <!DOCTYPE html>
 <html>
@@ -15,6 +18,44 @@
     <title>Home</title>
     <link rel='stylesheet' href='${pageContext.request.contextPath}/css/header.css'>
     <link rel='stylesheet' href='${pageContext.request.contextPath}/css/home.css'>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        /* Style for the modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 70%;
+        }
+
+        /* Close button style */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -31,6 +72,7 @@
                 %>
                 <a href="${pageContext.request.contextPath}/views/attendeeDash.jsp">Dashboard</a>
                 <a href="${pageContext.request.contextPath}/views/attendeeProfile.jsp">Profile</a>
+                <a onclick="openModal()"> Notification</a>
                 <%
                 } else if ("EventOrganizer".equals(userType)) {
                 %>
@@ -48,16 +90,54 @@
     </nav>
 </header>
 <h1>Welcome to the Home Page</h1>
+<%
+    NotificationDAO notificationDAO = new NotificationDAO();
+    EventDAO eventDAO = new EventDAO();
+%>
+<div id="notificationModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span onclick="closeModal()" style="float: right; cursor: pointer;">&times;</span>
+        <h2>Notifications</h2>
+        <ul>
+            <%
+                List<Notification> notiList = notificationDAO.getAllNotification();
+                for (Notification noti: notiList){
+                    int eventid = noti.getEventID();
+                    Event event = eventDAO.getEventById(eventid);
 
-<div class="button-container">
-    <button><a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuId%>">Create Event</a></button>
-    <button><a href="${pageContext.request.contextPath}/views/deleteEvent.jsp">Delete Event</a></button>
+                    if (event != null){
+            %>
+            <li>
+                <h3><%=event.getEventName()%></h3>=> <%=noti.getNotificationText()%>
+            </li>
+        </ul>
+        <%
+                }
+            }
+        %>
+    </div>
 </div>
 
-<form class="homeForm" action="${pageContext.request.contextPath}/EventServlet" method="get">
-    <input type="hidden" name="action" value="getAllEvents">
-    <input type="submit" style="display:none;">
-</form>
+<script>
+    function openModal() {
+        var modal = document.getElementById("notificationModal");
+        modal.style.display = "block";
+    }
+
+    function closeModal() {
+        var modal = document.getElementById("notificationModal");
+        modal.style.display = "none";
+    }
+
+    // Close the modal if the user clicks outside of it
+    window.onclick = function(event) {
+        var modal = document.getElementById("notificationModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 
 <div class="centered-container">
     <h2>Upcoming Events</h2>
@@ -65,15 +145,9 @@
 
 <div class="events-container">
     <%
-        Object eventListObj = request.getAttribute("eventList");
-        List<Event> events = null;
+        List<Event> events = eventDAO.getAllEvents();
 
-        if (eventListObj instanceof List<?>) {
-            List<?> tempList = (List<?>) eventListObj;
-            if (!tempList.isEmpty() && tempList.get(0) instanceof Event) {
-                events = (List<Event>) tempList;
-            }
-        }
+
         if (events != null && !events.isEmpty()) {
             for (Event event : events) {
     %>
@@ -95,12 +169,6 @@
     %>
 </div>
 
-<script>
-    // Automatically submit the form to trigger the event list retrieval
-    window.onload = function() {
-        document.querySelector('.homeForm').submit();
-    };
-</script>
 
 </body>
 </html>

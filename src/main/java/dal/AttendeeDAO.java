@@ -92,18 +92,14 @@ public class AttendeeDAO {
 
         try {
             // Delete from Attendee table
-            System.out.println("Preparing to delete from Attendee table.");
             PreparedStatement preparedStatement = connection.prepareStatement(deleteAttendeeQuery);
             preparedStatement.setInt(1, sjsuId);
-            int attendeeDeleteCount = preparedStatement.executeUpdate();
-            System.out.println("Rows deleted from Attendee table: " + attendeeDeleteCount);
+            preparedStatement.executeUpdate();
 
             // Delete from User table
-            System.out.println("Preparing to delete from User table.");
             preparedStatement = connection.prepareStatement(deleteUserQuery);
             preparedStatement.setInt(1, sjsuId);
-            int userDeleteCount = preparedStatement.executeUpdate();
-            System.out.println("Rows deleted from User table: " + userDeleteCount);
+            preparedStatement.executeUpdate();
 
             // Commit transaction
             connection.commit();
@@ -163,7 +159,7 @@ public class AttendeeDAO {
     public List<Attendee> getAllAttendees() {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT Attendee.SJSUID, User.SJSUEmail, User.UserName, User.Password, User.Role " +
-                             "FROM Attendee NATURAL JOIN User";
+                "FROM Attendee NATURAL JOIN User";
 
         List<Attendee> attendeeList = new ArrayList<>();
         Attendee attendee;

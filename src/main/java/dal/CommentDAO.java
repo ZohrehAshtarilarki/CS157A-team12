@@ -18,26 +18,26 @@ public class CommentDAO {
     public CommentDAO() {
         dbConnection = singletonDbConnection.getInstance();
     }
-    
+
     public void addComment(int eventID,int sjsuID, String text)
     {
-    	Connection connection = dbConnection.getConnection();
-    	String addQuery = "INSERT INTO Comment (eventID,sjsuID,commentText) values (?,?,?);";
-    	try {
-    		PreparedStatement ps = connection.prepareStatement(addQuery);
-    		ps.setInt(1, eventID);
-    		ps.setInt(2, sjsuID);
-    		ps.setString(3, text);
-    		ps.executeUpdate();
-    	}catch (SQLException e)
-    	{
-    		e.printStackTrace();
-    	}
+        Connection connection = dbConnection.getConnection();
+        String addQuery = "INSERT INTO Comment (eventID,sjsuID,commentText) values (?,?,?);";
+        try {
+            PreparedStatement ps = connection.prepareStatement(addQuery);
+            ps.setInt(1, eventID);
+            ps.setInt(2, sjsuID);
+            ps.setString(3, text);
+            ps.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
-    
+
     public List <Comment> getAllCommentbyEvent (int eventID)
     {
-    	Connection connection = dbConnection.getConnection();
+        Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Comment WHERE eventID = ?;";
         List<Comment> commentList = new ArrayList<>();
         try {
@@ -51,7 +51,7 @@ public class CommentDAO {
                 comment.setEventID(resultSet.getInt("eventID"));
                 comment.setSjsuID(resultSet.getInt("sjsuID"));
                 comment.setCommentText(resultSet.getString("commentText"));
-                
+
                 commentList.add(comment);
             }
         } catch (SQLException e) {
@@ -60,8 +60,8 @@ public class CommentDAO {
         } finally {
             dbConnection.closeConnection();
         }
-        
+
         return commentList;
     }
-    
+
 }

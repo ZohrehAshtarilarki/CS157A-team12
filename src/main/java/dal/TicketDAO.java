@@ -52,8 +52,6 @@ public class TicketDAO {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("Ticket already exists for this event and user");
         }
         return false;
     }
@@ -84,9 +82,9 @@ public class TicketDAO {
         List<Ticket> tickets = new ArrayList<>();
         try {
             Connection connection = dbConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "SELECT *  FROM Ticket" +
-                             " WHERE SJSUID= ?");
+            PreparedStatement statement = connection.prepareStatement(
+                    "SELECT *  FROM Ticket" +
+                            " WHERE SJSUID= ?");
 
             statement.setInt(1, sjsuId);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -100,35 +98,6 @@ public class TicketDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return tickets;
-    }
-    public List<Ticket> getTicketsByEventId(int eventId) {
-        List<Ticket> tickets = new ArrayList<>();
-        Connection connection = dbConnection.getConnection();
-        String sql = "SELECT t.TicketID, t.EventID, t.TicketBarcode FROM Ticket t " +
-                "NATURAL JOIN Register r " +
-                "WHERE r.SJSUID = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, eventId);
-            ResultSet resultSet = statement.executeQuery();
-
-            while (resultSet.next()) {
-                Ticket ticket = new Ticket(
-                        resultSet.getInt("TicketID"),
-                        resultSet.getInt("EventID"),
-                        resultSet.getString("TicketBarcode"),
-                        -1); // -1 or any placeholder for sjsuId
-                // Add the ticket to the list
-                tickets.add(ticket);
-            }
-        } catch (SQLException e) {
-            System.out.println("DB operation failure. reason:\n");
-            e.printStackTrace();
-            // Handle exceptions appropriately later
-        } finally {
-            dbConnection.closeConnection();
         }
         return tickets;
     }
@@ -153,7 +122,6 @@ public class TicketDAO {
                         -1); // -1 or any placeholder for sjsuId
             }
         } catch (SQLException e) {
-            System.out.println("DB operation failure. reason:\n");
             e.printStackTrace();
             // Handle exceptions appropriately later
         } finally {

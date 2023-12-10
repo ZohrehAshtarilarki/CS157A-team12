@@ -3,7 +3,6 @@ package service;
 import dal.TicketDAO;
 import model.Ticket;
 
-import java.util.List;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -29,11 +28,6 @@ public class TicketService {
     // Method to retrieve a ticket by its barcode
     public Ticket getTicketByBarcode(String barcode) {
         return ticketDAO.getTicketByBarcode(barcode);
-    }
-
-    // Method to retrieve tickets by user ID
-    public List<Ticket> getTicketsByUserID(int userID) {
-        return ticketDAO.getTicketsByUserID(userID);
     }
 
     public static byte[] generateTicketFile(Ticket ticket) throws IOException {

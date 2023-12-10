@@ -21,13 +21,12 @@ public class EventDAO{
         dbConnection = singletonDbConnection.getInstance();
     }
 
-    public void createEvent(Event event)
-    {
+    public void createEvent(Event event) {
         Connection connection = dbConnection.getConnection();
         String insertQuery = "INSERT INTO Event (EventName, Date, Time, Description, Category, requiresTicket) VALUES (?,?,?,?,?,?)";
         try {
             PreparedStatement ps1 = connection.prepareStatement(insertQuery);
-            //EventID is auto-generated, we don't need to set it manually
+            // EventID is auto-generated, we don't need to set it manually
             ps1.setString(1, event.getEventName());
             ps1.setDate(2, event.getDate());
             ps1.setTime(3, event.getTime());
@@ -36,6 +35,43 @@ public class EventDAO{
             ps1.setBoolean(6, event.isRequiresTicket());
 
             ps1.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbConnection.closeConnection();
+        }
+    }
+
+    public void addDatatoManage(int eventID, EventOrganizer organizer) {
+        Connection connection = dbConnection.getConnection();
+        String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(addManage);
+            ps.setInt(1, organizer.getSjsuId());
+            ps.setInt(2, eventID);
+
+            ps.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            dbConnection.closeConnection();
+        }
+    }
+    public void editEvent(Event event)
+    {
+        Connection connection = dbConnection.getConnection();
+        String editQuery = "UPDATE Event SET eventName=?, date=?, time=?, description=?, category=? WHERE eventID = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(editQuery);
+            ps.setString(1, event.getEventName());
+            ps.setDate(2, event.getDate());
+            ps.setTime(3, event.getTime());
+            ps.setString(4, event.getDescription());
+            ps.setString(5, event.getCategory());
+            ps.setInt(6, event.getEventID());
+            ps.executeUpdate();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -43,69 +79,8 @@ public class EventDAO{
             dbConnection.closeConnection();
         }
     }
-    
-    public void addDatatoManage(int eventID, EventOrganizer organizer)
-    {
-    	Connection connection = dbConnection.getConnection();
-    	String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
-    	 try {
-             PreparedStatement ps = connection.prepareStatement(addManage);
-             ps.setInt(1, organizer.getSjsuId());
-             ps.setInt(2, eventID);
 
-             ps.executeUpdate();
- 
-         } catch (SQLException e)
-         {
-             e.printStackTrace();
-         } finally {
-             dbConnection.closeConnection();
-         }
-    }
-
-    /*
-
-    public void editEvent(Event event, EventOrganizer eventOrganizer)
-    {
-    	Connection connection = dbConnection.getConnection();
-    	String editQuery = "UPDATE Event NATURAL JOIN Manage SET eventName=?, date=?, time=?, description=?, category=? WHERE SJSUID = ? AND eventID = ?";
-
-    	try {
-    		PreparedStatement ps = connection.prepareStatement(editQuery);
-    		ps.setString(1, event.getEventName());
-    		ps.setDate(2, event.getDate());
-    		ps.setTime(3, event.getTime());
-    		ps.setString(4, event.getDescription());
-    		ps.setString(5, event.getCategory());
-    		ps.setInt(6, eventOrganizer.getSjsuId());
-    		ps.setInt(7, event.getEventID());
-    	} catch (SQLException e)
-    	{
-    		e.printStackTrace();
-    	} finally {
-    		dbConnection.closeConnection();
-    	}
-    }
-
-
-    public void deleteEvent(Event event, EventOrganizer eventOrganizer)
-    {
-    	Connection connection = dbConnection.getConnection();
-    	String deleteQuery = "DELETE FROM Event NATURAL JOIN Manage WHERE eventID=? AND SJSUID = ?)";
-
-    	try {
-    		PreparedStatement ps = connection.prepareStatement(deleteQuery);
-    		ps.setInt(1, event.getEventID());
-    		ps.setInt(2, eventOrganizer.getSjsuId());
-    	} catch (SQLException e)
-    	{
-    		e.printStackTrace();
-    	}
-    }
-    */
-
-    public int deleteEvent(Event event, EventOrganizer eventOrganizer)
-    {
+    public int deleteEvent(Event event, EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
         String deleteQuery1 = "DELETE FROM Event WHERE EventID=? AND ? IN (SELECT SJSUID FROM Manage WHERE EventID=?);";
         String deleteQuery2 = "DELETE FROM Manage WHERE EventID=? AND SJSUID=?;";
@@ -117,8 +92,7 @@ public class EventDAO{
             ps1.setInt(3, event.getEventID());
 
             int i = ps1.executeUpdate();
-            if (i == 0)
-            {
+            if (i == 0) {
                 return 0;
             }
 
@@ -127,8 +101,7 @@ public class EventDAO{
             ps2.setInt(2, eventOrganizer.getSjsuId());
             ps2.executeUpdate();
 
-        } catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 1;
@@ -154,20 +127,19 @@ public class EventDAO{
             // Retrieves the value of the first column in the current row
             if (rs.next() && rs.getInt(1) > 0) {
                 // User is already registered for this event
-                System.out.println("User is already registered for this event.");
                 return false;
             }
 
             // Registration process
-            String registerQuery = "INSERT INTO Register (SJSUID, EventID, IsCheckedIn) VALUES (?, ?, ?)";
+            String registerQuery = "INSERT INTO Register (SJSUID, EventID) VALUES (?, ?)";
             registerStatement = connection.prepareStatement(registerQuery);
             registerStatement.setInt(1, user.getSjsuId());
             registerStatement.setInt(2, event.getEventID());
-            registerStatement.setBoolean(3, false);
             registerStatement.executeUpdate();
 
             if (event.isRequiresTicket()) {
                 // Generate and insert a new ticket
+                //String ticketQuery = "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)";
                 String ticketQuery = "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)";
                 ticketStatement = connection.prepareStatement(ticketQuery);
                 ticketStatement.setInt(1, event.getEventID());
@@ -197,7 +169,6 @@ public class EventDAO{
     }
 
     public boolean isUserRegisteredForEvent(int userId, int eventId) {
-        System.out.println("UserID: " + userId + "eventId: "+ eventId);
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -219,8 +190,6 @@ public class EventDAO{
                 int countVal = resultSet.getInt("Count");
                 if (countVal > 0) {
                     isUserRegistered = true;
-                } else {
-                    System.out.println("Query Result is empty");
                 }
             }
         } catch (SQLException e) {
@@ -236,18 +205,14 @@ public class EventDAO{
                 e.printStackTrace();
             }
         }
-        System.out.println("isUserRegistered from function: "+ isUserRegistered);
         return isUserRegistered;
     }
     public HashMap<String, Integer> getAttendeeCountForEvent(int sjsuId) {
-        System.out.println("SJSU ID of organizer: "+sjsuId);
         String sql = "SELECT Event.EventName AS EventName, COUNT(Register.EventID) AS EventCount " +
                 "FROM Event " +
                 "JOIN Register ON Event.EventID = Register.EventID " +
                 "WHERE Event.EventID IN (SELECT EventID FROM Manage WHERE SJSUID = ?) " +
                 "GROUP BY Register.EventID";
-        System.out.println("Query result: "+sql);
-
 
         HashMap<String, Integer> eventToCountMap = new HashMap<>();
         try (Connection conn = dbConnection.getConnection();
@@ -259,7 +224,6 @@ public class EventDAO{
                 if (rs.next()) {
                     String EventName = rs.getString("EventName");
                     int EventCount = rs.getInt("EventCount");
-                    System.out.println("Event Name: "+EventName + " Event Count: "+ EventCount);
                     eventToCountMap.put(EventName, EventCount);
                 }
             }
@@ -332,26 +296,6 @@ public class EventDAO{
 
         return eventList;
     }
-    
-    public int getEventIDbyName(String name)
-    {
-    	Connection connection = dbConnection.getConnection();
-    	String query = "Select * FROM Event WHERE eventName = ?;";
-    	int eventID = 0;
-    	try {
-    		PreparedStatement ps = connection.prepareStatement(query);
-    		ps.setString(1, name);
-    		ResultSet rs = ps.executeQuery();
-    		if(rs.next())
-    		{
-    			eventID = rs.getInt("eventID");
-    		}
-    	}catch (SQLException e)
-    	{
-    		e.printStackTrace();
-    	}
-    	return eventID;
- }
 
     public Event getEventByName(String eventName) {
         String sql = "SELECT * FROM Event WHERE EventName = ?";
@@ -378,5 +322,39 @@ public class EventDAO{
             // Handle exceptions appropriately later
         }
         return event;
+    }
+    public int getEventIDbyName(String name) {
+        Connection connection = dbConnection.getConnection();
+        String query = "Select * FROM Event WHERE eventName = ?;";
+        int eventID = 0;
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                eventID = rs.getInt("eventID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return eventID;
+    }
+
+    public List<Integer> getEventListBySjsuID(int sjsuID) {
+        Connection connection = dbConnection.getConnection();
+        List<Integer> list = new ArrayList<>();
+        String getList = "SELECT * FROM Manage WHERE sjsuID = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(getList);
+            ps.setInt(1, sjsuID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int eventID = rs.getInt("eventID");
+                list.add(eventID);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

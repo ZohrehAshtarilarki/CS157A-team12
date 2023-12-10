@@ -23,18 +23,8 @@ public class ReviewDAO {
     // Method to insert a new review into the database
     public boolean createReview(Review review) {
         Connection connection = dbConnection.getConnection();
-        String checkReviewQuery = "SELECT COUNT(*) FROM Review WHERE EventID = ? AND SJSUID = ?";
-        try {
-            // Check if review already exists
-            PreparedStatement checkStatement = connection.prepareStatement(checkReviewQuery);
-            checkStatement.setInt(1, review.getEventId());
-            checkStatement.setInt(2, review.getSjsuId());
-            ResultSet resultSet = checkStatement.executeQuery();
 
-            if (resultSet.next() && resultSet.getInt(1) > 0) {
-                // Review already exists, return false or handle as needed
-                return false;
-            }
+        try {
             // If no existing review, insert new review
             String insertReviewQuery = "INSERT INTO Review (EventID, SJSUID, ReviewText, Rating) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(insertReviewQuery);
@@ -50,6 +40,7 @@ public class ReviewDAO {
         }
     }
 
+
     public void deleteReview(int reviewId) throws SQLException {
         Connection connection = dbConnection.getConnection();
         // Start a transaction
@@ -59,11 +50,9 @@ public class ReviewDAO {
 
         try {
             // Delete from Review table
-            System.out.println("Preparing to delete from Review table.");
             PreparedStatement preparedStatement = connection.prepareStatement(deleteReviewQuery);
             preparedStatement.setInt(1, reviewId);
             int reviewDeleteCount = preparedStatement.executeUpdate();
-            System.out.println("Rows deleted from Attendee table: " + reviewDeleteCount);
 
             // Commit transaction
             connection.commit();
@@ -114,29 +103,6 @@ public class ReviewDAO {
         return reviews;
     }
 
-
-    // Method to retrieve a review by its ID
-    public Review getReviewById(int reviewId) {
-        Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Review WHERE ReviewID = ?";
-        try {
-            PreparedStatement statement = connection.prepareStatement(selectQuery);
-            statement.setInt(1, reviewId);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return new Review(
-                        resultSet.getInt("EventID"),
-                        resultSet.getInt("AttendeeID"),
-                        resultSet.getString("ReviewText"),
-                        resultSet.getFloat("Rating"));
-            }
-            return null;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     /*
   This implementation checks if a review exists for a specific event and user.
   If it does, it updates the Rating. If not, it creates a new review with the given Rating.
@@ -144,42 +110,36 @@ public class ReviewDAO {
     public boolean saveReview(int eventId, int userId, int rating, String text) {
         Connection connection = null;
         PreparedStatement checkStatement = null;
-        PreparedStatement updateStatement = null;
-
-        System.out.println("Here in save rating");
-        System.out.println("Here in save rating:" + text);
+        PreparedStatement insertStatement = null;
 
         try {
             connection = dbConnection.getConnection();
             connection.setAutoCommit(false); // Start transaction
 
-            // Check if a review already exists
-            String checkQuery = "SELECT COUNT(*) FROM Review WHERE EventID = ? AND SJSUID = ?";
+            // Check if user is registered for the event
+            String checkQuery = "SELECT COUNT(*) FROM Register WHERE EventID = ? AND SJSUID = ?";
             checkStatement = connection.prepareStatement(checkQuery);
             checkStatement.setInt(1, eventId);
             checkStatement.setInt(2, userId);
 
             ResultSet rs = checkStatement.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
-                // Update existing review with new rating
-                String updateQuery = "UPDATE Review SET Rating = ? WHERE EventID = ? AND SJSUID = ?";
-                updateStatement = connection.prepareStatement(updateQuery);
-                updateStatement.setInt(1, rating);
-                updateStatement.setInt(2, eventId);
-                updateStatement.setInt(3, userId);
-            } else {
-                // Insert new review with rating
+                // User is registered for the event, proceed with saving the review
                 String insertQuery = "INSERT INTO Review (EventID, SJSUID, Rating, ReviewText) VALUES (?, ?, ?, ?)";
-                updateStatement = connection.prepareStatement(insertQuery);
-                updateStatement.setInt(1, eventId);
-                updateStatement.setInt(2, userId);
-                updateStatement.setInt(3, rating);
-                updateStatement.setString(4, text);
-            }
+                insertStatement = connection.prepareStatement(insertQuery);
+                insertStatement.setInt(1, eventId);
+                insertStatement.setInt(2, userId);
+                insertStatement.setInt(3, rating);
+                insertStatement.setString(4, text);
 
-            updateStatement.executeUpdate();
-            connection.commit(); // Commit transaction
-            return true;
+                insertStatement.executeUpdate();
+                connection.commit(); // Commit transaction
+                return true;
+            } else {
+                // User is not registered for the event, rollback and return false
+                connection.rollback();
+                return false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             if (connection != null) {
@@ -193,10 +153,11 @@ public class ReviewDAO {
         } finally {
             // Close resources
             if (checkStatement != null) try { checkStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
-            if (updateStatement != null) try { updateStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
+            if (insertStatement != null) try { insertStatement.close(); } catch (SQLException e) { e.printStackTrace(); }
             if (connection != null) try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
+
 
     public double getAverageRatingForEvent(int eventId) {
         double averageRating = 0.0;
@@ -265,24 +226,26 @@ public class ReviewDAO {
         return reviewList;
     }
 
-    public Review getReviewByText(String reviewText) {
+    // Method to retrieve a review by its ID
+    public List<Review> getReviewById(int eventId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Review WHERE ReviewText = ?";
-        Review review = null;
+        String selectQuery = "SELECT * FROM Review WHERE EventID = " + eventId;
+        List<Review> reviewList = new ArrayList<>();
+        Review review;
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
-            preparedStatement.setString(1, String.valueOf(reviewText));
-
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
-                int attendeeId = Integer.parseInt(resultSet.getString("attendeeId"));
-                int eventId = Integer.parseInt((resultSet.getString("eventId")));
-                String reviewText1 = resultSet.getString("reviewText");
-                float rating = resultSet.getFloat("rating");
+            while (resultSet.next()) {
+                review = new Review();
+                review.setReviewId(resultSet.getInt("reviewId"));
+                review.setEventId(resultSet.getInt("eventId"));
+                review.setSjsuId(resultSet.getInt("sjsuId"));
+                review.setReviewText(resultSet.getString("reviewText"));
+                review.setRating(resultSet.getFloat("rating"));
 
-                review = new Review(eventId, attendeeId, reviewText1, rating);
+                reviewList.add(review);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -290,6 +253,7 @@ public class ReviewDAO {
         } finally {
             dbConnection.closeConnection();
         }
-        return review;
+
+        return reviewList;
     }
 }

@@ -73,9 +73,6 @@ public class AttendeeServlet extends HttpServlet {
 
         // Use the DAO to create a new Attendee record in the database
         attendeeDAO.createAttendee(attendee);
-
-        // Redirect or forward to a success page
-        //response.sendRedirect("/views/attendeeDash.jsp");
     }
 
     private void updateAttendee(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -125,14 +122,12 @@ public class AttendeeServlet extends HttpServlet {
         try {
             System.out.println("Attempting to delete attendee with SJSUID: " + sjsuId);
             attendeeDAO.deleteAttendee(sjsuId);
-            System.out.println("Deletion successful for SJSUID: " + sjsuId);
             // Set a success message as a request attribute
             request.setAttribute("message", "Attendee successfully deleted.");
             // Forward to the JSP page to display the message
             request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Deletion failed for SJSUID: " + sjsuId);
             // Set an error message as a request attribute
             request.setAttribute("error", "Error while deleting attendee.");
             // Forward to the JSP page to display the error message
@@ -142,7 +137,7 @@ public class AttendeeServlet extends HttpServlet {
 
 
     private void getAttendeeById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
+        int sjsuId = Integer.parseInt(request.getParameter("sjsuId"));
 
         Attendee attendee = attendeeDAO.getAttendeeById(sjsuId);
 
@@ -156,14 +151,6 @@ public class AttendeeServlet extends HttpServlet {
 
         // Use the retrieved list of attendees as needed, e.g., display it on a JSP page
         request.setAttribute("attendeeList", list);
-        request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
-    }
-
-    private void getAttendeeByName(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String attendeeName = request.getParameter("userName");
-        Attendee attendee = attendeeDAO.getAttendeeByName(attendeeName);
-
-        request.setAttribute("attendee", attendee);
         request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
     }
     @Override

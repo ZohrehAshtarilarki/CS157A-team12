@@ -77,7 +77,6 @@ public class ReviewServlet extends HttpServlet {
         try {
             eventId = Integer.parseInt(eventIdStr);
             attendeeId = Integer.parseInt(sjsuId);
-            rating = Float.parseFloat(ratingStr);
         } catch (NumberFormatException e) {
             // Handle the case where eventId or attendeeId is not a valid integer
             request.setAttribute("errorMessage", "Invalid event ID or attendee ID.");
@@ -117,7 +116,6 @@ public class ReviewServlet extends HttpServlet {
     }
 
     private void saveReview(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
         HttpSession session = request.getSession();
         // Retrieve sjsuId from session
         Integer sjsuId = (Integer) session.getAttribute("SJSUID");
@@ -128,24 +126,24 @@ public class ReviewServlet extends HttpServlet {
             return;
         }
 
-        String eventIdParam = request.getParameter("eventId");
+        String eventIdParam = request.getParameter("eventID");
         String ratingParam = request.getParameter("rating");
         String textParam = request.getParameter("reviewText");
 
-        if (eventIdParam == null || ratingParam == null) {
-            request.setAttribute("errorMessage", "Invalid event ID or rating.");
+        if (eventIdParam == null || ratingParam == null || textParam == null || textParam.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Invalid event ID, rating, or review text.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp");
             dispatcher.forward(request, response);
             return;
         }
 
-        int eventId, rating;
-        String text;
+        int eventId;
+        int rating;
+        String text = textParam.trim();
 
         try {
             eventId = Integer.parseInt(eventIdParam);
             rating = Integer.parseInt(ratingParam);
-            text = textParam;
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid event ID or rating format.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/eventInfo.jsp");
@@ -153,9 +151,13 @@ public class ReviewServlet extends HttpServlet {
             return;
         }
 
-        // Check if the user is registered for the event
+        // Initialize EventDAO and ReviewDAO here
         EventDAO eventDAO = new EventDAO();
+        ReviewDAO reviewDAO = new ReviewDAO();
+
+        // Check if the user is registered for the event
         boolean isRegistered = eventDAO.isUserRegisteredForEvent(sjsuId, eventId);
+
         if (!isRegistered) {
             // User is not registered for the event, hence cannot submit a review
             request.setAttribute("errorMessage", "You must be registered for the event to submit a review.");
@@ -164,27 +166,20 @@ public class ReviewServlet extends HttpServlet {
             return;
         }
 
-        ReviewDAO reviewDAO = new ReviewDAO();
+        // User is registered, proceed with saving the review
         boolean result = reviewDAO.saveReview(eventId, sjsuId, rating, text);
 
+        // Fetch the event details again to include in the forwarded request
+        Event event = eventDAO.getEventById(eventId);
+        request.setAttribute("event", event);
+        request.setAttribute("eventId", eventId);
 
         if (result) {
-            // Fetch the event details again to include in the forwarded request
-            Event event = eventDAO.getEventById(eventId);
-            if (event != null) {
-                // Set the event object in the request scope
-                request.setAttribute("event", event);
-                // Set a success message
-                request.setAttribute("successMessage", "Rating submitted successfully!");
-                // Also set the eventId in the request attribute
-                request.setAttribute("eventId", eventId);
-            } else {
-                // Set an error message if event is not found
-                request.setAttribute("errorMessage", "Event not found.");
-            }
+            // Set a success message
+            request.setAttribute("successMessage", "Review submitted successfully!");
         } else {
-            // Set an error message in case of failure in saving rating
-            request.setAttribute("errorMessage", "There was an error submitting the rating.");
+            // Set an error message in case of failure in saving the review
+            request.setAttribute("errorMessage", "There was an error submitting the review.");
         }
 
         // Forward to eventInfo.jsp in all cases
@@ -195,10 +190,8 @@ public class ReviewServlet extends HttpServlet {
 
     private void deleteReview(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String reviewIdStr = request.getParameter("reviewId");
-        System.out.println("Received Review ID: " + reviewIdStr); // Additional logging
 
         if (reviewIdStr == null || reviewIdStr.isEmpty()) {
-            System.out.println("Review ID is missing or empty");
             request.setAttribute("error", "Review ID is missing or empty.");
             request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
             return;
@@ -206,18 +199,14 @@ public class ReviewServlet extends HttpServlet {
 
         try {
             int reviewId = Integer.parseInt(reviewIdStr);
-            System.out.println("Attempting to delete review with ID: " + reviewId);
             reviewDAO.deleteReview(reviewId);
-            System.out.println("Deletion successful for review ID: " + reviewId);
             request.setAttribute("message", "Review successfully deleted.");
             request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
         } catch (NumberFormatException e) {
-            System.out.println("Invalid Review ID format: " + reviewIdStr);
             request.setAttribute("error", "Invalid Review ID format.");
             request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Deletion failed for Review ID: " + reviewIdStr);
             request.setAttribute("error", "Error while deleting review.");
             request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
         }
@@ -226,28 +215,14 @@ public class ReviewServlet extends HttpServlet {
     private void getReviewById(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Handling a GET request to retrieve a review
         int reviewId = Integer.parseInt(request.getParameter("reviewId"));
-        Review review = reviewDAO.getReviewById(reviewId);
+        List<Review> list = reviewDAO.getReviewById(reviewId);
 
-        if (review != null) {
-            request.setAttribute("review", review);
-            request.getRequestDispatcher("reviewDetails.jsp").forward(request, response);
-        } else {
-            response.sendRedirect("reviewNotFound.jsp");
-        }
+        // Use the retrieved list of reviews as needed, e.g., display it on a JSP page
+        request.setAttribute("reviewList", list);
+        request.getRequestDispatcher("/views/organizerDash.jsp").forward(request, response);
     }
     private void getAllReviews(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Assuming the event ID is passed as a request parameter named "eventId"
-        //String eventIdStr = request.getParameter("eventId");
-        //int eventId = 0;
-
-        // Convert the event ID to an integer
-       // try {
-            //eventId = Integer.parseInt(eventIdStr);
-        //} catch (NumberFormatException e) {
-            // Handle the case where eventId is not a valid integer
-            // For example, redirect to an error page or set a default event ID
-      //  }
 
         List<Review> list = reviewDAO.getAllReviews();
 

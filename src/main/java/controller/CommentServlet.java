@@ -29,11 +29,11 @@ public class CommentServlet extends HttpServlet {
 
 		if (action != null) {
 			switch (action) {
-			case "addComment":
-				addComment(request, response);
-				break;
-			default:
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+				case "addComment":
+					addComment(request, response);
+					break;
+				default:
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
 		}
 	}
@@ -45,11 +45,11 @@ public class CommentServlet extends HttpServlet {
 
 		if (action != null) {
 			switch (action) {
-			case "getAllCommentByEvent":
-				getAllCommentByEvent(request, response);
-				break;
-			default:
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+				case "getAllCommentByEvent":
+					getAllCommentByEvent(request, response);
+					break;
+				default:
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
 		}
 	}

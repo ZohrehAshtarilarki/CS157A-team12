@@ -8,6 +8,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.sql.SQLException" %>
+<%@ page import="model.Event" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -43,6 +44,7 @@
 
 <!-- Button Group for Deletion Actions -->
 <div class="button-group">
+    <button id="btnCreateEvent"><a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuId%>">Create Event</a></button>
     <!-- Trigger/Open The Attendee Delete Modal -->
     <button id="btnShowAttendees">Delete Attendee</button>
 
@@ -93,8 +95,9 @@
                 ReviewDAO reviewDAO = new ReviewDAO();
                 List<Review> reviews = null;
                 try {
+                    if (sjsuId != null) {
                     reviews = reviewDAO.getReviewsByOrganizer(sjsuId);
-                } catch (SQLException e) {
+                } }catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
                 for (Review review : reviews) {
@@ -150,6 +153,7 @@
     // Script for Attendee Delete Modal
     var deleteModal = document.getElementById("attendeeDeleteModal");
     var btnDelete = document.getElementById("btnShowAttendees");
+
     var spanDelete = document.getElementsByClassName("close")[0];
 
     btnDelete.onclick = function() {
@@ -207,6 +211,39 @@
         }
     }
 </script>
+<%
+    EventDAO eventDAO = new EventDAO();
+    List<Integer> list = eventDAO.getEventListBySjsuID(sjsuId);
+%>
+<h2>My Events</h2>
+<%
+    for (Integer id: list)
+    {
+        Event event = eventDAO.getEventById(id);
+%>
+<div class="attendee">
+    <span><%=event.getEventName()%></span>
+    <form action="${pageContext.request.contextPath}/EventServlet"
+          method="post">
+        <input type="hidden" name="action" value="deleteEvent">
+        <div>
+            <input type="Hidden"
+                   name="eventId" id="eventId" value="<%=event.getEventID()%>">
+        </div>
+        <div>
+            <input type="hidden"
+                   name="sjsuId" id="sjsuId" value="<%=sjsuId%>">
+        </div>
+        <div>
+            <button type="submit" name="action" value="deleteEvent">Delete</button>
+        </div>
+    </form>
+
+    <a href="${pageContext.request.contextPath}/views/editEvent.jsp?eventID=<%=event.getEventID()%>"><button>Edit</button></a>
+    <a href="${pageContext.request.contextPath}/views/addNotification.jsp?eventID=<%=event.getEventID()%>"><button>Add Notification</button></a>
+
+</div>
+<%}%>
 
 </body>
 </html>
