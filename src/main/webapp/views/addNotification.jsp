@@ -33,7 +33,7 @@
 %>
 
 <main>
-  <h1>Edit Event</h1>
+  <h1>Add Notification</h1>
   <form action="${pageContext.request.contextPath}/NotificationServlet"
         method="post">
     <input type="hidden" name="action" value="addNotification">

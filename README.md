@@ -24,9 +24,6 @@ The **Campus Event Management System** is a comprehensive platform designed to s
 ### Event Analytics
 - Administrators can access analytics and reports on event attendance, demographics, and feedback to make data-driven decisions about campus activities.
 
-### Calendar Integration
-- Events are seamlessly integrated into a campus-wide calendar, allowing users to view upcoming events and plan their schedules conveniently.
-
 ### Role-Based Access
 - Different user roles, including event organizers, attendees, and administrators, have specific permissions and access levels within the system.
 
