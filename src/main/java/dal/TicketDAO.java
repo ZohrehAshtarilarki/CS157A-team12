@@ -55,7 +55,7 @@ public class TicketDAO {
         }
         return false;
     }
-
+    
     // Method to retrieve a ticket by its barcode
     public Ticket getTicketByBarcode(String barcode) {
         try (Connection connection = dbConnection.getConnection();

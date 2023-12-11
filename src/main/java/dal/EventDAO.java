@@ -266,6 +266,60 @@ public class EventDAO{
         return event;
     }
 
+    public List<Event> getEventsByCategory(String category) {
+        Connection connection = dbConnection.getConnection();
+        List<Event> events = new ArrayList<>();
+        String selectQuery  = "SELECT * FROM Event WHERE Category = ?";
+        System.out.println("events by category" + selectQuery);
+
+        try {
+             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+
+            preparedStatement.setString(1, category);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Event event = new Event();
+                event.setEventID(rs.getInt("EventID"));
+                event.setEventName(rs.getString("EventName"));
+                event.setDate(rs.getDate("Date"));
+                event.setTime(rs.getTime("Time"));
+                event.setDescription(rs.getString("Description"));
+                event.setCategory(rs.getString("Category"));
+                event.setRequiresTicket(rs.getBoolean("requiresTicket"));
+                events.add(event);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return events;
+    }
+
+    /*
+    To add a dropdown menu that shows all the available categories, this
+    method is used  to populate the dropdown with categories from the database
+     */
+    public List<String> getAllEventCategories() {
+        Connection connection = dbConnection.getConnection();
+        List<String> categories = new ArrayList<>();
+        String selectQuery = "SELECT DISTINCT Category FROM Event";
+
+        try {
+             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                categories.add(rs.getString("Category"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return categories;
+    }
+
+
     public List<Event> getAllEvents() {
         Connection connection = dbConnection.getConnection();
         String selectQuery = "SELECT * FROM Event";

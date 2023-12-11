@@ -55,6 +55,28 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .centered-container form.search-form {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .search-form input[type="text"] {
+            padding: 5px;
+            margin-right: 10px;
+            width: 200px; /* Adjust as necessary */
+        }
+
+        .search-form button {
+            padding: 5px 15px;
+        }
+        .search-form select {
+            padding: 5px;
+            margin-right: 10px;
+            width: auto; /* Adjust width as needed */
+        }
+        h2 {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -90,9 +112,14 @@
     </nav>
 </header>
 <h1>Welcome to the Home Page</h1>
+<br>
+<br>
 <%
     NotificationDAO notificationDAO = new NotificationDAO();
     EventDAO eventDAO = new EventDAO();
+    String searchCategory = request.getParameter("category");
+    List<String> categories = eventDAO.getAllEventCategories();
+    request.setAttribute("categories", categories);
 %>
 <div id="notificationModal" class="modal">
     <!-- Modal content -->
@@ -133,22 +160,63 @@
     // Close the modal if the user clicks outside of it
     window.onclick = function(event) {
         var modal = document.getElementById("notificationModal");
-        if (event.target == modal) {
+        if (event.target === modal) {
             modal.style.display = "none";
         }
     }
 </script>
 
+<!-- Search Form -->
 <div class="centered-container">
-    <h2>Upcoming Events</h2>
+    <form action="${pageContext.request.contextPath}/EventServlet" method="GET" class="search-form">
+        <input type="hidden" name="action" value="searchByCategory" />
+        <label for="category">Search Events by Category:</label>
+        <select name="category" id="category" required>
+            <option value="">Select a category</option>
+            <%
+                for(String category : categories) {
+                    // Select the searched category
+                    String selected = category.equals(searchCategory) ? "selected" : "";
+            %>
+            <option value="<%= category %>" <%= selected %>><%= category %></option>
+            <%
+                }
+            %>
+        </select>
+        <button type="submit">Search</button>
+    </form>
 </div>
+<!-- Two line breaks -->
+<br><br>
 
+<% if(searchCategory == null || searchCategory.isEmpty()) { %>
+<h2>Upcoming Events</h2>
+<% } %>
+
+<%
+    List<Event> events;
+    if (searchCategory != null && !searchCategory.isEmpty()) {
+        events = eventDAO.getEventsByCategory(searchCategory);
+    } else {
+        events = eventDAO.getAllEvents();
+    }
+    request.setAttribute("events", events);
+%>
+
+<%
+    // Attempt to get the 'events' attribute from the request.
+    events = (List<Event>) request.getAttribute("events");
+
+    // If 'events' is not set in the request, call getAllEvents() to display all events.
+    if (events == null) {
+        events = eventDAO.getAllEvents();
+    }
+%>
 <div class="events-container">
     <%
-        List<Event> events = eventDAO.getAllEvents();
-
-
+        // Check if the 'events' list is not null and not empty.
         if (events != null && !events.isEmpty()) {
+            // Iterate over each event and display its details.
             for (Event event : events) {
     %>
     <ul id="event-list">
@@ -163,7 +231,7 @@
         }
     } else {
     %>
-    <p>No upcoming events.</p>
+    <p>No events found.</p>
     <%
         }
     %>

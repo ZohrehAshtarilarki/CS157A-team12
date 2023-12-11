@@ -30,43 +30,43 @@
 
 <main>
     <h1>Edit Event</h1>
-    <form action="${pageContext.request.contextPath}/EventServlet"
-          method="post">
+    <form action="${pageContext.request.contextPath}/EventServlet" method="post">
         <input type="hidden" name="action" value="editEvent">
+        <input type="hidden" name="eventID" id="eventID" value="<%=eventid%>">
+
         <div>
-            <input type="hidden"
-                   name="eventID" id="eventID" value=<%=eventid%>>
+            <label for="eventName">Event Name:</label>
+            <input type="text" name="eventName" id="eventName" required>
         </div>
         <div>
-            <label for="eventName">Event Name:</label> <input type="text"
-                                                              name="eventName" id="eventName" required>
+            <label for="eventDate">Event Date:</label>
+            <input type="date" name="eventDate" id="eventDate" required>
         </div>
         <div>
-            <label for="eventDate">Event Date:</label> <input type="date"
-                                                              name="eventDate" id="eventDate" required>
+            <label for="eventTime">Event time:</label>
+            <input type="time" name="eventTime" id="eventTime" required>
         </div>
         <div>
-            <label for="eventTime">Event time:</label> <input type="time"
-                                                              name="eventTime" id="eventTime" required>
+            <label for="eventDescription">Event Description:</label>
+            <input type="text" name="eventDescription" id="eventDescription" required>
         </div>
         <div>
-            <label for="eventDescription">Event Description:</label> <input
-                type="text" name="eventDescription" id="eventDescription" required>
+            <label for="eventCategory">Event Category:</label>
+            <input type="text" name="eventCategory" id="eventCategory" required>
         </div>
         <div>
-            <label for="eventCategory">Event Category:</label> <input
-                type="text" name="eventCategory" id="eventCategory" required>
+            <label for="requiresTicket">Ticket Required:</label>
+            <select name="requiresTicket" id="requiresTicket" required>
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
         </div>
-        <label for="requiresTicket">Ticket Required:</label> <select
-            name="requiresTicket" id="requiresTicket" required>
-        <option value="true">True</option>
-        <option value="false">False</option>
-    </select>
 
         <div>
             <button type="submit" name="action" value="editEvent">Edit</button>
         </div>
     </form>
 </main>
+
 </body>
 </html>

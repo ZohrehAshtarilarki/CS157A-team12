@@ -51,10 +51,12 @@ h1 {
 /* Modal Content */
 .modal-content {
     background-color: #fefefe;
-    margin: 10% auto; /* 10% from the top and centered */
+    margin: 2% auto; /* 10% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 50%; /* Adjust as necessary */
+    width: 60%;
+    height: 90vh;
+    overflow: auto;
 }
 
 /* The Close Button */
@@ -162,14 +164,43 @@ h1 {
 }
 
 /* Style for event name */
-.event-name {
-    font-size: 18px;
-    font-weight: bold;
-    color: #0055a8; /* Dark blue color */
+.attendee {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; /* Add space between attendee entries */
 }
 
-/* Style for attendee count */
-.attendee-count {
-    font-size: 16px;
-    color: #333; /* Darker text for emphasis */
+.event-name {
+    /* If you want the event name to take up more space, you can adjust the flex-grow value */
+    flex-grow: 1;
+    margin-right: 10px; /* Ensure there is space between the event name and the buttons */
+}
+
+.button-group {
+    display: flex;
+    gap: 10px; /* This creates space between the buttons */
+}
+
+.event-form,
+.edit-button {
+    display: inline-block; /* Keeps the form and anchor inline */
+}
+
+.event-button {
+    padding: 5px 15px; /* Adjust padding to match your design */
+    border: none;
+    cursor: pointer;
+}
+
+.delete-button {
+    background-color: #f44336; /* Red color for delete buttons */
+    color: white;
+}
+
+.edit-button {
+    background-color: #4CAF50; /* Green color for edit buttons */
+    color: white;
+    text-decoration: none; /* Removes underline from anchor */
+    padding: 5px 15px; /* Adjust padding to match delete button */
 }

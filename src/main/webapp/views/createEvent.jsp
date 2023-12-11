@@ -57,6 +57,12 @@
 			<input type="text" name="eventCategory" id="eventCategory" required>
 		</div>
 		<div>
+			<label for="requiresTicket">Ticket Required:</label> <select
+				name="requiresTicket" id="requiresTicket" required>
+			<option value="true">True</option>
+			<option value="false">False</option>
+		</select>
+
 			<button type="submit" name="action" value="createEvent">Create</button>
 		</div>
 	</form>

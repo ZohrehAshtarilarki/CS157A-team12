@@ -42,9 +42,11 @@
 <br> <!-- Line break added here -->
 <br> <!-- Line break added here -->
 
-<!-- Button Group for Deletion Actions -->
+<!-- Button Group for Deletion and Creation Actions -->
 <div class="button-group">
-    <button id="btnCreateEvent"><a href="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuId%>">Create Event</a></button>
+    <!-- Trigger/Open The Create Event Modal -->
+    <button id="btnCreateEvent">Create Event</button>
+
     <!-- Trigger/Open The Attendee Delete Modal -->
     <button id="btnShowAttendees">Delete Attendee</button>
 
@@ -55,11 +57,19 @@
     <button id="btnViewRegisteredAttendees">Registered Attendees</button>
 </div>
 
+<!-- The Create Event Modal -->
+<div id="createEventModal" class="modal">
+    <div class="modal-content">
+        <span class="close-create">&times;</span>
+        <iframe src="${pageContext.request.contextPath}/views/createEvent.jsp?sjsuID=<%=sjsuId%>" style="width:100%; height:80vh; border:none;"></iframe>
+    </div>
+</div>
+
 <!-- The Attendee Delete Modal -->
 <div id="attendeeDeleteModal" class="modal">
     <!-- Modal content for Deleting Attendee -->
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close-attendee">&times;</span>
         <h2>Attendees</h2>
         <div class="attendee-list">
             <%
@@ -153,23 +163,26 @@
     // Script for Attendee Delete Modal
     var deleteModal = document.getElementById("attendeeDeleteModal");
     var btnDelete = document.getElementById("btnShowAttendees");
-
-    var spanDelete = document.getElementsByClassName("close")[0];
+    var spanDelete = document.getElementsByClassName("close-attendee")[0];
 
     btnDelete.onclick = function() {
         deleteModal.style.display = "block";
     }
-
+    // When the user clicks on <span> (x), close the delete modal
     spanDelete.onclick = function() {
         deleteModal.style.display = "none";
+    }
+    // Close the review modal if the user clicks outside of it
+    window.onclick = function(event) {
+        if (event.target === deleteModal) {
+            deleteModal.style.display = "none";
+        }
     }
 
     // Get the review modal
     var reviewModal = document.getElementById("reviewModal");
-
     // Get the button that opens the review modal
     var btnShowReviews = document.getElementById("btnShowReviews");
-
     // Get the <span> element that closes the review modal
     var spanReview = document.getElementsByClassName("close-review")[0];
 
@@ -181,6 +194,12 @@
     // When the user clicks on <span> (x), close the review modal
     spanReview.onclick = function() {
         reviewModal.style.display = "none";
+    }
+    // Close the review modal if the user clicks outside of it
+    window.onclick = function(event) {
+        if (event.target === reviewModal) {
+            reviewModal.style.display = "none";
+        }
     }
 
     // Script for Registered Attendees Modal
@@ -204,10 +223,29 @@
         }
     }
 
-    // Close the review modal if the user clicks outside of it
+    // Get the modal for create event
+    var modal = document.getElementById("createEventModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("btnCreateEvent");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close-create")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-        if (event.target === reviewModal) {
-            reviewModal.style.display = "none";
+        if (event.target === modal) {
+            modal.style.display = "none";
         }
     }
 </script>
@@ -222,26 +260,16 @@
         Event event = eventDAO.getEventById(id);
 %>
 <div class="attendee">
-    <span><%=event.getEventName()%></span>
-    <form action="${pageContext.request.contextPath}/EventServlet"
-          method="post">
-        <input type="hidden" name="action" value="deleteEvent">
-        <div>
-            <input type="Hidden"
-                   name="eventId" id="eventId" value="<%=event.getEventID()%>">
-        </div>
-        <div>
-            <input type="hidden"
-                   name="sjsuId" id="sjsuId" value="<%=sjsuId%>">
-        </div>
-        <div>
-            <button type="submit" name="action" value="deleteEvent">Delete</button>
-        </div>
-    </form>
-
-    <a href="${pageContext.request.contextPath}/views/editEvent.jsp?eventID=<%=event.getEventID()%>"><button>Edit</button></a>
-    <a href="${pageContext.request.contextPath}/views/addNotification.jsp?eventID=<%=event.getEventID()%>"><button>Add Notification</button></a>
-
+    <span class="event-name"><%=event.getEventName()%></span>
+    <div class="button-group">
+        <form action="${pageContext.request.contextPath}/EventServlet" method="post" class="event-form">
+            <input type="hidden" name="eventId" value="<%=event.getEventID()%>">
+            <input type="hidden" name="sjsuId" value="<%=sjsuId%>">
+            <button type="submit" name="action" value="deleteEvent" class="event-button delete-button">Delete</button>
+        </form>
+        <a href="${pageContext.request.contextPath}/views/editEvent.jsp?eventID=<%=event.getEventID()%>" class="event-button edit-button">Edit</a>
+        <a href="${pageContext.request.contextPath}/views/addNotification.jsp?eventID=<%=event.getEventID()%>"><button>Add Notification</button></a>
+    </div>
 </div>
 <%}%>
 

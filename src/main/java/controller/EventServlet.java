@@ -84,9 +84,15 @@ public class EventServlet extends HttpServlet {
 					break;
 				case "getAttendeeCountForEvent":
 					getAttendeeCountForEvent(request, response);
+				case "searchByCategory":
+					searchByCategory(request, response);
+					break;
 				default:
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
 			}
+		} else {
+			// Load the categories and events for the home page
+			loadHomePage(request, response);
 		}
 	}
 
@@ -243,6 +249,29 @@ public class EventServlet extends HttpServlet {
 		event.setRequiresTicket(requiresTicket);
 
 		eventDAO.editEvent(event);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	private void searchByCategory(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String category = request.getParameter("category");
+		List<Event> events = eventDAO.getEventsByCategory(category);
+		request.setAttribute("events", events);
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	// Method to load the home page
+	private void loadHomePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// Fetch the categories from the database using EventDAO
+		List<String> categories = eventDAO.getAllEventCategories();
+		request.setAttribute("categories", categories);
+
+		// Fetch all events for the home page by default
+		List<Event> events = eventDAO.getAllEvents();
+		request.setAttribute("events", events);
+
+		// Forward to the home.jsp with events and categories loaded
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/views/home.jsp");
 		dispatcher.forward(request, response);
 	}
