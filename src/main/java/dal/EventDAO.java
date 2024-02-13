@@ -23,7 +23,7 @@ public class EventDAO{
 
     public void createEvent(Event event) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO Event (EventName, Date, Time, Description, Category, requiresTicket) VALUES (?,?,?,?,?,?)";
+        String insertQuery = "INSERT INTO event (event_name, date, time, description, category, requires_ticket) VALUES (?,?,?,?,?,?)";
         try {
             PreparedStatement ps1 = connection.prepareStatement(insertQuery);
             // EventID is auto-generated, we don't need to set it manually
@@ -44,7 +44,7 @@ public class EventDAO{
 
     public void addDatatoManage(int eventID, EventOrganizer organizer) {
         Connection connection = dbConnection.getConnection();
-        String addManage = "INSERT INTO Manage (SJSUID, EventID) VALUES (?,?)";
+        String addManage = "INSERT INTO manage (sjsu_id, event_id) VALUES (?,?)";
         try {
             PreparedStatement ps = connection.prepareStatement(addManage);
             ps.setInt(1, organizer.getSjsuId());
@@ -61,7 +61,7 @@ public class EventDAO{
     public void editEvent(Event event)
     {
         Connection connection = dbConnection.getConnection();
-        String editQuery = "UPDATE Event SET eventName=?, date=?, time=?, description=?, category=? WHERE eventID = ?";
+        String editQuery = "UPDATE event SET event_name=?, date=?, time=?, description=?, category=? WHERE event_id = ?";
 
         try {
             PreparedStatement ps = connection.prepareStatement(editQuery);
@@ -82,8 +82,8 @@ public class EventDAO{
 
     public int deleteEvent(Event event, EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
-        String deleteQuery1 = "DELETE FROM Event WHERE EventID=? AND ? IN (SELECT SJSUID FROM Manage WHERE EventID=?);";
-        String deleteQuery2 = "DELETE FROM Manage WHERE EventID=? AND SJSUID=?;";
+        String deleteQuery1 = "DELETE FROM event WHERE event_id=? AND ? IN (SELECT sjsu_id FROM manage WHERE event_id=?);";
+        String deleteQuery2 = "DELETE FROM manage WHERE event_id=? AND sjsu_id=?;";
 
         try {
             PreparedStatement ps1 = connection.prepareStatement(deleteQuery1);
@@ -118,7 +118,7 @@ public class EventDAO{
             connection.setAutoCommit(false); // Start transaction
 
             // Check if user is already registered for the event
-            String checkQuery = "SELECT COUNT(*) FROM Register WHERE SJSUID = ? AND EventID = ?";
+            String checkQuery = "SELECT COUNT(*) FROM register WHERE sjsu_id = ? AND event_id = ?";
             checkStatement = connection.prepareStatement(checkQuery);
             checkStatement.setInt(1, user.getSjsuId());
             checkStatement.setInt(2, event.getEventID());
@@ -131,7 +131,7 @@ public class EventDAO{
             }
 
             // Registration process
-            String registerQuery = "INSERT INTO Register (SJSUID, EventID) VALUES (?, ?)";
+            String registerQuery = "INSERT INTO register (sjsu_id, event_id) VALUES (?, ?)";
             registerStatement = connection.prepareStatement(registerQuery);
             registerStatement.setInt(1, user.getSjsuId());
             registerStatement.setInt(2, event.getEventID());
@@ -140,7 +140,7 @@ public class EventDAO{
             if (event.isRequiresTicket()) {
                 // Generate and insert a new ticket
                 //String ticketQuery = "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)";
-                String ticketQuery = "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)";
+                String ticketQuery = "INSERT INTO ticket (event_id, sjsu_id, ticket_barcode) VALUES (?, ?, ?)";
                 ticketStatement = connection.prepareStatement(ticketQuery);
                 ticketStatement.setInt(1, event.getEventID());
                 ticketStatement.setInt(2, user.getSjsuId());
@@ -178,7 +178,7 @@ public class EventDAO{
             connection = dbConnection.getConnection();
 
             // SQL query to check if the user is registered for the event
-            String query = "SELECT Count(*) AS Count FROM Register WHERE SJSUID = ? AND EventID = ?";
+            String query = "SELECT Count(*) AS Count FROM register WHERE sjsu_id = ? AND event_id = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, userId);
             preparedStatement.setInt(2, eventId);
@@ -208,11 +208,11 @@ public class EventDAO{
         return isUserRegistered;
     }
     public HashMap<String, Integer> getAttendeeCountForEvent(int sjsuId) {
-        String sql = "SELECT Event.EventName AS EventName, COUNT(Register.EventID) AS EventCount " +
-                "FROM Event " +
-                "JOIN Register ON Event.EventID = Register.EventID " +
-                "WHERE Event.EventID IN (SELECT EventID FROM Manage WHERE SJSUID = ?) " +
-                "GROUP BY Register.EventID";
+        String sql = "SELECT event.event_name AS EventName, COUNT(Register.event_id) AS EventCount " +
+                "FROM event " +
+                "JOIN register ON event.event_id = register.event_id " +
+                "WHERE event.event_id IN (SELECT manage.event_id FROM manage WHERE manage.sjsu_id = ?) " +
+                "GROUP BY register.event_id";
 
         HashMap<String, Integer> eventToCountMap = new HashMap<>();
         try (Connection conn = dbConnection.getConnection();
@@ -222,7 +222,7 @@ public class EventDAO{
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    String EventName = rs.getString("EventName");
+                    String EventName = rs.getString("event_name");
                     int EventCount = rs.getInt("EventCount");
                     eventToCountMap.put(EventName, EventCount);
                 }
@@ -236,7 +236,7 @@ public class EventDAO{
 
     public Event getEventById(int eventID) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Event WHERE EventID = ?";
+        String selectQuery = "SELECT * FROM event WHERE event_id = ?";
         Event event = null;
 
         try {
@@ -247,13 +247,13 @@ public class EventDAO{
 
             if (resultSet.next()) {
                 event = new Event();
-                event.setEventID(Integer.parseInt(resultSet.getString("EventID")));
-                event.setEventName(resultSet.getString("EventName"));
-                event.setDate(resultSet.getDate("Date"));
-                event.setTime(resultSet.getTime("Time"));
-                event.setDescription(resultSet.getString("Description"));
-                event.setCategory(resultSet.getNString("Category"));
-                event.setRequiresTicket(resultSet.getBoolean("RequiresTicket"));
+                event.setEventID(Integer.parseInt(resultSet.getString("event_id")));
+                event.setEventName(resultSet.getString("event_name"));
+                event.setDate(resultSet.getDate("date"));
+                event.setTime(resultSet.getTime("time"));
+                event.setDescription(resultSet.getString("description"));
+                event.setCategory(resultSet.getNString("category"));
+                event.setRequiresTicket(resultSet.getBoolean("requires_ticket"));
 
             }
         } catch (SQLException e) {
@@ -269,7 +269,7 @@ public class EventDAO{
     public List<Event> getEventsByCategory(String category) {
         Connection connection = dbConnection.getConnection();
         List<Event> events = new ArrayList<>();
-        String selectQuery  = "SELECT * FROM Event WHERE Category = ?";
+        String selectQuery  = "SELECT * FROM event WHERE category = ?";
         System.out.println("events by category" + selectQuery);
 
         try {
@@ -281,13 +281,13 @@ public class EventDAO{
 
             while (rs.next()) {
                 Event event = new Event();
-                event.setEventID(rs.getInt("EventID"));
-                event.setEventName(rs.getString("EventName"));
-                event.setDate(rs.getDate("Date"));
-                event.setTime(rs.getTime("Time"));
-                event.setDescription(rs.getString("Description"));
-                event.setCategory(rs.getString("Category"));
-                event.setRequiresTicket(rs.getBoolean("requiresTicket"));
+                event.setEventID(rs.getInt("event_id"));
+                event.setEventName(rs.getString("event_name"));
+                event.setDate(rs.getDate("date"));
+                event.setTime(rs.getTime("time"));
+                event.setDescription(rs.getString("description"));
+                event.setCategory(rs.getString("category"));
+                event.setRequiresTicket(rs.getBoolean("requires_ticket"));
                 events.add(event);
             }
         } catch (SQLException e) {
@@ -303,7 +303,7 @@ public class EventDAO{
     public List<String> getAllEventCategories() {
         Connection connection = dbConnection.getConnection();
         List<String> categories = new ArrayList<>();
-        String selectQuery = "SELECT DISTINCT Category FROM Event";
+        String selectQuery = "SELECT DISTINCT category FROM event";
 
         try {
              PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
@@ -311,7 +311,7 @@ public class EventDAO{
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                categories.add(rs.getString("Category"));
+                categories.add(rs.getString("category"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -322,7 +322,7 @@ public class EventDAO{
 
     public List<Event> getAllEvents() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Event";
+        String selectQuery = "SELECT * FROM event";
         List<Event> eventList = new ArrayList<>();
 
         try {
@@ -331,13 +331,13 @@ public class EventDAO{
 
             while (resultSet.next()) {
                 Event event = new Event();
-                event.setEventID(Integer.parseInt(resultSet.getString("EventID")));
-                event.setEventName(resultSet.getString("EventName"));
-                event.setDate(resultSet.getDate("Date"));
-                event.setTime(resultSet.getTime("Time"));
-                event.setDescription(resultSet.getString("Description"));
-                event.setCategory(resultSet.getNString("Category"));
-                event.setRequiresTicket(resultSet.getBoolean("RequiresTicket"));
+                event.setEventID(Integer.parseInt(resultSet.getString("event_id")));
+                event.setEventName(resultSet.getString("event_name"));
+                event.setDate(resultSet.getDate("date"));
+                event.setTime(resultSet.getTime("time"));
+                event.setDescription(resultSet.getString("description"));
+                event.setCategory(resultSet.getNString("category"));
+                event.setRequiresTicket(resultSet.getBoolean("requires_ticket"));
 
                 eventList.add(event);
             }
@@ -352,7 +352,7 @@ public class EventDAO{
     }
 
     public Event getEventByName(String eventName) {
-        String sql = "SELECT * FROM Event WHERE EventName = ?";
+        String sql = "SELECT * FROM event WHERE event_name = ?";
         Event event = null;
 
         try (Connection conn = dbConnection.getConnection();
@@ -362,13 +362,13 @@ public class EventDAO{
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     event = new Event();
-                    event.setEventID(Integer.parseInt(rs.getString("EventID")));
-                    event.setEventName(rs.getString("EventName"));
-                    event.setDate(rs.getDate("Date"));
-                    event.setTime(rs.getTime("Time"));
-                    event.setDescription(rs.getString("Description"));
-                    event.setCategory(rs.getNString("Category"));
-                    event.setRequiresTicket(rs.getBoolean("RequiresTicket"));
+                    event.setEventID(Integer.parseInt(rs.getString("event_id")));
+                    event.setEventName(rs.getString("event_name"));
+                    event.setDate(rs.getDate("date"));
+                    event.setTime(rs.getTime("time"));
+                    event.setDescription(rs.getString("description"));
+                    event.setCategory(rs.getNString("category"));
+                    event.setRequiresTicket(rs.getBoolean("requires_ticket"));
                 }
             }
         } catch (SQLException e) {
@@ -379,14 +379,14 @@ public class EventDAO{
     }
     public int getEventIDbyName(String name) {
         Connection connection = dbConnection.getConnection();
-        String query = "Select * FROM Event WHERE eventName = ?;";
+        String query = "Select * FROM event WHERE event_name = ?;";
         int eventID = 0;
         try {
             PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                eventID = rs.getInt("eventID");
+                eventID = rs.getInt("event_id");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -397,13 +397,13 @@ public class EventDAO{
     public List<Integer> getEventListBySjsuID(int sjsuID) {
         Connection connection = dbConnection.getConnection();
         List<Integer> list = new ArrayList<>();
-        String getList = "SELECT * FROM Manage WHERE sjsuID = ?";
+        String getList = "SELECT * FROM manage WHERE sjsu_id = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(getList);
             ps.setInt(1, sjsuID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                int eventID = rs.getInt("eventID");
+                int eventID = rs.getInt("event_id");
                 list.add(eventID);
             }
         } catch (SQLException e) {

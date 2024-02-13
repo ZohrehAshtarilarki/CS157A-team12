@@ -20,7 +20,7 @@ public class AttendeeDAO {
 
     public void createAttendee(Attendee attendee) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO Attendee (SJSUID) VALUES (?)";
+        String insertQuery = "INSERT INTO attendee (sjsu_id) VALUES (?)";
 
         try {
             // Start transaction
@@ -48,7 +48,7 @@ public class AttendeeDAO {
         boolean updateResult = false;
 
         // SQL query to update the User table
-        String updateUserQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
+        String updateUserQuery = "UPDATE user SET sjsu_email=?, username=?, password=?, role=? WHERE sjsu_id=?";
 
         PreparedStatement preparedStatement = null;
         try {
@@ -87,8 +87,8 @@ public class AttendeeDAO {
         // Start a transaction
         connection.setAutoCommit(false);
 
-        String deleteAttendeeQuery = "DELETE FROM Attendee WHERE SJSUID = ?";
-        String deleteUserQuery = "DELETE FROM User WHERE SJSUID = ?";
+        String deleteAttendeeQuery = "DELETE FROM attendee WHERE sjsu_id = ?";
+        String deleteUserQuery = "DELETE FROM user WHERE sjsu_id = ?";
 
         try {
             // Delete from Attendee table
@@ -128,7 +128,7 @@ public class AttendeeDAO {
 
     public Attendee getAttendeeById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Attendee WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM attendee WHERE sjsu_id = ?";
         Attendee attendee = null;
 
         try {
@@ -138,11 +138,11 @@ public class AttendeeDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
-                String sjsuEmail = resultSet.getString("SJSUEmail");
-                String userName = resultSet.getString("Username");
-                String password = resultSet.getString("Password");
-                String role = resultSet.getString("Role");
+                int sjsuID = Integer.parseInt(resultSet.getString("sjsu_id"));
+                String sjsuEmail = resultSet.getString("sjsu_email");
+                String userName = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String role = resultSet.getString("role");
 
                 attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
             }
@@ -158,8 +158,8 @@ public class AttendeeDAO {
 
     public List<Attendee> getAllAttendees() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT Attendee.SJSUID, User.SJSUEmail, User.UserName, User.Password, User.Role " +
-                "FROM Attendee NATURAL JOIN User";
+        String selectQuery = "SELECT attendee.sjsu_id, user.sjsu_email, user.username, user.password, user.role " +
+                "FROM attendee NATURAL JOIN user";
 
         List<Attendee> attendeeList = new ArrayList<>();
         Attendee attendee;
@@ -170,11 +170,11 @@ public class AttendeeDAO {
 
             while (resultSet.next()) {
                 attendee = new Attendee();
-                attendee.setSjsuId(resultSet.getInt("SJSUID"));
-                attendee.setSjsuEmail(resultSet.getString("SJSUEmail"));
-                attendee.setUsername(resultSet.getString("Username"));
-                attendee.setPassword(resultSet.getString("Password"));
-                attendee.setRole(resultSet.getString("Role"));
+                attendee.setSjsuId(resultSet.getInt("sjsu_id"));
+                attendee.setSjsuEmail(resultSet.getString("sjsu_email"));
+                attendee.setUsername(resultSet.getString("username"));
+                attendee.setPassword(resultSet.getString("password"));
+                attendee.setRole(resultSet.getString("role"));
 
                 attendeeList.add(attendee);
             }
@@ -190,7 +190,7 @@ public class AttendeeDAO {
 
     public Attendee getAttendeeByName(String username) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Attendee WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM attendee WHERE sjsu_id = ?";
         Attendee attendee = null;
 
         try {
@@ -200,11 +200,11 @@ public class AttendeeDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                int sjsuID = Integer.parseInt(resultSet.getString("SJSUID"));
-                String sjsuEmail = resultSet.getString("SJSUEmail");
-                String userName = resultSet.getString("Username");
-                String password = resultSet.getString("Password");
-                String role = resultSet.getString("Role");
+                int sjsuID = Integer.parseInt(resultSet.getString("sjsu_id"));
+                String sjsuEmail = resultSet.getString("sjsu_email");
+                String userName = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                String role = resultSet.getString("role");
 
                 attendee = new Attendee(sjsuID, sjsuEmail, userName, password, role);
             }

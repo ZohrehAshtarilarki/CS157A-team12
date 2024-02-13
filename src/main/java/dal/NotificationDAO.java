@@ -22,7 +22,7 @@ public class NotificationDAO {
     public void addNotification(Notification noti)
     {
         Connection con = dbConnection.getConnection();
-        String add = "INSERT INTO Notification(eventID, notificationText) VALUES (?,?)";
+        String add = "INSERT INTO notification(event_id, notification_text) VALUES (?,?)";
         try {
             PreparedStatement ps = con.prepareStatement(add);
             ps.setInt(1, noti.getEventID());
@@ -37,14 +37,14 @@ public class NotificationDAO {
     public List <Notification> getAllNotification()
     {
         Connection con = dbConnection.getConnection();
-        String get = "SELECT * FROM Notification";
+        String get = "SELECT * FROM notification";
         List <Notification> result = new ArrayList<>();
         try {
             PreparedStatement ps = con.prepareStatement(get);
             ResultSet rs = ps.executeQuery();
             while(rs.next())
             {
-                result.add(new Notification(rs.getInt("eventID"), rs.getString("notificationText")));
+                result.add(new Notification(rs.getInt("event_id"), rs.getString("notification_text")));
             }
 
         }catch (SQLException e)

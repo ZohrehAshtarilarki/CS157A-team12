@@ -22,7 +22,7 @@ public class CommentDAO {
     public void addComment(int eventID,int sjsuID, String text)
     {
         Connection connection = dbConnection.getConnection();
-        String addQuery = "INSERT INTO Comment (eventID,sjsuID,commentText) values (?,?,?);";
+        String addQuery = "INSERT INTO comment (event_id,sjsu_id,comment_text) values (?,?,?);";
         try {
             PreparedStatement ps = connection.prepareStatement(addQuery);
             ps.setInt(1, eventID);
@@ -38,7 +38,7 @@ public class CommentDAO {
     public List <Comment> getAllCommentbyEvent (int eventID)
     {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Comment WHERE eventID = ?;";
+        String selectQuery = "SELECT * FROM comment WHERE event_id = ?;";
         List<Comment> commentList = new ArrayList<>();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(selectQuery);
@@ -47,10 +47,10 @@ public class CommentDAO {
 
             while (resultSet.next()) {
                 Comment comment = new Comment();
-                comment.setCommentID(resultSet.getInt("commentID"));
-                comment.setEventID(resultSet.getInt("eventID"));
-                comment.setSjsuID(resultSet.getInt("sjsuID"));
-                comment.setCommentText(resultSet.getString("commentText"));
+                comment.setCommentID(resultSet.getInt("comment_id"));
+                comment.setEventID(resultSet.getInt("event_id"));
+                comment.setSjsuID(resultSet.getInt("sjsu_id"));
+                comment.setCommentText(resultSet.getString("comment_text"));
 
                 commentList.add(comment);
             }

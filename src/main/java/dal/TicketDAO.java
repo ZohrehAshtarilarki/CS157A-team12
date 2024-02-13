@@ -22,7 +22,7 @@ public class TicketDAO {
     public boolean hasTicketForEvent(int sjsuId, int eventId) {
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT COUNT(*) FROM Register WHERE SJSUID = ? AND EventID = ?")) {
+                     "SELECT COUNT(*) FROM register WHERE sjsu_id = ? AND event_id = ?")) {
 
             statement.setInt(1, sjsuId);
             statement.setInt(2, eventId);
@@ -43,7 +43,7 @@ public class TicketDAO {
         if (!hasTicketForEvent(ticket.getSjsuId(), ticket.getEventId())) {
             try (Connection connection = dbConnection.getConnection();
                  PreparedStatement statement = connection.prepareStatement(
-                         "INSERT INTO Ticket (EventID, SJSUID, TicketBarcode) VALUES (?, ?, ?)")) {
+                         "INSERT INTO ticket (event_id, sjsu_id, ticket_barcode) VALUES (?, ?, ?)")) {
 
                 statement.setInt(1, ticket.getEventId());
                 statement.setInt(2, ticket.getSjsuId());
@@ -60,15 +60,15 @@ public class TicketDAO {
     public Ticket getTicketByBarcode(String barcode) {
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT * FROM Ticket WHERE TicketBarcode = ?")) {
+                     "SELECT * FROM ticket WHERE ticket_barcode= ?")) {
 
             statement.setString(1, barcode);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return new Ticket(
-                            resultSet.getInt("TicketID"),
-                            resultSet.getInt("EventID"),
-                            resultSet.getString("TicketBarcode"),
+                            resultSet.getInt("ticket_id"),
+                            resultSet.getInt("event_id"),
+                            resultSet.getString("ticket_barcode"),
                             -1); // -1 or any placeholder for sjsuId
                 }
             }
@@ -83,16 +83,16 @@ public class TicketDAO {
         try {
             Connection connection = dbConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(
-                    "SELECT *  FROM Ticket" +
-                            " WHERE SJSUID= ?");
+                    "SELECT *  FROM ticket" +
+                            " WHERE sjsu_id= ?");
 
             statement.setInt(1, sjsuId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     tickets.add(new Ticket(
-                            resultSet.getInt("TicketID"),
-                            resultSet.getInt("EventID"),
-                            resultSet.getString("TicketBarcode"),
+                            resultSet.getInt("ticket_id"),
+                            resultSet.getInt("event_id"),
+                            resultSet.getString("ticket_barcode"),
                             sjsuId)); // Using sjsuID from the method parameter
                 }
             }
@@ -109,16 +109,16 @@ public class TicketDAO {
         ResultSet resultSet = null;
         try {
             connection = dbConnection.getConnection();
-            String sql = "SELECT * FROM Ticket WHERE TicketID = ?";
+            String sql = "SELECT * FROM ticket WHERE ticket_id = ?";
             statement = connection.prepareStatement(sql);
             statement.setString(1, ticketId);
             resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
                 return new Ticket(
-                        resultSet.getInt("TicketID"),
-                        resultSet.getInt("EventID"),
-                        resultSet.getString("TicketBarcode"),
+                        resultSet.getInt("ticket_id"),
+                        resultSet.getInt("event_id"),
+                        resultSet.getString("ticket_barcode"),
                         -1); // -1 or any placeholder for sjsuId
             }
         } catch (SQLException e) {

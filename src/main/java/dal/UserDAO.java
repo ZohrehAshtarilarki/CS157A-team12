@@ -17,7 +17,7 @@ public class UserDAO {
 
     public String registerUser(User user) {
         Connection connection = dbConnection.getConnection();
-        String insertUserQuery = "INSERT INTO User (SJSUID, SJSUEmail, Username, Password, Role) VALUES (?, ?, ?, ?, ?)";
+        String insertUserQuery = "INSERT INTO user (sjsu_id, sjsu_email, username, password, role) VALUES (?, ?, ?, ?, ?)";
 
         try {
             // Insert user
@@ -45,7 +45,7 @@ public class UserDAO {
 
     public boolean checkUserExists(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String checkUserQuery = "SELECT * FROM User WHERE SJSUID = ?";
+        String checkUserQuery = "SELECT * FROM user WHERE sjsu_id = ?";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(checkUserQuery);
@@ -70,7 +70,7 @@ public class UserDAO {
     public boolean updateUser(User user) {
         Connection connection = dbConnection.getConnection();
         boolean updateResult = false;
-        String updateQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
+        String updateQuery = "UPDATE user SET sjsu_email=?, username=?, password=?, role=? WHERE sjsu_id=?";
 
         PreparedStatement preparedStatement = null;
         try {
@@ -105,7 +105,7 @@ public class UserDAO {
 
     public void deleteUser(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String deleteQuery = "DELETE FROM User WHERE SJSUID = ?";
+        String deleteQuery = "DELETE FROM user WHERE sjsu_id = ?";
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery);
@@ -122,7 +122,7 @@ public class UserDAO {
 
     public User getUserById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM User WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM user WHERE sjsu_id = ?";
         User user = null;
 
         try {
@@ -133,11 +133,11 @@ public class UserDAO {
 
             if (resultSet.next()) {
                 user = new User();
-                user.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                user.setSjsuEmail(resultSet.getString("SJSUEmail"));
-                user.setUsername(resultSet.getString("Username"));
-                user.setPassword(resultSet.getString("Password"));
-                user.setRole(resultSet.getString("Role"));
+                user.setSjsuId(Integer.parseInt(resultSet.getString("sjsu_id")));
+                user.setSjsuEmail(resultSet.getString("sjsu_email"));
+                user.setUsername(resultSet.getString("username"));
+                user.setPassword(resultSet.getString("password"));
+                user.setRole(resultSet.getString("role"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -150,7 +150,7 @@ public class UserDAO {
     }
 
     public User getUserByUsername(String username) {
-        String selectQuery = "SELECT * FROM User WHERE Username = ?";
+        String selectQuery = "SELECT * FROM user WHERE username = ?";
         User user = null;
 
         try (Connection connection = dbConnection.getConnection();
@@ -161,11 +161,11 @@ public class UserDAO {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     user = new User();
-                    user.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                    user.setSjsuEmail(resultSet.getString("SJSUEmail"));
-                    user.setUsername(resultSet.getString("Username"));
-                    user.setPassword(resultSet.getString("Password"));
-                    user.setRole(resultSet.getString("Role"));
+                    user.setSjsuId(Integer.parseInt(resultSet.getString("sjsu_id")));
+                    user.setSjsuEmail(resultSet.getString("sjsu_email"));
+                    user.setUsername(resultSet.getString("username"));
+                    user.setPassword(resultSet.getString("password"));
+                    user.setRole(resultSet.getString("role"));
                 }
             }
         } catch (SQLException e) {
@@ -178,7 +178,7 @@ public class UserDAO {
 
     public List<User> getAllUsers() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM User";
+        String selectQuery = "SELECT * FROM user";
         List<User> userList = new ArrayList<>();
 
         try {
@@ -188,11 +188,11 @@ public class UserDAO {
 
             while (resultSet.next()) {
                 User user = new User();
-                user.setSjsuId(Integer.parseInt(resultSet.getString("SJSUID")));
-                user.setSjsuEmail(resultSet.getString("SJSUEmail"));
-                user.setUsername(resultSet.getString("Username"));
-                user.setPassword(resultSet.getString("Password"));
-                user.setRole(resultSet.getString("Role"));
+                user.setSjsuId(Integer.parseInt(resultSet.getString("sjsu_id")));
+                user.setSjsuEmail(resultSet.getString("sjsu_email"));
+                user.setUsername(resultSet.getString("username"));
+                user.setPassword(resultSet.getString("password"));
+                user.setRole(resultSet.getString("role"));
 
                 userList.add(user);
             }

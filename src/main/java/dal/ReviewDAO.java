@@ -26,7 +26,7 @@ public class ReviewDAO {
 
         try {
             // If no existing review, insert new review
-            String insertReviewQuery = "INSERT INTO Review (EventID, SJSUID, ReviewText, Rating) VALUES (?, ?, ?, ?)";
+            String insertReviewQuery = "INSERT INTO review (event_id, sjsu_id, review_text, rating) VALUES (?, ?, ?, ?)";
             PreparedStatement statement = connection.prepareStatement(insertReviewQuery);
             statement.setInt(1, review.getEventId());
             statement.setInt(2,review.getSjsuId());
@@ -46,7 +46,7 @@ public class ReviewDAO {
         // Start a transaction
         connection.setAutoCommit(false);
 
-        String deleteReviewQuery = "DELETE FROM Review WHERE ReviewID = ?";
+        String deleteReviewQuery = "DELETE FROM review WHERE review_id = ?";
 
         try {
             // Delete from Review table
@@ -80,10 +80,10 @@ public class ReviewDAO {
 
     public List<Review> getReviewsByOrganizer(int sjsuId) throws SQLException {
         List<Review> reviews = new ArrayList<>();
-        String query = "SELECT r.* FROM Review r " +
-                "JOIN Event e ON r.EventID = e.EventID " +
-                "JOIN Manage m ON e.EventID = m.EventID " +
-                "WHERE m.SJSUID = ?";
+        String query = "SELECT r.* FROM review r " +
+                "JOIN event e ON r.event_id = e.event_id " +
+                "JOIN manage m ON e.event_id = m.event_id " +
+                "WHERE m.sjsu_id = ?";
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, sjsuId);
@@ -91,10 +91,10 @@ public class ReviewDAO {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Review review = new Review();
-                    review.setReviewId(resultSet.getInt("reviewId"));
-                    review.setEventId(resultSet.getInt("eventId"));
-                    review.setSjsuId(resultSet.getInt("sjsuId"));
-                    review.setReviewText(resultSet.getString("reviewText"));
+                    review.setReviewId(resultSet.getInt("review_id"));
+                    review.setEventId(resultSet.getInt("event_id"));
+                    review.setSjsuId(resultSet.getInt("sjsu_id"));
+                    review.setReviewText(resultSet.getString("review_text"));
                     review.setRating(resultSet.getFloat("rating"));
                     reviews.add(review);
                 }
@@ -117,7 +117,7 @@ public class ReviewDAO {
             connection.setAutoCommit(false); // Start transaction
 
             // Check if user is registered for the event
-            String checkQuery = "SELECT COUNT(*) FROM Register WHERE EventID = ? AND SJSUID = ?";
+            String checkQuery = "SELECT COUNT(*) FROM register WHERE event_id = ? AND sjsu_id = ?";
             checkStatement = connection.prepareStatement(checkQuery);
             checkStatement.setInt(1, eventId);
             checkStatement.setInt(2, userId);
@@ -125,7 +125,7 @@ public class ReviewDAO {
             ResultSet rs = checkStatement.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 // User is registered for the event, proceed with saving the review
-                String insertQuery = "INSERT INTO Review (EventID, SJSUID, Rating, ReviewText) VALUES (?, ?, ?, ?)";
+                String insertQuery = "INSERT INTO review (event_id, sjsu_id, rating, review_text) VALUES (?, ?, ?, ?)";
                 insertStatement = connection.prepareStatement(insertQuery);
                 insertStatement.setInt(1, eventId);
                 insertStatement.setInt(2, userId);
@@ -161,7 +161,7 @@ public class ReviewDAO {
 
     public double getAverageRatingForEvent(int eventId) {
         double averageRating = 0.0;
-        String sql = "SELECT AVG(Rating) AS Average FROM Review WHERE EventID = ?";
+        String sql = "SELECT AVG(Rating) AS Average FROM review WHERE event_id = ?";
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -179,7 +179,7 @@ public class ReviewDAO {
 
     public int getRatingCountForEvent(int eventId) {
         int ratingCount = 0;
-        String sql = "SELECT COUNT(*) AS Count FROM Review WHERE EventID = ?";
+        String sql = "SELECT COUNT(*) AS Count FROM review WHERE event_id = ?";
         try (Connection connection = dbConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -197,7 +197,7 @@ public class ReviewDAO {
 
     public List<Review> getAllReviews() {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Review";
+        String selectQuery = "SELECT * FROM review";
 
         List<Review> reviewList = new ArrayList<>();
         Review review;
@@ -208,10 +208,10 @@ public class ReviewDAO {
 
             while (resultSet.next()) {
                 review = new Review();
-                review.setReviewId(resultSet.getInt("reviewId"));
-                review.setEventId(resultSet.getInt("eventId"));
-                review.setSjsuId(resultSet.getInt("sjsuId"));
-                review.setReviewText(resultSet.getString("reviewText"));
+                review.setReviewId(resultSet.getInt("review_d"));
+                review.setEventId(resultSet.getInt("event_id"));
+                review.setSjsuId(resultSet.getInt("sjsu_id"));
+                review.setReviewText(resultSet.getString("review_text"));
                 review.setRating(resultSet.getFloat("rating"));
 
                 reviewList.add(review);
@@ -229,7 +229,7 @@ public class ReviewDAO {
     // Method to retrieve a review by its ID
     public List<Review> getReviewById(int eventId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM Review WHERE EventID = " + eventId;
+        String selectQuery = "SELECT * FROM review WHERE event_id = " + eventId;
         List<Review> reviewList = new ArrayList<>();
         Review review;
 
@@ -239,10 +239,10 @@ public class ReviewDAO {
 
             while (resultSet.next()) {
                 review = new Review();
-                review.setReviewId(resultSet.getInt("reviewId"));
-                review.setEventId(resultSet.getInt("eventId"));
-                review.setSjsuId(resultSet.getInt("sjsuId"));
-                review.setReviewText(resultSet.getString("reviewText"));
+                review.setReviewId(resultSet.getInt("review_id"));
+                review.setEventId(resultSet.getInt("event_id"));
+                review.setSjsuId(resultSet.getInt("sjsu_id"));
+                review.setReviewText(resultSet.getString("review_text"));
                 review.setRating(resultSet.getFloat("rating"));
 
                 reviewList.add(review);

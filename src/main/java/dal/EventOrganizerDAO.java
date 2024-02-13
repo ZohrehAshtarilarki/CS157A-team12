@@ -21,7 +21,7 @@ public class EventOrganizerDAO {
 
     public void createOrganizer(EventOrganizer eventOrganizer) {
         Connection connection = dbConnection.getConnection();
-        String insertQuery = "INSERT INTO EventOrganizer (SJSUID, OrganizationName) VALUES (?, ?)";
+        String insertQuery = "INSERT INTO event_organizer (sjsu_id, organization_name) VALUES (?, ?)";
 
         try {
             PreparedStatement OrganizerStm = connection.prepareStatement(insertQuery);
@@ -46,8 +46,8 @@ public class EventOrganizerDAO {
         Connection connection = null;
         boolean updateResult = false;
 
-        String updateOrganizerQuery = "UPDATE EventOrganizer SET OrganizationName=? WHERE SJSUID=?";
-        String updateUserQuery = "UPDATE User SET SJSUEmail=?, Username=?, Password=?, Role=? WHERE SJSUID=?";
+        String updateOrganizerQuery = "UPDATE event_organizer SET organization_name=? WHERE sjsu_id=?";
+        String updateUserQuery = "UPDATE user SET sjsu_email=?, username=?, password=?, role=? WHERE sjsu_id=?";
 
         try {
             connection = dbConnection.getConnection();
@@ -102,7 +102,7 @@ public class EventOrganizerDAO {
 
     public EventOrganizer getOrganizerById(int sjsuId) {
         Connection connection = dbConnection.getConnection();
-        String selectQuery = "SELECT * FROM EventOrganizer WHERE SJSUID = ?";
+        String selectQuery = "SELECT * FROM event_organizer WHERE sjsu_id = ?";
         EventOrganizer eventOrganizer = null;
 
         try {
@@ -113,8 +113,8 @@ public class EventOrganizerDAO {
 
             if (resultSet.next()) {
                 eventOrganizer = new EventOrganizer();
-                eventOrganizer.setSjsuId(resultSet.getInt("SJSUID"));
-                eventOrganizer.setOrganizationName(resultSet.getString("OrganizationName"));
+                eventOrganizer.setSjsuId(resultSet.getInt("sjsu_id"));
+                eventOrganizer.setOrganizationName(resultSet.getString("organization_name"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

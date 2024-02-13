@@ -8,9 +8,9 @@ import java.sql.SQLException;
 public class singletonDbConnection implements DbConnectionInt {
     private Connection connection;
 
-    private static final String URL = "jdbc:mysql://localhost:3306/EventManagement";
+    private static final String URL = "jdbc:mysql://localhost:3306/event_management";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "123456@Ebi";
+    private static final String PASSWORD = "Your password";
 
     private singletonDbConnection() {
         try {
