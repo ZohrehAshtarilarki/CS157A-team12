@@ -10,7 +10,7 @@ public class singletonDbConnection implements DbConnectionInt {
 
     private static final String URL = "jdbc:mysql://localhost:3306/event_management";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Your password";
+    private static final String PASSWORD = "Samm9009";
 
     private singletonDbConnection() {
         try {
