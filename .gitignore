@@ -2,9 +2,6 @@
 *.mwb
 *.mwb.bak
 
-# Ignore exported SQL files
-*.sql
-
 # Ignore MySQL Workbench log files
 *.log
 
